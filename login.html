@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<!-- 
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, June 2018, v0.5
+#
+############################################################
+-->
+<html>
+<head>
+<link rel="stylesheet" href="client/css/jquery-ui-1.12.1.css">
+<script src="client/js/jquery-3.2.1.js"></script>
+<script src="client/js/jquery_cookie.js"></script>
+<script src="client/utilities.js"></script>
+<script src="client/constants.js"></script>
+<script src="client/client.js"></script>
+</head>
+
+<style>
+input[type="text"],
+input[type="password"] {
+    color: brown;
+	padding-left: 2vw;
+	width: 100%;
+  	text-align: left;
+s}
+#message {
+	font-size: xx-large;
+	padding-bottom: 2vh;
+}
+input[type="button"] {
+    color: brown;
+	padding-top: 2vh;
+	padding-left: 5vw;
+	margin-right: 2vw;
+	float: left;
+  	text-align: center;
+	width: 20%;
+	font-size: xx-large;
+}
+.grid-container {
+    display: grid;
+    grid-template-columns: 25% 35%}");
+    background-color: #2196F3;
+    padding: 0px;
+}
+.grid-item {
+	height: 200px;
+}
+
+</style>
+
+<script>
+
+$(window).on('load', function () {
+	setStyles();
+	setupHeadings();
+	setTimeout(function() {
+		positionCopyright();
+	}, 100);
+	let html = div("what do you want to do?", "message");
+	$("body").append(html);
+	let loginButton = div(`<input type="button" value="login">`, "login");
+	let changePasswordButton = div(`<input type="button" value="change password">`, "changePassword");
+	let registerButton = div(`<input type="button" value="register">`, "register");
+	let blockDiv = div("", "block");
+	$("body").append(blockDiv);
+	$("#block").append(loginButton);
+	$("#block").append(changePasswordButton);
+	$("#block").append(registerButton);
+	$("#login").click(doLogin);
+	$("#changePassword").click(doChangePassword);
+	$("#register").click(doRegister);
+});
+
+function grid(name, selector, args) {
+	// this only works for grids with 2 columns
+	let container = div("", `container-${name}`);
+	container.addClass("grid-container")
+
+	$(selector).append(container);
+    rows = arguments.length - 2;
+	for(var i = 2; i < arguments.length; i++) {
+		let row = arguments[i];
+		for(let col = 0; col < row.length; col++) {
+			let contents = div(row[col], `grid-item-${name}-${i}-${col}`);
+			$(`#container-${name}`).append(contents);
+			$(`#grid-item-${name}-${i}-${col}`).addClass("grid-item");
+			$(`#grid-item-${name}-${i}-${col}`).css({"line-height":"5vw", "font-size":"x-large"});
+		}
+	}
+}
+
+function doLogin() {
+	$("#block").empty();
+	$("#message").html("login to assessmydeal<br/>")
+	grid("do-login", "#block", 
+			["email",    `<input type="text" style="font-size:large" id="email">`], 
+			["password", `<input type="password" style="font-size:large" id="password">`]
+	);
+	let submitButton = div(`<input type="button" value="submit">`, "do-login");
+	$("#block").append(submitButton);	
+	$("#do-login").click(function() {
+		$.ajax({
+			url: "authentication",
+			dataType: 'text',
+			data: {},
+			success: function(data, status) {
+				// data is of the form:   <token>;<document for client.html>
+				let n = data.indexOf(";");
+				let token = data.slice(0, n);
+				let html = data.slice(n+1);
+				document.open();
+				document.email = token;
+				document.write(html);
+				document.close();
+			},
+			error: function(data, status, error) {
+				console.log("error data", data, status, error);	  
+				$("#message").html("wrong password, try again")
+				$("#password").val("");
+			},
+			beforeSend: function(xhr, settings) { 
+				let email = $("#email").val();
+				let password = $("#password").val();
+				xhr.setRequestHeader('Authorization', `${email}+${password}`); 
+			} 
+		});
+	});
+}
+
+function doChangePassword() {
+	$("#message").html("change password<br/>")
+	$("#block").empty();
+	let emailBox = $(`<div>email<input type="text" id="email"></div>`);
+	let passwordBox0 = $(`<div>old password<input type="password" id="password0"></div>`);
+	let passwordBox1 = $(`<div>new password<input type="password" id="password1"></div>`);
+	let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
+	grid("do-change-password", "#block",
+			["email",            `<input type="text" id="email">`],
+            ["old password",     `<input type="password" id="password0">`],
+            ["new password",     `<input type="password" id="password1">`],
+            ["confirm password", `<input type="password" id="password2">`]
+	);
+	let submitButton = div(`<input type="button" id="do-changePassword" value="submit">`);
+	$("#block").append(submitButton);
+	$("#do-changePassword").click(function() {
+		let email = $("#email").val();
+		let password0 = $("#password0").val();
+		let password1 = $("#password1").val();
+		let password2 = $("#password2").val();
+		if(password1 !== password2) {
+			$("#message").html("passwords different, try again");
+			$("#password1").val("");
+			$("#password2").val("");
+			return;
+		}
+		$.ajax({
+			url: "change-password",
+			dataType: 'json',
+			data:{
+			    email: `${email}`,
+			    oldPassword: `${password0}`,
+				newPassword: `${password1}`
+			},
+			success: function(data, status) {
+				$("#block").empty();					
+    			$("#message").html("change successful")
+				setTimeout(function() {
+					location.reload();
+	    		}, 3000);
+			},
+			error: function(data, status, error) {
+				$("#message").html("wrong password, try again")
+				$("#password0").val("");
+				$("#password1").val("");
+				$("#password2").val("");
+			} 
+		});
+	});
+}
+
+function doRegister() {
+	function startRegistration() {
+		let email = $("#email").val();
+		$.ajax({
+			url: "start-registration",
+			dataType: 'json',
+			data:{
+			    email: `${email}`
+			},
+			success: function(data, status) {
+				$("#start-registration").remove();
+				$("#message").html("Please enter a password for your account and the code sent to you by email")
+				let codeBox = div(`enter code<input type="text" id="code">`);
+				grid("do-register2", "#block", 
+	                       ["password",         `<input type="password" id="password1">`],
+	                       ["confirm password", `<input type="password" id="password2">`],
+	                       ["enter code",       `<input type="text" id="code">`]
+				);
+				let submitButton = div(`<input type="button" id="complete-registration" value="submit">`);
+				$("#block").append(submitButton);	
+				$("#complete-registration").click(completeRegistration);
+			},
+			error: function(data, status, error) {
+				$("#message").html("Registration failed")
+			} 
+		});
+		
+	}
+	
+	function completeRegistration() {
+		let email = $("#email").val();
+		let password1 = $("#password1").val();
+		let password2 = $("#password2").val();
+		let code = $("#code").val();
+		if(password1 !== password2) {
+			$("#message").html("passwords different, try again");
+			$("#password1").val("");
+			$("#password2").val("");
+			return;
+		}
+		$.ajax({
+			url: "complete-registration",
+			dataType: 'json',
+			data:{
+			    email: `${email}`,
+			    password: `${password1}`,
+			    code: `${code}`
+			},
+			success: function(data, status) {
+				$("#message").html("Registration succeeded - you can now logon")
+				setTimeout(function() {
+					location.reload();
+				}, 3000);
+			},
+			error: function(data, status, error) {
+				console.log(data, status, error);
+				$("#message").html("Registration failed")
+			} 
+		});
+	}
+	
+	$("#message").html("Please register for assessmydeal")
+	$("#block").empty();
+	let emailBox = $(`<div>email<input type="text" id="email"></div>`);
+	grid("do-login", "#block", ["email", `<input type="text" id="email">`]);
+	let passwordBox1 = $(`<div>password<input type="password" id="password1"></div>`);
+	let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
+	let submitButton = div(`<input type="button" id="start-registration" value="submit">`);
+	$("#block").append(submitButton);	
+	$("#messageBox").html("");	
+	$("#start-registration").click(startRegistration);
+}
+
+function setupHeadings() {	
+	let image = div("<img src='client/images/highlands.png'/>", "highlands-image", {"float":"left"});
+	let headingFrame = div("", "heading-frame", {"width":BANNER_WIDTH, "background-color":TITLE_BAR_COLOR});
+	let headingTopFrame = div("", "heading-top-frame", {"width":BANNER_WIDTH, "border-style": "solid"});
+	let headingText = div(`${BANNER_TEXT}`, "heading-text", {"width":BANNER_WIDTH, "display":"inline-block", "text-align":"center"});
+	let headingBottomFrame = div("", "heading-bottom-frame", {"width":"60%", "border-style": "solid"});
+	$("#headings").append(image);
+	$("#headings").append(headingFrame);
+	$("#heading-frame").append(headingTopFrame);
+	$("#heading-frame").append(headingText);
+	$("#heading-frame").append(headingBottomFrame);	
+	$("div#headings").css({
+		"display": "flex",
+		"width": "100%",
+		"flex-direction": "row",
+		"justify-content": "center",
+		"align-items": "center",
+		"align-content": "space-between",
+		"background-color": TITLE_BAR_COLOR
+	});
+	$("#heading-frame").css({
+		"display": "flex",
+		"flex-direction": "column",
+		"text-align": "center",
+		"padding-left": "15vw",
+	    "font-size": "xx-large",
+		"color": BANNER_TITLE_COLOR
+	});
+
+}
+
+</script>
+
+<body>
+	<div id="headings"></div>
+</body>
+</html>
+

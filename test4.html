@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<!-- 
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, June 2018, v0.5
+#
+############################################################
+-->
+<html>
+<head>
+<script src="client/js/jquery-3.2.1.js"></script>
+<script src="client/js/jquery_cookie.js"></script>
+<script src="client/utilities.js"></script>
+</head>
+<script>
+function authenticate() {
+	
+}
+
+$(window).on('load', function () {
+	let html = div("what do you want to do?", "message");
+	$("body").append(html);
+	let loginButton = div(`<input type="button" value="login">`, "login");
+	let changePasswordButton = $(`<input type="button" id="changePassword" value="change password">`);
+	let registerButton = div(`<input type="button" id="register" value="register">`);
+	let blockDiv = div("", "block");
+	$("body").append(blockDiv);
+	$("#block").append(loginButton);
+	$("#block").append(changePasswordButton);
+	$("#block").append(registerButton);
+	$("#login").click(doLogin);
+	$("#changePassword").click(doChangePassword);
+	$("#register").click(doRegister);
+});
+
+function doLogin() {
+	$("#block").empty();
+	$("#message").html("login")
+	let emailBox = $(`<div>email<input type="text" id="email"></div>`);
+	let passwordBox = $(`<div>password<input type="password" id="password"></div>`);
+	let submitButton = div(`<input type="button" id="do-login" value="submit">`);
+	$("#block").append(emailBox);
+	$("#block").append(passwordBox);
+	$("#block").append(submitButton);	
+	$("#do-login").click(function() {
+		$.ajax({
+			url: "authentication",
+			dataType: 'text',
+			data: {
+			    alt: 'json-in-script'
+			},
+			success: function(data, status) {
+				// data is of the form:   <token>;<document for client.html>
+				let n = data.indexOf(";");
+				let token = data.slice(0, n);
+				let html = data.slice(n+1);
+				document.open();
+				document.token = token;
+				document.write(html);
+				document.close();
+			},
+			error: function(data, status, error) {
+				console.log("error data", data, status, error);	  
+			},
+			beforeSend: function(xhr, settings) { 
+				let email = $("#email").val();
+				let password = $("#password").val();
+				xhr.setRequestHeader('Authorization', `${email}+${password}`); 
+			} 
+		});
+	});
+}
+
+function doChangePassword() {
+	$("#message").html("change password")
+	$("#block").empty();
+	let emailBox = $(`<div>email<input type="text" id="email"></div>`);
+	let passwordBox0 = $(`<div>old password<input type="password" id="password0"></div>`);
+	let passwordBox1 = $(`<div>new password<input type="password" id="password1"></div>`);
+	let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
+	let submitButton = div(`<input type="button" id="do-changePassword" value="submit">`);
+	$("#block").append(emailBox);
+	$("#block").append(passwordBox0);
+	$("#block").append(passwordBox1);
+	$("#block").append(passwordBox2);
+	$("#block").append(submitButton);
+	$("#do-changePassword").click(function() {
+		let email = $("#email").val();
+		let password0 = $("#password0").val();
+		let password1 = $("#password1").val();
+		let password2 = $("#password2").val();
+		if(password1 !== password2) {
+			$("#message").html("passwords different, try again");
+			$("#password1").val("");
+			$("#password2").val("");
+			return;
+		}
+		$.ajax({
+			url: "change-password",
+			dataType: 'json',
+			data:{
+			    email: `${email}`,
+			    oldPassword: `${password0}`,
+				newPassword: `${password1}`
+			},
+			success: function(data, status) {
+				$("#block").empty();					
+    			$("#message").html("change successful")
+				setTimeout(function() {
+					location.reload();
+	    		}, 5000);
+			},
+			error: function(data, status, error) {
+				$("#message").html("wrong password, try again")
+				$("#password0").val("");
+				$("#password1").val("");
+				$("#password2").val("");
+			} 
+		});
+	});
+}
+
+function doRegister() {
+	$("#message").html("not yet implemented")
+	$("#block").empty();
+	let emailBox = $(`<div>email<input type="text" id="email"></div>`);
+	let passwordBox1 = $(`<div>password<input type="password" id="password1"></div>`);
+	let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
+	let submitButton = div(`<input type="button" id="do-register" value="submit">`);
+	let messageBox = div("", "message");
+	$("#block").append(emailBox);
+	$("#block").append(passwordBox1);
+	$("#block").append(passwordBox2);
+	$("#block").append(submitButton);	
+	$("#block").append(messageBox);	
+	$("#do-register").click(function() {
+		let email = $("#email").val();
+		let password1 = $("#password1").val();
+		let password2 = $("#password2").val();
+		if(password1 !== password2) {
+			$("#message").html("passwords different, try again");
+			$("#password1").val("");
+			$("#password2").val("");
+			return;
+		}
+		$.ajax({
+			url: "register",
+			dataType: 'json',
+			data:{
+			    email: `${email}`,
+			    password: `${password1}`
+			},
+			success: function(data, status) {
+				console.log("success");
+			},
+			error: function(data, status, error) {
+				console.log("error data", data, status, error);	  
+			} 
+		});
+	});
+}
+
+</script>
+
+
+<body>
+<!--  
+	email: <input type="text" id="email"><br>
+	password: <input type="text" id="password"><br>
+	<input type="button" id="login2" value="submit">
+-->
+</body>
+</html>
+

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!-- 
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, June 2018, v0.5
+#
+############################################################
+-->
+<html>
+<head>
+<script src="client/js/jquery-3.2.1.js"></script>
+</head>
+<script>
+$(window).on('load', function () {
+	let USERNAME = "chris";
+ 	let PASSWORD = "pwd";
+	let token = 99;	
+	$.ajax({
+		  url: "http://127.0.0.1:9097/test3.html",
+		  dataType: 'json',
+		  data: {
+		    alt: 'json-in-script'
+		  },
+		  success: function(data, status) {
+		    return console.log("The returned data", data);
+		  },
+		  beforeSend: function(xhr, settings) { xhr.setRequestHeader('Authorization','Bearer ' + token); } 
+		});
+});
+</script>
+
+
+<body>
+	<div id="mychart"></div>
+</body>
+</html>
+

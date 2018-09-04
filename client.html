@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<!-- 
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, June 2018, v0.5
+#
+############################################################
+-->
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name='viewport' 
+        content='width=device-width, height=device-height, user-scalable=no,
+                 initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+  <meta http-equiv="Cache-Control" content="max-age=31536000">
+<link rel="stylesheet" href="client/css/jquery.mobile-1.4.5.css">
+<link rel="stylesheet" href="client/css/jquery-ui-1.12.1.css">
+<link rel="stylesheet" href="client/c3-0.6.5/c3.min.css"/>
+<link rel="stylesheet" href="client/select2-stable-3.5/select2.css"/>
+<script src="client/js/jquery-3.2.1.js"></script>
+<script src="client/js/jquery_cookie.js"></script>
+<script src="client/select2-stable-3.5/select2.js"></script>
+<script src="client/js/jquery-ui-1.12.1.js"></script>
+<script src="client/d3-5.5.0/d3.min.js" charset="utf-8"></script>
+<script src="client/c3-0.6.5/c3.min.js"></script>
+
+<!-- These are the applications scripts -->
+<script src="client/ajax.js"></script>
+<script src="client/charts.js"></script>
+<script src="client/checkbox.js"></script>
+<script src="client/client.js"></script>
+<script src="client/constants.js"></script>
+<!--  <script src="client/graph.js"></script>  -->
+<script src="client/scatter.js"></script>
+<script src="client/utilities.js"></script>
+<script src="client/table.js"></script>
+
+<!-- 
+These are the old C3 and D3 libraries
+<link rel="stylesheet" href="c3-0.4.10/c3.min.css"/>
+<script src="client/d3-3.5.17/d3.min.js" charset="utf-8"></script>
+<script src="client/c3-0.4.10/c3.min.js"></script>
+ -->
+
+<style type="text/css">
+body {
+    overscroll-behavior: none;
+}
+
+.select2-container, .select2-result-label {
+	width:20%;
+	font-size: small;
+}
+
+#scattercharts tspan{
+    fill: blue;
+    font-weight: bold;
+	font-size: x-small;
+}
+
+input[type=text] { 
+	width: 60%; 
+	box-sizing: border-box; 
+}
+
+#showResults {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+	background-color: gold;
+	width: 50%;
+	height: 10vh;
+	transform: translateX(50%);
+	margin-top: 10vh;
+	margin-bottom: 10vh;
+	font-size: xx-large;
+}
+.c3-axis-y text 
+{
+  font-size: 15px; //change the size of the fonts
+}
+
+.c3-axis-x text 
+{
+  font-size: 15px; //change the size of the fonts
+}
+</style>
+
+<script>
+
+$(window).on('load', function () {
+	setupHeadings();
+	if($(location).attr('search')==="?charts") {
+		// charts
+		displayCharts();
+		displayPieCharts();
+		displayScatterChart();
+		displayCheckboxData();
+		displayTableData();
+	} else {
+		// assessments
+		removeCookiesOnStartup();
+		getQuestions();
+		getOptions();
+		addClickHandlers();
+	}
+	setupTabs();
+	setStyles();
+	setTimeout(function() {
+		positionCopyright();
+	}, 100);
+});
+
+function setupHeadings() {	
+	let image = div("<img src='client/images/highlands.png'/>", "highlands-image", {"float":"left"});
+	let headingFrame = div("", "heading-frame", {"width":BANNER_WIDTH, "background-color":TITLE_BAR_COLOR});
+	let headingTopFrame = div("", "heading-top-frame", {"width":BANNER_WIDTH, "border-style": "solid"});
+	let headingText = div(`${BANNER_TEXT}`, "heading-text", {"width":BANNER_WIDTH, "display":"inline-block", "text-align":"center"});
+	let headingBottomFrame = div("", "heading-bottom-frame", {"width":"60%", "border-style": "solid"});
+	$("#headings").append(image);
+	$("#headings").append(headingFrame);
+	$("#heading-frame").append(headingTopFrame);
+	$("#heading-frame").append(headingText);
+	$("#heading-frame").append(headingBottomFrame);	
+
+	$("#charts-title").text(`${OVERVIEW_TAB_TEXT}`);
+	$("#piecharts-title").text(`${RESPONSES_TAB_TEXT}`);
+
+    $("#assessment-button").text(ASSESSMENT_TAB_TITLE);
+    $("#charts-button").text(OVERVIEW_TAB_TITLE);
+    $("#piecharts-button").text(RESPONSES_TAB_TITLE);
+    $("#growth-button").text(SCATTER_TAB_TITLE);
+    $("#checkbox-button").text(CHECKBOXES_TAB_TITLE);
+    $("#table-button").text(TABLE_CHARTS_TAB_TITLE);
+}
+
+function setupTabs() {
+	function hideTab(selector) {
+		$(`[href="${selector}"]`).closest('li').hide();		
+	}
+	let tabObject = {};
+	if($(location).attr('search')==="?charts") {
+		tabObject["active"] = 1;
+		hideTab("#questions-tab");		
+	} else {
+		tabObject["active"] = 0;
+		hideTab("#overview-tab");
+		hideTab("#responses-tab");
+		hideTab("#growth-tab");
+		hideTab("#checkbox-tab");
+		hideTab("#table-tab");
+	}
+	$(function() {$("#tabs").tabs(tabObject);});
+}
+</script>
+
+</head>
+<body>
+	<div id="headings"></div>
+    <div id="tabs">
+	  <ul>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#questions-tab" class="tabs-button" id="assessment-button">Assessment</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#overview-tab" class="tabs-button" id="charts-button">Overview</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#responses-tab" class="tabs-button" id="piecharts-button">Responses</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#growth-tab" class="tabs-button" id="growth-button">Growth</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#checkbox-tab" class="tabs-button" id="checkbox-button">Checkboxes</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#table-tab" class="tabs-button" id="table-button">Table Charts</a></li>
+	  </ul>
+	  <div id="questions-tab">
+		<div id='canvas' style='float:left'>
+		    <div id='questions'></div>
+	    </div>
+	    <div id='results' style='float:left'></div>
+	    <div id='errorMessage'>&nbsp;</div>
+	    <button id="showResults" type="button">Submit Form</button>
+	  </div>
+	  <div id="overview-tab">
+		<div class="tab-title" id="charts-title"></div>
+		<div id="filter-drop-down"></div>
+		<div id="chart"></div>
+	  </div>
+	  <div id="responses-tab">
+	    <div class="tab-title" id="piecharts-title"></div>
+		<div id="pie-filter-drop-down"></div>
+		<div id="piecharts-message"></div>
+		<div id="piechart"></div>
+	  </div>
+	  <div id="growth-tab">
+	    <div class="tab-title" id="scattercharts-title"></div>
+		<div id="scatter-filter-drop-down"></div>
+		<div id="scattercharts"></div>
+	  </div>
+	  <div id="checkbox-tab">
+	    <div class="tab-title" id="checkbox-title"></div>
+		<div id="checkbox-filter-drop-down"></div>
+		<div id="checkboxcharts"></div>
+	  </div>
+	  <div id="table-tab">
+	    <div class="tab-title" id="table-title"></div>
+		<div id="table-filter-drop-down"></div>
+		<div id="tablecharts"></div>
+	  </div>
+	</div>    
+	<div id="modal_dialog"></div>
+    <div id="copyright"></div>
+</body>
+</html>
+
