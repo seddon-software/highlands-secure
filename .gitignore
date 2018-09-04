@@ -1,3 +1,4 @@
 *.xlsx
 *.tar
+libs/__pycache__
 
