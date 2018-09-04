@@ -78,7 +78,7 @@ class Database:
                     print(e)
         finally:
             connection.close()
-        return result['password']
+        return result['code']
 
     def getField(self, fieldName, fieldValue):
         connection = self.connect()
