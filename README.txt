@@ -11,14 +11,16 @@ To initilize the system:
 To run the server:
 	python server.py [excelFile]
 	
-To run the automatic tests:
+To run the automatic tests (these are broken at present):
 	python run_tests.py [excelFile]
 	
 To start the client assessment in a browser:
-	http://<server-ip>:<port>/client.html
+	https://<server-ip>:<port>
+	https://assessmydeal.com:9097
 
 To start the client with the charts in a browser:
-	http://<server-ip>:<port>/client.html?charts
+	https://<server-ip>:<port>/client.html?charts
+	https://assessmydeal.com:9097/client.html?charts
 
 To run automatic tests you will need to install selenium:
 	pip install selenium
@@ -30,5 +32,9 @@ To run server on A2Hosting server:
 	
 To start ftp server:
 	sudo systemctl start vsftpd
-	
+
+To do:
+	move application to default SSL port (443)
+	make server a genuine daemon process
+	install a valid SSL certificate on server
 
