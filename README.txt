@@ -26,9 +26,9 @@ To run automatic tests you will need to install selenium:
 	pip install selenium
 
 To run server on A2Hosting server:
-	ssh -p 7822 <user-name>@68.66.241.111
-	ssh -p 7822 chris@68.66.241.111
-	cd /opt/highlands/h-workshop/Python/src/_Highlands
+	ssh -p 7822 <user-name>@assessmydeal.com
+	ssh -p 7822 chris@assessmydeal.com
+	cd /opt/highlands/h-workshop/Python/src/_Highlands/highlands-secure
 	nohup python server.py & disown
 	
 To start ftp server:
@@ -38,4 +38,11 @@ To do:
 	move application to default SSL port (443)
 	make server a genuine daemon process
 	install a valid SSL certificate on server
+	sudo iptables -A PREROUTING -t nat -i venet0 -p tcp --dport 443 -j REDIRECT --to-port 9097
+	sudo iptables -A PREROUTING -t nat -i venet0 -p tcp --dport 80 -j REDIRECT --to-port 9096
+Note:
+	realpath .	# print real path of a directory
+	assessmydeal.com is 68.66.241.111
 
+	
+	
