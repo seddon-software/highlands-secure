@@ -1,4 +1,7 @@
 *.xlsx
 *.tar
+.project
+.pydevproject
 libs/__pycache__
-
+/.metadata/
+/RemoteSystemsTempFiles/
