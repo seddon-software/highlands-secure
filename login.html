@@ -19,6 +19,9 @@
 </head>
 
 <style>
+body {
+    background-color: azure;
+}
 input[type="text"],
 input[type="password"] {
     color: brown;
@@ -34,20 +37,17 @@ input[type="button"] {
     color: brown;
 	padding-top: 2vh;
 	padding-left: 5vw;
-	margin-right: 2vw;
+	margin-left: 2vw;
 	float: left;
   	text-align: center;
 	width: 20%;
-	font-size: xx-large;
+	font-size: large;
 }
 .grid-container {
     display: grid;
     grid-template-columns: 25% 35%}");
     background-color: #2196F3;
     padding: 0px;
-}
-.grid-item {
-	height: 200px;
 }
 
 </style>
@@ -88,7 +88,11 @@ function grid(name, selector, args) {
 			let contents = div(row[col], `grid-item-${name}-${i}-${col}`);
 			$(`#container-${name}`).append(contents);
 			$(`#grid-item-${name}-${i}-${col}`).addClass("grid-item");
-			$(`#grid-item-${name}-${i}-${col}`).css({"line-height":"5vw", "font-size":"x-large"});
+			$(`#grid-item-${name}-${i}-${col}`).css({
+				"line-height":"5vw", 
+				"font-size":"x-large",
+			    "padding-right": "1vw",
+				"text-align":"right"});
 		}
 	}
 }
