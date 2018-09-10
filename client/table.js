@@ -31,6 +31,7 @@ function drawTableCharts(data) {
 	$("#table-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
 	let title = div(`${TABLE_CHARTS_TAB_TEXT}`, "", { color:`${TABLE_CHARTS_TITLE_COLOR}`});
 	$("#table-title").html(title);
+	if (emails.length === 0) return;
 
 	function attachPieChart(key, filter) {
 		o = {

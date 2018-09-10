@@ -111,7 +111,6 @@ def addManagerToUsersTable(usersTable, manager, managerPassword, database):
             sql = """INSERT INTO `{}` (`email`,   `password`, `code`, `category`)
                                VALUES ('{}', '{}',  '0',    '1');
                   """.format(usersTable, manager, managerPassword)
-            print(sql)
             cursor.execute(sql)
             # connection is not autocommit by default. So you must commit to save your changes.
             connection.commit()    

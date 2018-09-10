@@ -45,6 +45,7 @@ function drawCheckboxCharts(data) {
 	$("#checkbox-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
 	let title = div(`${CHECKBOXES_TAB_TEXT}`, "", { color:`${CHECKBOX_TITLE_COLOR}`});
 	$("#checkbox-title").html(title);
+	if (emails.length === 0) return;
 
 	function drawAllCheckboxCharts(clientOrEmail) {
 	 	$("#checkboxcharts").empty();

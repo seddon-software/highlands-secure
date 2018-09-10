@@ -37,6 +37,7 @@ function scatterChartCallback(data) {
 	$("#scatter-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
 	let heading = div(`${SCATTER_TAB_TEXT}`, "", {'color':`${GROWTH_TITLES_COLOR}`});
 	$("#scattercharts-title").html(heading);
+	if (emails.length === 0) return;
 
 	let questionNumber = scatterData['question'][0];
 	let questionText = scatterData['question'][1];
