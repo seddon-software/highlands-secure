@@ -3,7 +3,7 @@
 #
 #    Highlands Client
 #
-#    © Highlands Negotiations, June 2018, v0.5
+#    © Highlands Negotiations, 2018, v1.0
 #
 ############################################################
 */
@@ -594,7 +594,7 @@ function displayQuestionsAndOptions() {
 }
 
 function positionCopyright() {
-    $("#copyright").html(`&nbsp;&nbsp;&nbsp;${COPYRIGHT_MESSAGE}`);
+    $("#copyright").html(COPYRIGHT_MESSAGE);
     $("#copyright").css("color", COPYRIGHT_TEXT_COLOR)
     			   .css("background-color", COPYRIGHT_BACKGROUND_COLOR)
                    .css("bottom", "0px")

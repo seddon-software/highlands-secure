@@ -1,3 +1,14 @@
+/* 
+############################################################
+#
+#    Highlands Client
+#
+#    © Highlands Negotiations, 2018, v1.0
+#
+############################################################
+*/
+
+
 // !!!! important
 // xSort is undocumented, c3.js reorders json data without this attribute and this in turn messes up the data index
 // https://stackoverflow.com/questions/48465126/c3-charts-dynamic-bubble-size-in-scatter-plot-wrong-index

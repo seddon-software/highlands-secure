@@ -1,3 +1,13 @@
+/* 
+############################################################
+#
+#    Highlands Client
+#
+#    © Highlands Negotiations, 2018, v1.0
+#
+############################################################
+*/
+
 /*
  * This function is a simple wrapper around the JQuery AJAX call
  */

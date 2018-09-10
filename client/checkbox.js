@@ -1,3 +1,13 @@
+/* 
+############################################################
+#
+#    Highlands Client
+#
+#    © Highlands Negotiations, 2018, v1.0
+#
+############################################################
+*/
+
 /*
  * This file handles the display of checkbox data.
  * 

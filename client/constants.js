@@ -3,7 +3,7 @@
 #
 #    Highlands Client
 #
-#    © Highlands Negotiations, June 2018, v0.5
+#    © Highlands Negotiations, 2018, v1.0
 #
 ############################################################
 */
@@ -88,7 +88,7 @@ var TABLE_CHARTS_TAB_TEXT = "Table Charts:";
 
 //miscellaneous
 var BANNER_TEXT = "Highlands Negotiations LLC";
-var COPYRIGHT_MESSAGE = "© Highlands Negotiations, June-August 2018, v0.9";
+var COPYRIGHT_MESSAGE = "\u00A9 Highlands Negotiations, 2018, v1.0";
 var SCATTER_X_TITLE = 'Market Growth';
 var SCATTER_Y_TITLE = 'Client Revenue Growth';
 var WHERE_TO_GO_ON_EXIT = "http://www.highlandsnegotiations.com/";

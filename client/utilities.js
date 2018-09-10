@@ -1,3 +1,13 @@
+/* 
+############################################################
+#
+#    Highlands Client
+#
+#    © Highlands Negotiations, 2018, v1.0
+#
+############################################################
+*/
+
 function buildMenu(data, id, clients, emails) {  // scatterData
 	function getClients() {
 		let clients = [];
