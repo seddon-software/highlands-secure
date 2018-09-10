@@ -99,9 +99,28 @@ def createUsersTable(table, manager, managerPassword, database):
         email VARCHAR(40) NOT NULL,
         password VARCHAR(40),
         code VARCHAR(20),
+        category VARCHAR(40),
         PRIMARY KEY (`email`)
         )""".format(table)
     execute(connection, sql)
+
+def addManagerToUsersTable(usersTable, manager, managerPassword, database):
+    connection = connect(manager, managerPassword, database)
+    try:
+        with connection.cursor() as cursor:
+            sql = """INSERT INTO `{}` (`email`,   `password`, `code`, `category`)
+                               VALUES ('{}', '{}',  '0',    '1');
+                  """.format(usersTable, manager, managerPassword)
+            print(sql)
+            cursor.execute(sql)
+            # connection is not autocommit by default. So you must commit to save your changes.
+            connection.commit()    
+    except Exception as e:
+        print("rollback")
+        print(e)
+        connection.rollback()
+    finally:
+        connection.close()
 
 def showTables(user, password, database):
     connection = connect(user, password, database)
@@ -153,6 +172,7 @@ if __name__ == "__main__":
     dropTable(usersTable, manager, managerPassword, database)
     createTable(table, manager, managerPassword, database)
     createUsersTable(usersTable, manager, managerPassword, database)
+    addManagerToUsersTable(usersTable, manager, managerPassword, database)
+    printTable(manager, managerPassword, database, usersTable)
     showTables(manager, managerPassword, database)
     showUsers(root, rootPassword, database)
-#    printTable(manager, managerPassword, database, table)

@@ -1,3 +1,11 @@
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, 2018, v1.0
+#
+############################################################
+
 import pandas as pd
 from ast import literal_eval
 from database import Database

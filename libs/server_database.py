@@ -2,7 +2,7 @@
 #
 #    Highlands Server
 #
-#    © Highlands Negotiations, June 2018, v0.5
+#    © Highlands Negotiations, 2018, v1.0
 #
 ############################################################
 

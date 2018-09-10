@@ -1,3 +1,11 @@
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, 2018, v1.0
+#
+############################################################
+
 import pymysql.cursors
 import os
 from myglobals import MyGlobals

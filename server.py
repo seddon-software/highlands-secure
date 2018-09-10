@@ -2,7 +2,7 @@
 #
 #    Highlands Server
 #
-#    © Highlands Negotiations, June 2018, v0.5
+#    © Highlands Negotiations, 2018, v1.0
 #
 ############################################################
 
@@ -91,8 +91,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
         def generateCode():
             return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-
-            
+   
         parsedUrl = urllib.parse.urlparse(self.path) # returns a 6-tuple
         fileName = parsedUrl[2]
         queryString = parsedUrl[4]
@@ -187,7 +186,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write('["registration failed"]'.encode())
                 print("{} failed to register".format(data['email'][0]))
         elif(fileName == "authentication"):
-            print("authenticated")
             theEmail, success = authenticate()
             if success:
                 fileName = "client.html"
@@ -204,7 +202,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 print("{} failed to login".format(data['email'][0]))                
         else:
             def isInvalidRequest():
-                if (extension == "html" or extension == "js" or extension == "css"):
+                if(fileName == "client.html"): return True
+                if(extension == "html" or extension == "js" or extension == "css"):
                     return False
                 else:
                     return True

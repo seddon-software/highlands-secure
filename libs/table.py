@@ -1,3 +1,11 @@
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, 2018, v1.0
+#
+############################################################
+
 import os
 # this line is only executed if this file is run stand alone (for testing only)
 if __name__ == "__main__": os.chdir("..")

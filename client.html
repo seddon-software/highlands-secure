@@ -4,7 +4,7 @@
 #
 #    Highlands Server
 #
-#    © Highlands Negotiations, June 2018, v0.5
+#    © Highlands Negotiations, 2018, v1.0
 #
 ############################################################
 -->
@@ -90,8 +90,10 @@ input[type=text] {
 
 $(window).on('load', function () {
 	setupHeadings();
-	if($(location).attr('search')==="?charts") {
+	if(document.email==="manager") {
+		//if($(location).attr('search')==="?charts") {
 		// charts
+		console.log(document.email);
 		displayCharts();
 		displayPieCharts();
 		displayScatterChart();
@@ -139,7 +141,8 @@ function setupTabs() {
 		$(`[href="${selector}"]`).closest('li').hide();		
 	}
 	let tabObject = {};
-	if($(location).attr('search')==="?charts") {
+	if(document.email==="manager") {
+//	if($(location).attr('search')==="?charts") {
 		tabObject["active"] = 1;
 		hideTab("#questions-tab");		
 	} else {
