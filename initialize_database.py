@@ -97,9 +97,8 @@ def createUsersTable(table, manager, managerPassword, database):
     connection = connect(manager, managerPassword, database)
     sql = """CREATE TABLE IF NOT EXISTS {} (
         email VARCHAR(40) NOT NULL,
-        password VARCHAR(40),
+        password VARCHAR(255),
         code VARCHAR(20),
-        category VARCHAR(40),
         PRIMARY KEY (`email`)
         )""".format(table)
     execute(connection, sql)
@@ -108,8 +107,8 @@ def addManagerToUsersTable(usersTable, manager, managerPassword, database):
     connection = connect(manager, managerPassword, database)
     try:
         with connection.cursor() as cursor:
-            sql = """INSERT INTO `{}` (`email`,   `password`, `code`, `category`)
-                               VALUES ('{}', '{}',  '0',    '1');
+            sql = """INSERT INTO `{}` (`email`,   `password`, `code`)
+                               VALUES ('{}',       SHA1('{}'), '0');
                   """.format(usersTable, manager, managerPassword)
             cursor.execute(sql)
             # connection is not autocommit by default. So you must commit to save your changes.
@@ -172,6 +171,8 @@ if __name__ == "__main__":
     createTable(table, manager, managerPassword, database)
     createUsersTable(usersTable, manager, managerPassword, database)
     addManagerToUsersTable(usersTable, manager, managerPassword, database)
-    printTable(manager, managerPassword, database, usersTable)
     showTables(manager, managerPassword, database)
     showUsers(root, rootPassword, database)
+    print("UsersTable")
+    print("==========")
+    printTable(manager, managerPassword, database, usersTable)

@@ -44,7 +44,7 @@ class Database:
         try:
             with connection.cursor() as cursor:
                 try:
-                    sql = """REPLACE INTO {} SET email = '{}', password = '{}', code = '{}'
+                    sql = """REPLACE INTO {} SET email = '{}', password = SHA1('{}'), code = '{}'
                     """.format(g.get("usersTable"), email, password, code)
                     cursor.execute(sql)
                     connection.commit()

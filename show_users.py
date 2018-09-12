@@ -1,0 +1,87 @@
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, June 2018, v0.5
+#
+############################################################
+
+import pymysql.cursors, sys, os
+import pandas as pd
+
+
+def execute(connection, sql):
+    # connection is not autocommit by default. So you must commit to save your changes.
+    try:
+        with connection.cursor() as cursor:
+            pymysql.cursors.Cursor._defer_warnings = True
+
+            cursor.execute(sql)
+        connection.commit()    
+    finally:
+        connection.close()
+        
+
+def connect(user, password, database=""):
+    connection = pymysql.connect(host='localhost',
+                                 user=user,
+                                 password=password,
+                                 db=database,
+                                 charset='utf8mb4',
+                                 cursorclass=pymysql.cursors.DictCursor)
+    return connection
+
+def printTable(manager, managerPassword, database, table):
+    connection = connect(manager, managerPassword, database)
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT `email`, `password` FROM `{}`".format(table)
+            cursor.execute(sql)
+            results = cursor.fetchall()
+            for row in results:
+                print(row)
+    finally:
+        connection.close()
+
+def getNamesAndPasswords():
+    pd.set_option('display.width', 1000)
+    table = pd.read_excel(excelFile, 'setup')
+    rootFrame = table[(table.TYPE == "user") & (table.NAME == "root")]
+    managerFrame = table[(table.TYPE == "user") & (table.NAME == "manager")]
+    databaseFrame = table[table.TYPE == "database"]
+    usersFrame = table[table.TYPE == "users"]
+
+    root = rootFrame["NAME"].tolist()[0]
+    rootPassword = rootFrame["OPTION"].tolist()[0]
+    manager = managerFrame["NAME"].tolist()[0]
+    managerPassword = managerFrame["OPTION"].tolist()[0]
+    database = databaseFrame["NAME"].tolist()[0]
+    table = databaseFrame["OPTION"].tolist()[0]
+    usersTable = usersFrame["OPTION"].tolist()[0]
+
+    return [root, rootPassword, manager, managerPassword, database, table, usersTable]
+
+def parseCommandLine():
+    # default excel file is "highlands.xlsx", but can be changed on command line:
+    #    python server.py [excel-file]
+    if len(sys.argv) > 2:
+        print("Useage: python server.py [excel-file]")
+        sys.exit()
+    if len(sys.argv) == 1:
+        excelFile = "highlands.xlsx"
+    else:
+        excelFile = sys.argv[1].replace(".xlsx", "") + ".xlsx"
+    
+    if not os.path.isfile(excelFile):
+        print("{} does not exist".format(excelFile))
+        sys.exit()
+
+    return excelFile
+
+if __name__ == "__main__":
+    global excelFile
+    excelFile = parseCommandLine()
+    root, rootPassword, manager, managerPassword, database, table, usersTable = getNamesAndPasswords()
+    print("UsersTable (passwords stored as SHA1 hashes)")
+    print("============================================")
+    printTable(manager, managerPassword, database, usersTable)
