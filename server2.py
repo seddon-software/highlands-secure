@@ -29,6 +29,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
 PORT = 9096
 SERVER = "assessmydeal.com"
+SERVER = "209.124.74.241"
 server = http.server.HTTPServer((SERVER, PORT), Handler)
 
 print("server:", SERVER)
