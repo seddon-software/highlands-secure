@@ -35,7 +35,7 @@ def printTable(manager, managerPassword, database, table):
     connection = connect(manager, managerPassword, database)
     try:
         with connection.cursor() as cursor:
-            sql = "SELECT `*` FROM `{}`".format(table)
+            sql = "SELECT * FROM `{}`".format(table)
             cursor.execute(sql)
             results = cursor.fetchall()
             for row in results:

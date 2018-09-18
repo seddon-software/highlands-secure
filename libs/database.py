@@ -31,7 +31,7 @@ class Database:
         connection = self.connect()
         try:
             with connection.cursor() as cursor:
-                sql = "SELECT `*` FROM `{}`".format(g.get("table"))
+                sql = "SELECT * FROM `{}`".format(g.get("table"))
                 cursor.execute(sql)
                 results = cursor.fetchall()
         finally:
@@ -109,7 +109,7 @@ class Database:
         connection = self.connect()
         try:
             with connection.cursor() as cursor:
-                sql = "SELECT `*` FROM `{}`".format(g.get("usersTable"))
+                sql = "SELECT * FROM `{}`".format(g.get("usersTable"))
                 cursor.execute(sql)
                 results = cursor.fetchall()
                 for result in results:

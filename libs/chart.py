@@ -46,7 +46,7 @@ class Chart:
         connection = db.connect()
         try:
             with connection.cursor() as cursor:
-                sql = "SELECT `*` FROM `{}`".format(g.get("table"))
+                sql = "SELECT * FROM `{}`".format(g.get("table"))
                 cursor.execute(sql)
                 results = cursor.fetchall()
                 chartData = pd.DataFrame(columns=['guid', 'client','section','email','marks'])
@@ -110,7 +110,7 @@ class Chart:
         connection = db.connect()
         try:
             with connection.cursor() as cursor:
-                sql = "SELECT `*` FROM `{}`".format(g.get("table"))
+                sql = "SELECT * FROM `{}`".format(g.get("table"))
                 cursor.execute(sql)
                 results = cursor.fetchall()
                 chartData = pd.DataFrame(columns=['client','section','marks'])
@@ -173,7 +173,7 @@ class Chart:
         connection = db.connect()
         try:
             with connection.cursor() as cursor:
-                sql = "SELECT `*` FROM `{}`".format(g.get("table"))
+                sql = "SELECT * FROM `{}`".format(g.get("table"))
                 cursor.execute(sql)
                 results = cursor.fetchall()
                 
