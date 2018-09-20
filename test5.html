@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!-- 
+############################################################
+#
+#    Highlands Server
+#
+#    © Highlands Negotiations, June 2018, v0.5
+#
+############################################################
+-->
+<html>
+<head>
+<link rel="stylesheet" href="client/c3-0.6.5/c3.min.css"/>
+<script src="client/js/jquery-3.2.1.js"></script>
+<script src="client/js/jquery_cookie.js"></script>
+<script src="client/utilities.js"></script>
+<script src="client/d3-5.5.0/d3.min.js" charset="utf-8"></script>
+<script src="client/c3-0.6.5/c3.min.js"></script>
+</head>
+<script>
+
+$(window).on('load', function () {
+	drawChart();
+});
+
+
+function drawChart() {
+	var chart = c3.generate({
+	    bind: "#chart",
+	    axis: {
+	    	y: {
+	    		min: -200,
+	    		max: 600
+	    	}
+	    },
+		data: {
+	        columns: [
+	        	['data1', 15, 100,  50, 200,  75, 125],
+	        	['data2', 15, 100,  50, 200,  75, 125],
+	            ['data3', 15, 100,  50, 200,  75, 125],
+	            ['data4', -50,   50, -20,  75,  -75, -25],
+	        ],
+	        groups: [
+	            ['data2', 'data1']
+	        ],
+	        type: 'bar',
+	        labels: false
+	    },
+	    grid: {
+	        y: {
+	            lines: [{value: 0}]
+	        }
+	    }
+	});
+}
+
+</script>
+
+
+<body>
+	<div id="chart"></div>
+</body>
+</html>
+

@@ -33,7 +33,10 @@ table = Table()
 db = Database()
 
 class Handler(http.server.BaseHTTPRequestHandler):
-        
+    def log_message(self, format, *args):
+        # supress log messages from http.server
+        return
+   
     def do_POST(self):
         jsonResponse = self.rfile.read(int(self.headers['Content-Length']))
 
@@ -207,7 +210,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             else:
                 sendHeaders(401)
                 self.wfile.write('["login failed"]'.encode())
-                print("{} failed to login".format(data['email'][0]))                
+                print("{} failed to login".format(theEmail))                
         else:
             def isInvalidRequest():
                 if(fileName == "client.html"): return True
@@ -251,6 +254,7 @@ print("port:", PORT)
 print("database:", g.get("database"))
 print("table:", g.get("table"))
 print("users table:", g.get("usersTable"))
+print("")
 httpd.serve_forever()
 
 

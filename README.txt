@@ -44,6 +44,7 @@ To do:
 Note:
 	realpath .	# print real path of a directory
 	assessmydeal.com is 68.66.241.111
+	assessmydeal.com is 209.124.74.241
 	redirect commands:
 		sudo iptables -A PREROUTING -t nat -i venet0 -p tcp --dport 443 -j REDIRECT --to-port 9097
 		sudo iptables -A PREROUTING -t nat -i venet0 -p tcp --dport 80 -j REDIRECT --to-port 9096

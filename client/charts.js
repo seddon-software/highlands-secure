@@ -175,6 +175,7 @@ function drawChart(data) {
 		}
 		displayHeading();
 		
+		console.log(filteredColumnData);
 		// x-axis: <Aspect>, <values array>
 		// y-axis: <client array>
 		// axes are swapped

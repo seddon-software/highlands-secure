@@ -59,8 +59,7 @@ class Database:
         try:
             with connection.cursor() as cursor:
                 try:
-                    sql = """SELECT password FROM {} WHERE email = '{}'
-                    """.format(g.get("usersTable"), email)
+                    sql = """SELECT password FROM {} WHERE email = '{}'""".format(g.get("usersTable"), email)
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     
@@ -69,7 +68,8 @@ class Database:
                     print(e)
         finally:
             connection.close()
-        return result['password']
+        
+        return result['password'] if result else ""
 
     def getCode(self, email):
         connection = self.connect()
@@ -125,6 +125,7 @@ if __name__ == "__main__":
     db.createUser("Peter", "S", "123")
     db.createUser("Peter", "Smith", "456")
     print(db.getPassword("John"))
+    print(db.getPassword("Johnny"))
     db.printUsers()
     
     

@@ -1,0 +1,5 @@
+server: 127.0.0.1
+port: 9091
+database: highlands
+table: Survey1
+users table: users99
