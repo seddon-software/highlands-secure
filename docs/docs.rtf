@@ -1,0 +1,319 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red102\green177\blue50;\red0\green170\blue0;\red0\green0\blue0;
+\red85\green142\blue40;}
+{\*\expandedcolortbl;;\cssrgb\c46532\c73327\c25364;\csgenericrgb\c0\c66667\c0;\cssrgb\c0\c0\c0;
+\cssrgb\c39975\c61335\c20601;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww28300\viewh17700\viewkind0
+\deftab720
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+
+\f0\b\fs36 \cf0 \ul \ulc0 Highlands Application\
+
+\b0\fs24 \ulnone \
+
+\b \ul Introduction\
+
+\b0 \ulnone \
+This application is in 3 parts: Server, Client, Database.  The server is written in Python (Anaconda 3.6) and the client runs in a browser and is mainly written in JavaScript.  The client uses two JavaScript libraries: JQuery and C3.js.  The server is controlled by an Excel file.  This Excel file defaults to the name highlands.xlsx, but can be called anything as long as it has an .xlsx extension.\
+\
+The Excel File has 2 mandatory and 1 optional tab:\
+\pard\tx786\tx3584\pardeftab720\ri-18659\partightenfactor0
+\cf0 	setup tab:		this defines the passwords for two users: manager and root.  These users are MySQL accounts; root is the admininstrator of the database and manager is the account under which the server and associated programs are run. \
+		The setup tab also defines which database and table is used by the server and the host and port number for the server.\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 	questions tab:		this defines the id and text for all the questions, together with all the possible answers (options).\
+	tests tab:		this is an optional tab that defines a set of automatic tests.  These tests are invoked by a stand-alone python application called "run_tests.py".\
+	\
+Before running the server for the first time, the MySQL database needs to be initialised.  To initilize the system run:\
+	python initialize_database.py [excelFile]\
+If the name of the Excel file is omitted, the file "highlands.xlsx" is assumed.  This also applies to running the server and the automatic tests.\
+\
+To run the server:\
+	python server.py [excelFile]\
+	\
+To run the automatic tests:\
+	python run_tests.py [excelFile]\
+\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 If you want to set up some test data use the automatic test application, "run_tests.py" to run sample assessments.  This program will drive the Chrome browser automatically using the Python Selenium package.  To run automatic tests you may need to install selenium:\
+	pip install selenium\
+\
+After one or more assessments are completed, results can be displayed in a browser using a URL of the form: \
+	http://<server-ip>:<port>/client.html?charts\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+
+\b \cf0 \ul \ulc0 \
+A2 Hosting Server\
+
+\b0 \ulnone \
+If the server is run on the A2 hosting server it will terminate when you log out unless additional steps are taken.  To log in to the hosting server run:\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 	ssh -p 7822 <login-name>@68.66.241.111\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 Then it is sufficient to run the commands:	\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 	cd /opt/highlands/h-workshop/Python/src/_Highlands\
+	nohup python server.py & disown\
+	logout\
+\
+Once the server is running you can start the client assessment in a browser:\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 	http://<server-ip>:<port>/client.html\
+\
+Files are normally uploaded to the A2 hosting server using git.  The commands:\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 	cd /opt/highlands/h-workshop/Python/src/_Highlands\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 	git clone https://github.com/guyjlloyd/h-workshop.git\
+has already been run to initialise the application.  \
+\
+If further commits are made then, you should first stop the server:\
+	kill <pid>\
+where pid the the process id of the server as shown in:\
+	ps -ef\
+then run:\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 	cd /opt/highlands/h-workshop/Python/src/_Highlands\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 	git pull\
+and restart the server:\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 	nohup python server.py & disown\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 \
+
+\b \ul FTP\
+
+\b0 \ulnone \
+Finally, it may be necessary to use FTP to transfer additional files to the A2 hosting server (excel files, certificates).  \
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 As this is an umanaged hosting server you will need to start an ftp server with:\
+	sudo systemctl start vsftpd\
+I have already installed the vsftpd daemon program.\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+\cf0 \
+You can use FileZilla as the FTP client using the FileZilla Site Manager, General Tab (ignore other tabs)	\
+	Host:		68.66.241.111\
+	Protocol:	FTP\
+	Encryption:	Use plain FTP\
+	Logon Type:	Normal\
+	User:		your A2 login name\
+	Password:	your A2 login password\
+	Account:	leave blank\
+\
+\pard\tx786\tx3584\pardirnatural\partightenfactor0
+
+\b \cf0 \ul \ulc0 Further Work\
+
+\b0 \ulnone 1) The server is running under http at present.  It is a simple matter to run the server using https, but this requires a certificate.\
+2) You may want the server to run on a default port (http:80 or https:443).  However ports below 1024 can only be accessed by root, so you need to use port forwarding.  For example to forward https to port 8443:\
+\pard\pardeftab720\partightenfactor0
+\cf0 	sudo iptables -t nat -A OUTPUT -p tcp --dport 443 -d 127.0.0.1 -j DNAT --to-destination 127.0.0.1:8443\
+\pard\tx786\tx3584\pardirnatural\partightenfactor0
+\cf0 Then the port number doesn't need to be specified in the browser URL.\
+ \
+
+\b \ul Server Code\
+
+\b0 \ulnone \
+The server uses 
+\f1 http.server.HTTPServer 
+\f0 to handle all client requests.  The HTTPServer library uses a callback to handle client requests (in our case the handler is called: "Handler").\
+Most client requests use a GET request that contains a URL to determine what the server should send back to the client.  The exception is when the client sends the server the results of the survey when the client uses a POST.  The choice of GET and POST is arbitrary and initially I decided to use GET for the request of the Questions and POST to return the results.  As the application expanded I decided to use GET for all subsequent requests.\
+\
+The server contains a lengthy multiple if statement to separate GET reqests.  Currently the following URLs are used:\
+\cf2     
+\i questions			- send list of [QuestionNo, Section, Question, Type, Autofill] tuples\
+    options				- send list of [Option1, Option2, Option3, ...]\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+
+\i0 \cf2     
+\i emails-and-clients	- return a pair of lists: [email1, email2, ...], [client1, client2, ...]
+\i0 \
+    
+\i chart-data			- return a dictionary of each database record.  Each key is of the form: section, client, <email>, uuid.  Each value is sum of marks for the database record
+\i0 \
+    
+\i piechart-data		- return ...\
+    piechart-data2		- return ...\
+
+\i0     
+\i table-data		- return ...\
+    checkbox-data		- return ...\
+    scatter-data		- return ...\
+
+\i0     
+\i piechart-questions-options  - return ...\
+\pard\tx786\tx3584\pardirnatural\partightenfactor0
+
+\i0 \cf0 Additionally the client can request a file resource by giving the name of the file as the URL.  For example:\
+\cf2     
+\i favicon.ico\
+    images/highlands.png\cf3 \
+\pard\tx786\tx3584\pardirnatural\partightenfactor0
+
+\i0 \cf4 For all resources it is important the server returns the correct MIME type, otherwise the browser may render the resource incorrectly (see getMimeType and sendHeaders).\
+\
+\pard\tx786\tx3584\pardeftab720\sl280\partightenfactor0
+\cf4 \expnd0\expndtw0\kerning0
+During development, some of the Python files were getting very long, so I decided to split them up.\'a0 The best way of doing that is to create a set of class files:\
+
+\i \cf2 \'a0\'a0\'a0 excel.py\
+\'a0\'a0\'a0 chart.py\
+\'a0\'a0\'a0 myglobals.py\
+\'a0\'a0\'a0 scatter.py\cf4 \
+
+\i0 etc.\'a0 I then instantiate one object for each of the classes in any file that needs to use the functionality of the class.\'a0 For example, in server.py:\
+
+\i \cf2 \'a0\'a0\'a0 # import class files\
+\'a0\'a0\'a0 from myglobals import MyGlobals\
+\'a0\'a0\'a0 from checkbox import Checkbox\
+\'a0\'a0\'a0 from scatter import Scatter\
+\'a0\'a0\'a0 from radio import Radio\
+\'a0\'a0\'a0 from chart import Chart\
+\'a0\'a0\'a0 from excel import Excel\
+\'a0\'a0\'a0 from table import Table\
+\
+\'a0\'a0\'a0 # create an object for each class\
+\'a0\'a0\'a0 checkbox = Checkbox()\
+\'a0\'a0\'a0 scatter = Scatter()\
+\'a0\'a0\'a0 radio = Radio()\
+\'a0\'a0\'a0 chart = Chart()\
+\'a0\'a0\'a0 xl = Excel()\
+\'a0\'a0\'a0 table = Table()\
+
+\i0 \cf5 \
+\cf4 Each time you create an object in Python the __init__() method is called.\'a0 After that no methods are called until a client request is sent to the server.\'a0 For example, the client will make a request with the URL: "piechart-data2" and the server has a massive if statement to process requests (inside doGET()) and half way down is he code:\
+\
+    
+\i \cf2 elif(fileName == "piechart-data2"):\
+\'a0\'a0\'a0\'a0    sendHeaders()\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0jsonString = json.dumps(radio.getPieChartData2())\
+\'a0
+\i0 \cf4 \
+The server sends back the headers to the browser to say it received the request and then calls "radio.getPieChartData2()".\'a0 The radio object was instantiated earlier, so we just call the method "getPieChartData2().\'a0 If the code was smaller I would have just had a function called getPieChartData2 (that's how I did do it originally), but its easier to use a method because the code is in a different file and Python doesn't allow global variables across files.\'a0 So if you put a break point on the first line of getPieChartData2 and then refresh the browser pie charts you will hit the breakpoint.\'a0 When the method returns it has all the data the client needs as a JSON string.\'a0 However, we can't send JSON strings directly to the client from Python web servers - it needs to be converted to bytes first.  Hence the code fragment:\cf0 \kerning1\expnd0\expndtw0 \
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+
+\i \cf2         jsonAsBytes = jsonString.encode("UTF-8")\
+        self.wfile.write(jsonAsBytes)\expnd0\expndtw0\kerning0
+\
+\pard\tx786\tx3584\pardeftab720\sl280\partightenfactor0
+
+\i0 \cf4 \
+Client\
+\
+The client can operate in two modes dependent on which URL is used.  The URL:\
+\pard\tx786\tx3584\pardeftab720\sl280\partightenfactor0
+\cf2     http://<server>:<port>/client.html\
+\pard\tx786\tx3584\pardeftab720\sl280\partightenfactor0
+\cf4 is used to start the survey of questions.  The URL\
+\pard\tx786\tx3584\pardeftab720\sl280\partightenfactor0
+\cf2     http://<server>:<port>/client.html?charts\
+\pard\tx786\tx3584\pardeftab720\sl280\partightenfactor0
+\cf4 is used to see a graphical representation of the results of the surveys.\
+\
+The client code starts with client.html.  The file contains the initial html for the client and the top level javascript code.  As can be seen by inspecting this file, the client is using JQuery libraries to perform the bulk of the basic scripting and the C3 javascript library for all the charts.  Note that C3 calls the D3 javascipt library, so both are loaded.  It is important to use compatible C3 and D3 libraries.  I'm using:\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+
+\i \cf2 \kerning1\expnd0\expndtw0     d3-5.5.0/d3.min.js\
+    c3-0.6.5/c3.min.js\expnd0\expndtw0\kerning0
+\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+
+\i0 \cf4 The entry point for the code is about half way through this file, begining with the function:\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+
+\i \cf2 \kerning1\expnd0\expndtw0     $(window).on('load', function () \{ \
+        ...\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+
+\i0 \cf4 In this function are the main calls to all the other javascript files.  In the case of the survey we call:\
+\cf2     removeCookiesOnStartup();\
+    getQuestions();\
+    getOptions();\
+    addClickHandlers();\
+\cf4 and in the case of the charts we call:\
+\cf2     displayCharts();\
+    displayPieCharts();\
+    displayScatterChart();\
+    displayCheckboxData();\
+    displayTableData();\
+\cf4 All these functions can be found in the javascript files located in the client sub-directory.  The code then continues to set up the tabs for the application using the JQuery Tab widget (see: https://jqueryui.com/tabs/).  Most of these functionsrequest information from the server using AJAX calls.  JQuery provides a callback mechanism for such calls.  For example, the function getQuestions() in client.js makes the call:\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+
+\i \cf2     $.ajax(\
+    \{\
+        url: '/questions',\
+        type: 'GET',\
+        contentType:'application/json',\
+        dataType:'json',\
+        success: function(data) \{\
+        	questions = data;\
+        	results = new Array(questions.length);\
+        \}	\
+    \});\
+\pard\tx786\tx3584\pardeftab720\partightenfactor0
+
+\i0 \cf4 The $ is alternative notation for the master JQuery object.  Here we are calling its ajax method.  The call takes one parameter: a JSON object, with several key-value pairs.  The url is the request that the server sees in the GET message.  If the server is happy with the request it will reply with a status code 200 (OK) and send back the requested data.  The client captures this data asynchronously in the function associated with the success key of the parameter used in the AJAX call.  To check the data returned from the server, put a breakpoint on the first line of this function and inspect the data variable.  Most of the other functions make similar calls and the data is always returned in the "success" function.\
+\
+Brief notes on some of these functions is given below:\
+\
+\cf2 function removeCookiesOnStartup()\
+\cf4 This function is used to remove the cookies used for auto-completing fiels.  If the browser gets refreshed to restart the application, without this function the browser will remember all the auto filled fields.  You can inspect cookies in most of the browsers.  For example in Chrome the Cookies tab can be found under Application/Storage.  The Application tab is usually the 5th tab (just after Network).  You google to see how to display cookies in other browsers.\
+\cf2 \
+function getQuestions()\
+\cf4 Cleary this function gets all the questions from the server.  It also sets up an array to store all the results of the survey.\
+\cf2 \
+function getOptions()\
+\cf4 This gets all the options from the surver and then calls displayQuestionsAndOptions().  This function does all the hard work; take a look at this fuction you'll see it contains a large if statement to cater for all the different types of questions (radio, textbox, text, textarea, ...).\
+\
+\cf2 function displayCharts()\
+\cf4 TBD\cf2 \
+\
+function displayPieCharts()\
+\cf4 This function is similar to the others, except it needs to wait to load two different sets of data from the server: \cf2 '/piechart-data2'\cf4  and \cf2 '/piechart-questions-options'\cf4 .  Recall that all requests are asynchronous so I can't be sure in which order the requests will be received.  Therefore I store the result from these queries in 2 global variables:\
+\cf2     pieChartData = 
+\b undefined
+\b0 ;\
+    pieChartQuestionsAndOptions = 
+\b undefined
+\b0 ;\
+\cf4 The variables are set to undefined initially, so that I can check when both are defined.  I have 2 callback functions (because there are 2 requests):\
+
+\b \cf2     function
+\b0  getPieChartData(data) \{\
+        pieChartData = data;\
+        
+\b if
+\b0  (pieChartData && pieChartQuestionsAndOptions) \{\
+            drawPieChart(data);\
+        \}\
+    \}\
+\
+
+\b     function
+\b0  getPieChartQuestionsAndOptions(data) \{\
+         pieChartQuestionsAndOptions = data;\
+         
+\b if
+\b0  (pieChartData && pieChartQuestionsAndOptions) \{\
+            drawPieChart(data);\
+        \}\
+    \}\
+\cf4 and I can't be sure which will fire last.  Hence I check for both global variables to be defined before proceding to call drawPieChart().\
+\
+\cf2 function displayScatterChart()\
+\cf4 TBD\cf2 \
+\
+function displayCheckboxData()\
+\cf4 TBD\cf2 \
+\
+function displayTableData()\
+\cf4 TBD\cf2 \
+\
+\cf4 \
+\
+
+\f1 \cf0 \
+}
