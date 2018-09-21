@@ -288,8 +288,9 @@ function displayEmail(text, n, questionType, autoFill, questionNumber) {
 	results[n] = keyValuePair(questionType, answer);
 	questionAnswered(selector, n);
 
-	// should make this field read only (but will break automatic tests)
-    $(`#text-${questionNumber}`).prop("readonly", true);
+	// make this field read only (but not for automatic tests)
+	if(!document.auto)
+		$(`#text-${questionNumber}`).prop("readonly", true);
     
     // this field is automatically fiiled in and is read only.  Therefore the change function is longer called.
     // change the color when text changed

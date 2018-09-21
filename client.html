@@ -89,6 +89,12 @@ input[type=text] {
 <script>
 
 $(window).on('load', function () {
+	//flag for automatic testing
+	if($(location).attr('search')==="?auto")
+		document.auto = true;
+	else
+		document.auto = false;
+	
 	setupHeadings();
 	if(document.email==="manager") {
 		//if($(location).attr('search')==="?charts") {
@@ -142,7 +148,6 @@ function setupTabs() {
 	}
 	let tabObject = {};
 	if(document.email==="manager") {
-//	if($(location).attr('search')==="?charts") {
 		tabObject["active"] = 1;
 		hideTab("#questions-tab");		
 	} else {

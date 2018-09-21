@@ -24,7 +24,10 @@ def startBrowser(url):
         browser = webdriver.Chrome(executable_path=r"chromedriver.exe")
     except: pass
     try:
-        browser = webdriver.Chrome(executable_path=r"chromedriver")
+        browser = webdriver.Chrome(executable_path=r"chromedriver_linux")
+    except: pass
+    try:
+        browser = webdriver.Chrome(executable_path=r"chromedriver_macos")
     except: pass
     try:
         browser.get(url)

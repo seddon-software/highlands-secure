@@ -213,7 +213,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 print("{} failed to login".format(theEmail))                
         else:
             def isInvalidRequest():
-                if(fileName == "client.html"): return True
+                if(fileName == "client.html" and queryString != "auto"): return True
                 if(extension == "html" or extension == "js" or extension == "css"):
                     return False
                 else:
