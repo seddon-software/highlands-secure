@@ -6,6 +6,7 @@
 #
 ############################################################
 
+import datetime
 import pymysql.cursors
 import pandas as pd
 import sys, os
@@ -107,6 +108,7 @@ excelFile = parseCommandLine()
 
 
 root, rootPassword, manager, managerPassword, database, table, server, port = getNamesAndPasswords()
-outFile = 'results.xlsx'
+today = datetime.datetime.now().strftime("%Y-%m-%d")
+outFile = "spreadsheets/{}_{}_{}.xlsx".format(database, table, today)
 getExcelData().to_excel(outFile, index = False)
-print("MySql database[{}],table[{}] exported to Excel[{}]".format(database, table, outFile))
+print("MySql database table exported to Excel [{}]".format(outFile))

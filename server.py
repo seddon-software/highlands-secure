@@ -240,8 +240,14 @@ g = MyGlobals()
 import server_database as sql
 PORT = g.get("port")
 SERVER = g.get("server")
-httpd = http.server.HTTPServer((SERVER, PORT), Handler)
-
+try:
+    httpd = http.server.HTTPServer((SERVER, PORT), Handler)
+except OSError as e:
+    print(e)
+    print("server:", SERVER)
+    print("port:", PORT)
+    sys.exit()
+    
 import ssl
 httpd.socket = ssl.wrap_socket(httpd.socket,
                                      server_side=True,
