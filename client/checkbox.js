@@ -38,11 +38,7 @@ function drawCheckboxCharts(data) {
 	let emails = data[0];
 	let clients = data[1];
 	let id = "checkbox-filter";
-	let menu = buildMenu(undefined, id, clients, emails);
-	let html = $(`${menu}`);
-	html.css({'width':'auto'});
-	$("#checkbox-filter-drop-down").html(html);
-	$("#checkbox-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
+	buildMenu("#checkbox-filter-drop-down", id, clients, emails);
 	let title = div(`${CHECKBOXES_TAB_TEXT}`, "", { color:`${CHECKBOX_TITLE_COLOR}`});
 	$("#checkbox-title").html(title);
 	if (emails.length === 0) return;

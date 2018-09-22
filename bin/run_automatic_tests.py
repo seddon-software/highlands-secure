@@ -223,7 +223,7 @@ print("table:", tableName)
 try:
     rows, cols = table.shape
     
-    startBrowser("https://{}:{}/client/client.html?auto".format(server, port))
+    startBrowser("https://{}:{}/client.html?auto".format(server, port))
     for testNo in range(1, cols-1):  # 1 non test column
         print("Starting Test {}".format(testNo))
         data = "Test{}".format(testNo)

@@ -38,7 +38,8 @@ function getClientsAndEmailsForCharts(data) {
 	let emails = data[0];
 	let clients = data[1];
 	clientsAndEmailsForCharts = [emails, clients];
-	getAjaxData('/chart-data', drawChart);
+	//getAjaxData('/chart-data', drawChart);
+	getAjaxData('/chart-data', drawChart2);
 }
 
 function getPieChartData(data) {
@@ -58,6 +59,13 @@ function getPieChartQuestionsAndOptions(data) {
 function cleanupSelectText(text) {
 	text = text.trim();
 	return text.replace(/ /g,"&nbsp;");
+}
+
+function drawChart2(data) {
+	console.log("Got to here: line 65");
+	let emails = clientsAndEmailsForCharts[0];
+	let clients = clientsAndEmailsForCharts[1];
+	buildMenu("#filter-drop-down", "filter", clients, emails);
 }
 
 function drawChart(data) {
@@ -207,7 +215,7 @@ function drawChart(data) {
 		uniqueClients = clientsAndEmailsForCharts[1];
 		uniqueEmails = clientsAndEmailsForCharts[0];
 
-		let html = $(`${buildMenu(data, "filter", uniqueClients, uniqueEmails)}`);
+		$(`${buildMenu(data, "filter", uniqueClients, uniqueEmails)}`);
 		html.css({'width':'auto'});
 		$(selector).prepend(html);
 
@@ -268,11 +276,7 @@ function pieChartCallback(data) {
 	}
 
 	let maxLegendLength = 100;
-	let menu = buildMenu(pieChartData, "pie-filter", clients, emails);
-	let html = $(`${menu}<br/>`);
-	html.css({'width':'auto'});
-	$("#pie-filter-drop-down").html(html);
-	$("#pie-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
+	let menu = buildMenu("#pie-filter-drop-down", "pie-filter", clients, emails);
 	$("#pie-filter").on("change", function(e) { 
 		if(e.val === "-") {
 			filteredPieChartData = pieChartData['all'];

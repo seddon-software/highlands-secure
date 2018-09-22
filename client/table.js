@@ -24,11 +24,7 @@ function drawTableCharts(data) {
 	let emails = data[0];
 	let clients = data[1];
 	let id = "table-filter";
-	let menu = buildMenu(undefined, id, clients, emails);
-	let html = $(`${menu}`);
-	html.css({'width':'auto'});
-	$("#table-filter-drop-down").html(html);
-	$("#table-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
+	buildMenu("#table-filter-drop-down", id, clients, emails);
 	let title = div(`${TABLE_CHARTS_TAB_TEXT}`, "", { color:`${TABLE_CHARTS_TITLE_COLOR}`});
 	$("#table-title").html(title);
 	if (emails.length === 0) return;

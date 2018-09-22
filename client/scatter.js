@@ -30,11 +30,7 @@ function scatterChartCallback(data) {
 	let emails = data[0];
 	let clients = data[1];
 	let id = "scatter-filter";
-	let menu = buildMenu(scatterData.frequencies, id, clients, emails);
-	let html = $(`${menu}`);
-	html.css({'width':'auto'});
-	$("#scatter-filter-drop-down").html(html);
-	$("#scatter-filter").select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
+	buildMenu("#scatter-filter-drop-down", id, clients, emails);
 	let heading = div(`${SCATTER_TAB_TEXT}`, "", {'color':`${GROWTH_TITLES_COLOR}`});
 	$("#scattercharts-title").html(heading);
 	if (emails.length === 0) return;
