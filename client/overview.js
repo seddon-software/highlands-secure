@@ -10,7 +10,7 @@
 
 //var clientsAndEmailsForCharts;
 
-function displayChartsx() {
+function displayCharts() {
 	let a1 = getAjaxData2("/emails-and-clients");
 	let a2 = getAjaxData2("/chart-data-7");
 	$.when(a1, a2).done(function(emailsAndClientsResponse, chartDataResponse) {
@@ -18,11 +18,11 @@ function displayChartsx() {
 		let clients = emailsAndClientsResponse[0][1];
 		let categories = chartDataResponse[0]['categories']
 		let chartData = chartDataResponse[0]['data']
-		drawChart2(emails, clients, chartData, categories);
+		drawChart(emails, clients, chartData, categories);
 	});
 }
 
-function drawChart2(emails, clients, chartData, categories) {
+function drawChart(emails, clients, chartData, categories) {
 	buildMenu("#filter-drop-down", "filter", clients, emails);
 	$("#filter").on("change", function(e) { 
 		function getSelection() {
@@ -40,32 +40,38 @@ function drawChart2(emails, clients, chartData, categories) {
 		}
 		let key = getSelection();
 		if(key == 'all') {
-			generateChartx(categories, chartData, getSelection());				
+			generateChart(categories, chartData, 'all');				
 		} else {
-			generateChartx([key], chartData, getSelection());
-//		generateChart();
+			generateChart([key], chartData, getSelection());
 		}
 	});
 
-	generateChartx(categories, chartData, 'all');
+	generateChart(categories, chartData, 'all');
 }
 
 
-function generateChartx(categories, data, key) {
-//	function displayHeading() {
-//		let entries = filteredColumnData[0].length - 1;
-//		let heading = div(`<br/>Number of records = ${entries}<br/>`, "forensics-heading", {color:`${OVERVIEW_STATUS}`});
-//		if($("#forensics-heading").length) {
-//			$("#forensics-heading").html(heading)
-//		} else {
-//			$("#filter-drop-down").append(heading);
-//		}
-//	}
-//	displayHeading();
+function generateChart(categories, data, key) {
+	function displayHeading() {
+		let entries = categories.length;
+		let heading = div(`<br/>Number of records = ${entries}<br/>`, "forensics-heading", {color:`${OVERVIEW_STATUS}`});
+		if($("#forensics-heading").length) {
+			$("#forensics-heading").html(heading)
+		} else {
+			$("#filter-drop-down").append(heading);
+		}
+	}
 	
 	// x-axis: <Aspect>, <values array>
 	// y-axis: <categories>
 	// axes are swapped
+	let columns = data[key][key];
+	if(key != 'all') {
+		categories = [];
+		for(let i = 1; i < columns[0].length; i++) {
+			categories.push(key);
+		}
+	}
+	displayHeading();
 	let n = data[key][key][0].length - 0.5;
 	let height = n * screen.height / 10;
 	let o = {};  // used to generate chart
