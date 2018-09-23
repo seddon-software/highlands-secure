@@ -75,8 +75,21 @@ def grantPrivilegesToManager(root, rootPassword, manager, database):
     connection = connect(root, rootPassword, database)
     sql = "GRANT ALL PRIVILEGES ON {}.* TO '{}'@'localhost'".format(database, manager)
     execute(connection, sql)
-    
+
+def tableExists(manager, managerPassword, database, table):
+    connection = connect(manager, managerPassword, database)
+    with connection.cursor() as cursor:
+        sql = """SELECT count(*) FROM information_schema.TABLES
+                 WHERE (TABLE_SCHEMA = '{}') AND (TABLE_NAME = '{}')
+              """.format(database, table)
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        return result['count(*)'] != 0
+
 def dropTable(table, manager, managerPassword, database):
+    if tableExists(manager, managerPassword, database, table):
+        response = input("{} already exists, do you want to overwrite (y/n): ".format(table))
+        if response != 'y': return 
     connection = connect(manager, managerPassword, database)
     sql = "DROP TABLE IF EXISTS {}".format(table)
     execute(connection, sql)

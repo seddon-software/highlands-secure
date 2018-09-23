@@ -6,6 +6,9 @@
 #
 ############################################################
 
+
+import logging
+import logging.handlers
 import sys
 import smtplib
 import random
@@ -24,6 +27,17 @@ from excel import Excel
 from table import Table
 from database import Database
 
+
+LOG_FILENAME = 'logs/rotation.out'
+
+# Set up a specific logger with our desired output level
+my_logger = logging.getLogger('MyLogger')
+my_logger.setLevel(logging.DEBUG)
+
+# Add the log message handler to the logger
+handler = logging.handlers.RotatingFileHandler(LOG_FILENAME)
+my_logger.addHandler(handler)
+
 checkbox = Checkbox()
 scatter = Scatter()
 radio = Radio()
@@ -33,7 +47,7 @@ table = Table()
 db = Database()
 
 class Handler(http.server.BaseHTTPRequestHandler):
-    def log_message(self, format, *args):
+    def xlog_message(self, format, *args):
         # supress log messages from http.server
         return
    
@@ -89,7 +103,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
         
         def sendCodeInEmail(email, code):                    
             server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-            # server.login("chris.and.seddon", "xhlesley1A")
             server.login("assess.my.deal.2018", "My-team-is-spurs.")
             msg = MIMEText(str(code))
             msg['Subject'] = 'Highlands AssessMyDeal Registration Code'
@@ -101,12 +114,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
         def generateCode():
             return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
    
+        my_logger.debug(self.client_address)
+        print(self.client_address)
         parsedUrl = urllib.parse.urlparse(self.path) # returns a 6-tuple
         fileName = parsedUrl[2]
         queryString = parsedUrl[4]
         fileName = fileName[1:]  # remove leading '/'
-        
-        # make client.html the default pages
+
+        # make login.html the default pages
         if fileName == "": fileName = "login.html"
         data = urllib.parse.parse_qs(queryString)
 
@@ -133,9 +148,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
             jsonString = json.dumps(chart.getChartData())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
-        elif(fileName == "piechart-data"):
+        elif(fileName == "chart-data-7"):
             sendHeaders()
-            jsonString = json.dumps(radio.getPieChartData())
+            jsonString = json.dumps(chart.getChartData7())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
         elif(fileName == "table-data"):
@@ -251,8 +266,8 @@ except OSError as e:
 import ssl
 httpd.socket = ssl.wrap_socket(httpd.socket,
                                      server_side=True,
-                                     keyfile='highlands.key',
-                                     certfile='highlands.pem',
+                                     keyfile='certs/highlands.key',
+                                     certfile='certs/highlands.pem',
                                      ssl_version=ssl.PROTOCOL_TLSv1_2)
 
 print("server:", SERVER)

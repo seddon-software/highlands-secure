@@ -7,8 +7,10 @@
 ############################################################
 
 import pandas as pd
-import sys
+import sys, os
 from myglobals import MyGlobals
+
+if __name__ == "__main__": os.chdir("..")
 
 g = MyGlobals()
 
@@ -29,7 +31,7 @@ class Excel:
     
     
     def extractOptions(self, df):
-        df.drop(['Number', 'Section', 'Question','Type'], axis = 1, inplace = True)
+        df.drop(['Number', 'Important', 'Section', 'Question','Type'], axis = 1, inplace = True)
         df = df.fillna(value='')
         options = []
         row = []
@@ -116,3 +118,9 @@ class Excel:
         pd.options.display.max_rows = 999999
         self.questions = self.extractQuestions(table[['Number', 'Section', 'Question', 'Type', 'Option1']])
         self.options = self.extractOptions(table)
+
+if __name__ == "__main__":
+    xl = Excel()
+    print(xl)
+    
+    

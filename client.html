@@ -28,21 +28,14 @@
 
 <!-- These are the applications scripts -->
 <script src="client/ajax.js"></script>
-<script src="client/charts.js"></script>
 <script src="client/checkbox.js"></script>
 <script src="client/client.js"></script>
 <script src="client/constants.js"></script>
-<!--  <script src="client/graph.js"></script>  -->
+<script src="client/overview.js"></script>
+<script src="client/piecharts.js"></script>
 <script src="client/scatter.js"></script>
-<script src="client/utilities.js"></script>
 <script src="client/table.js"></script>
-
-<!-- 
-These are the old C3 and D3 libraries
-<link rel="stylesheet" href="c3-0.4.10/c3.min.css"/>
-<script src="client/d3-3.5.17/d3.min.js" charset="utf-8"></script>
-<script src="client/c3-0.4.10/c3.min.js"></script>
- -->
+<script src="client/utilities.js"></script>
 
 <style type="text/css">
 body {
@@ -89,18 +82,18 @@ input[type=text] {
 <script>
 
 $(window).on('load', function () {
-	//flag for automatic testing
+	//flag for automatic testing to make email field read/write
 	if($(location).attr('search')==="?auto")
-		document.auto = true;
+		document.auto = true;	// testing
 	else
-		document.auto = false;
+		document.auto = false;	// normal
 	
 	setupHeadings();
+	document.email = "manager";		// ********** REMOVE *******************
 	if(document.email==="manager") {
-		//if($(location).attr('search')==="?charts") {
 		// charts
-		console.log(document.email);
-		displayCharts();
+		//displayCharts();
+		displayChartsx();
 		displayPieCharts();
 		displayScatterChart();
 		displayCheckboxData();
@@ -152,11 +145,13 @@ function setupTabs() {
 		hideTab("#questions-tab");		
 	} else {
 		tabObject["active"] = 0;
+		/*					// ********** REMOVE *******************
 		hideTab("#overview-tab");
 		hideTab("#responses-tab");
 		hideTab("#growth-tab");
 		hideTab("#checkbox-tab");
 		hideTab("#table-tab");
+		*/
 	}
 	$(function() {$("#tabs").tabs(tabObject);});
 }

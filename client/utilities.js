@@ -48,8 +48,8 @@ function buildMenu2(data, id, clients, emails) {
 		});
 		return emails;
 	}
-//	if(clients === undefined) clients = getClients();
-//	if(emails  === undefined) emails = getEmails();
+	if(clients === undefined) clients = getClients();
+	if(emails  === undefined) emails = getEmails();
 	let menu = `
 		<div><label>Filter:</label>
 		<select id=${id}>

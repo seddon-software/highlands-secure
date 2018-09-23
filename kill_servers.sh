@@ -9,4 +9,4 @@
 ############################################################
 
 # cd . is only there to avoid errors when no processes are found
-kill $(cd .;ps -ef | grep '[p]ython -u server.py' | awk '{print $2}') 2>/dev/null
+kill $(cd .;ps -ef | grep '[p]ython server.py' | awk '{print $2}') 2>/dev/null

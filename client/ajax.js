@@ -25,3 +25,14 @@ function getAjaxData(url, fn) {
     });
 }
 
+function getAjaxData2(url, fn) {
+    let z = $.ajax(
+    {
+        url: url,
+        type: 'GET',
+        contentType:'application/json',
+        dataType:'json'
+    });
+    return z;
+}
+
