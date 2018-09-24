@@ -99,6 +99,13 @@ class Chart:
             chartData[['marks']] = chartData[['marks']].apply(pd.to_numeric)
             chartData = chartData.groupby(['section', 'client','email','guid']).sum()
             chartData = chartData.to_dict()['marks']
+            for x in chartData:
+                print(x)
+#             def getToolTips():
+#                 toolTips = []
+#                 for key in chartData:
+#                     print(x)
+                
 
 #             def getAspects():
 #                 aspects = []
@@ -116,15 +123,18 @@ class Chart:
 
             # chartData has composite keys: (<aspect>, <client>, <email>, <guid>) 
 
-            def getCategories():
+            def getCategoriesAndToolTips():
                 categories = []
+                toolTips = []
                 firstAspect = next(iter(chartData))[0]
                 for key in chartData:
                     aspect = key[0]
                     client = key[1]
+                    email = key[2]
                     if aspect == firstAspect: 
                         categories.append(client)
-                return categories
+                        toolTips.append(email)
+                return categories, toolTips
                 
             def getAll():
                 data = []
@@ -146,31 +156,28 @@ class Chart:
                     data.append(row)
                 return {filter: data }
 
-            def getFilteredEmail(item):
-                data = []
-                for aspect in getCompositeKeys(0):
-                    row = [aspect]
-                    for key in chartData:
-                        if key[0] == aspect and key[2] == item:
-                            row.append(int(chartData[key]))
-                    data.append(row)
-                return {item: data }
+#             def getFilteredEmail(item):
+#                 data = []
+#                 for aspect in getCompositeKeys(0):
+#                     row = [aspect]
+#                     for key in chartData:
+#                         if key[0] == aspect and key[2] == item:
+#                             row.append(int(chartData[key]))
+#                     data.append(row)
+#                 return {item: data }
 
-            def doit():
+            def generateResult():
                 # chartData has composite keys: (<aspect>, <client>, <email>, <guid>) 
-                # print(getCategories())
                 data = {}
-                # print(getAll())
                 data['all'] = getAll()
                 for client in getCompositeKeys(1):
-                    # print(getFilteredData(client, 1))
                     data[client] = getFilteredData(client, 1)
                 for email in getCompositeKeys(2):
-                    # print(getFilteredData(email, 2))
                     data[email] = getFilteredData(email, 2)
-                return { 'categories':getCategories(), 'data' : data }
+                categories, toolTips = getCategoriesAndToolTips()
+                return { 'categories':categories, 'toolTips':toolTips, 'data':data }
 
-            entries = doit()
+            entries = generateResult()
             for entry in entries['data']:
                 print(entry)
             print(entries['categories'])

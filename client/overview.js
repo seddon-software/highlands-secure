@@ -16,41 +16,37 @@ function displayCharts() {
 	$.when(a1, a2).done(function(emailsAndClientsResponse, chartDataResponse) {
 		let emails = emailsAndClientsResponse[0][0];
 		let clients = emailsAndClientsResponse[0][1];
-		let categories = chartDataResponse[0]['categories']
-		let chartData = chartDataResponse[0]['data']
-		drawChart(emails, clients, chartData, categories);
+		let categories = chartDataResponse[0]['categories'];
+		let toolTips = chartDataResponse[0]['toolTips'];
+		let chartData = chartDataResponse[0]['data'];
+		console.log(clients);
+		console.log(toolTips);
+		console.log(chartData);
+		drawChart(emails, clients, chartData, categories, toolTips);
 	});
 }
 
-function drawChart(emails, clients, chartData, categories) {
+function drawChart(emails, clients, chartData, categories, toolTips) {
 	buildMenu("#filter-drop-down", "filter", clients, emails);
+	generateChart(categories, toolTips, chartData, ["all", "-"]);
+
 	$("#filter").on("change", function(e) { 
 		function getSelection() {
 			if(e.val === "-") {
-				console.log("all");
-			return 'all';
+				return ['all', '-'];
 			} else {
 				let parts = e.val.split(',');
 				let group = parts[0];
 				let text = parts[1];
-				console.log(group, text);
-				console.log("item");
-				return text;
+				return [text, group];
 			}
 		}
-		let key = getSelection();
-		if(key == 'all') {
-			generateChart(categories, chartData, 'all');				
-		} else {
-			generateChart([key], chartData, getSelection());
-		}
+		generateChart(categories, toolTips, chartData, getSelection());
 	});
-
-	generateChart(categories, chartData, 'all');
 }
 
 
-function generateChart(categories, data, key) {
+function generateChart(categories, toolTips, data, selection) {
 	function displayHeading() {
 		let entries = categories.length;
 		let heading = div(`<br/>Number of records = ${entries}<br/>`, "forensics-heading", {color:`${OVERVIEW_STATUS}`});
@@ -64,12 +60,31 @@ function generateChart(categories, data, key) {
 	// x-axis: <Aspect>, <values array>
 	// y-axis: <categories>
 	// axes are swapped
+	let key = selection[0];
+	let group = selection[1];
 	let columns = data[key][key];
+	
+	// now filter categories and tooltips
+	// group will be 'client' or 'email' 
+	// swap tooltips and categories if group is email
 	if(key != 'all') {
-		categories = [];
-		for(let i = 1; i < columns[0].length; i++) {
-			categories.push(key);
+		filteredCategories = [];
+		filteredToolTips = []
+		for(let i = 0; i < categories.length; i++) {
+			if(group === 'client') {
+				if(categories[i] === key) {
+					filteredCategories.push(categories[i]);
+					filteredToolTips.push(toolTips[i]);
+				}
+			} else { // 'email' 
+				if(toolTips[i] === key) {
+					filteredCategories.push(toolTips[i]);
+					filteredToolTips.push(categories[i]);
+				}				
+			}
 		}
+		categories = filteredCategories;
+		toolTips = filteredToolTips;
 	}
 	displayHeading();
 	let n = data[key][key][0].length - 0.5;
@@ -83,7 +98,7 @@ function generateChart(categories, data, key) {
     o["padding"] = { left: $(window).width()/8 },
     o["tooltip"] = {
 		format: {
-//			title: function(i) { return filteredEmails[i]; },
+			title: function(i) { return toolTips[i]; }
 //			value: function(value, ratio, id) { return value; }
 		}
 	}
