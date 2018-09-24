@@ -268,6 +268,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
 import server_database as sql
 my_logger = setupLogging()
+my_logger.debug("server started at {}".format(datetime.datetime.now()))
+
 PORT = g.get("port")
 SERVER = g.get("server")
 try:
