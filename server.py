@@ -283,8 +283,8 @@ except OSError as e:
 import ssl
 httpd.socket = ssl.wrap_socket(httpd.socket,
                                      server_side=True,
-                                     keyfile='certs/highlands.key',
-                                     certfile='certs/highlands.pem',
+                                     keyfile='certs/privkey1.pem',
+                                     certfile='certs/fullchain1.pem',
                                      ssl_version=ssl.PROTOCOL_TLSv1_2)
 
 print("server:", SERVER)
