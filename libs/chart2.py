@@ -12,10 +12,11 @@ from ast import literal_eval
 if __name__ == "__main__": os.chdir("..")
 from database import Database
 from myglobals import MyGlobals
-
+from excel import Excel
 
 g = MyGlobals()
 db = Database()
+xl = Excel()
 
 class Chart:
     def __init__(self):
@@ -50,6 +51,7 @@ class Chart:
 #             client
 #         except NameError:
 #             client = ""
+        z = xl.getImportantQuestions()
         connection = db.connect()
         try:
             with connection.cursor() as cursor:
@@ -75,7 +77,7 @@ class Chart:
                             email = d["name"]
                             break
                     
-                    for pair in keyValuePairs:
+                    for i, pair in enumerate(keyValuePairs):
                         def addItem(section, marks): # last parameter must be a list
                             for mark in marks:
                                 data = {
@@ -83,7 +85,8 @@ class Chart:
                                         'client' : client,
                                         'section': section,
                                         'email'  : email,
-                                        'marks'  : mark
+                                        'marks'  : mark,
+                                        #'important' : z[i]
                                        }
                                 return chartData.append(data, ignore_index=True)
                         # marks are presented differently in radio, checkbox and table entries:
@@ -96,6 +99,8 @@ class Chart:
                             chartData = addItem(pair["checkbox"]["section"], pair["checkbox"]["marks"].split())
                         if 'table' in pair:
                             chartData = addItem(pair["table"]["section"], pair["table"]["marks"])
+            print(chartData)
+                        
             chartData[['marks']] = chartData[['marks']].apply(pd.to_numeric)
             chartData = chartData.groupby(['section', 'client','email','guid']).sum()
             chartData = chartData.to_dict()['marks']
@@ -155,6 +160,9 @@ class Chart:
                 return { 'categories':categories, 'toolTips':toolTips, 'data':data }
 
             entries = generateResult()
+            for entry in entries['data']:
+                print(entry)
+            print(entries['categories'])
         finally:
             connection.close()
         return entries    # return a dict
@@ -166,6 +174,10 @@ class Chart:
         yaxis: [section, client]
         tooltip: email
         """
+#         try:
+#             client
+#         except NameError:
+#             client = ""
         connection = db.connect()
         try:
             with connection.cursor() as cursor:

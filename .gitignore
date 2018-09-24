@@ -3,6 +3,7 @@ GUY
 *.tar
 .project
 .pydevproject
+logs/
 libs/__pycache__
 /.metadata/
 /RemoteSystemsTempFiles/

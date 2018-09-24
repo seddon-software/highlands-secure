@@ -7,8 +7,9 @@
 ############################################################
 
 
-import logging
+#import logging
 import logging.handlers
+import datetime
 import sys
 import smtplib
 import random
@@ -28,16 +29,6 @@ from table import Table
 from database import Database
 
 
-LOG_FILENAME = 'logs/rotation.out'
-
-# Set up a specific logger with our desired output level
-my_logger = logging.getLogger('MyLogger')
-my_logger.setLevel(logging.DEBUG)
-
-# Add the log message handler to the logger
-handler = logging.handlers.RotatingFileHandler(LOG_FILENAME)
-my_logger.addHandler(handler)
-
 checkbox = Checkbox()
 scatter = Scatter()
 radio = Radio()
@@ -45,9 +36,27 @@ chart = Chart()
 xl = Excel()
 table = Table()
 db = Database()
+g = MyGlobals()
+
+
+def setupLogging():
+    LOG_FILENAME = "logs/{2}-{3}-{4}-{0}-{1}.log".format(
+        g.get("server"), 
+        g.get("port"), 
+        g.get("database"), 
+        g.get("table"), 
+        g.get("usersTable"))
+    # Set up a specific logger with our desired output level
+    my_logger = logging.getLogger('MyLogger')
+    my_logger.setLevel(logging.DEBUG)
+    
+    # Add the log message handler to the logger
+    handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=1000000, backupCount=10)
+    my_logger.addHandler(handler)
+    return my_logger
 
 class Handler(http.server.BaseHTTPRequestHandler):
-    def xlog_message(self, format, *args):
+    def log_message(self, format, *args):
         # supress log messages from http.server
         return
    
@@ -101,21 +110,26 @@ class Handler(http.server.BaseHTTPRequestHandler):
                         return email, None
             return None
         
-        def sendCodeInEmail(email, code):                    
-            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-            server.login("assess.my.deal.2018", "My-team-is-spurs.")
-            msg = MIMEText(str(code))
-            msg['Subject'] = 'Highlands AssessMyDeal Registration Code'
-            msg['From'] = 'assess my deal'
-            msg['To'] = email 
-            server.send_message(msg)
-            server.quit()
-
+        def sendCodeInEmail(email, code):
+            try:
+                server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+                server.login("assess.my.deal.2018", "My-team-is-spurs.")
+                msg = MIMEText(str(code))
+                msg['Subject'] = 'Highlands AssessMyDeal Registration Code'
+                msg['From'] = 'assess my deal'
+                msg['To'] = email 
+                server.send_message(msg)
+            except:
+                log("send email failed for {}".format(email))
+            finally:
+                server.quit()
+                
         def generateCode():
             return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-   
-        my_logger.debug(self.client_address)
-        print(self.client_address)
+
+        def log(message):
+            my_logger.debug("{}: ({}) {}".format(datetime.datetime.now(), self.client_address[0], message))
+ 
         parsedUrl = urllib.parse.urlparse(self.path) # returns a 6-tuple
         fileName = parsedUrl[2]
         queryString = parsedUrl[4]
@@ -123,6 +137,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
         # make login.html the default pages
         if fileName == "": fileName = "login.html"
+        if fileName == "login.html": log("website accessed")
         data = urllib.parse.parse_qs(queryString)
 
         if(fileName == "favicon.ico"):
@@ -187,18 +202,18 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 sendHeaders()
                 db.createUser(data['email'][0], data['newPassword'][0], "")
                 self.wfile.write('["password changed"]'.encode())
-                print("password updated for {}".format(data['email'][0]))
+                log("password updated for {}".format(data['email'][0]))
             else:
                 sendHeaders(401)
                 self.wfile.write('["incorrect password"]'.encode())
-                print("password update failed for {}".format(data['email'][0]))
+                log("password update failed for {}".format(data['email'][0]))
         elif(fileName == "start-registration"):
             sendHeaders()
             code = generateCode()
             sendCodeInEmail(data['email'][0], code)
             db.createUser(data['email'][0], "", code)
             self.wfile.write('["registration code sent"]'.encode())
-            print("registration code {} sent to {}".format(code, data['email'][0]))
+            log("registration code {} sent to {}".format(code, data['email'][0]))
         elif(fileName == "complete-registration"):
             code1 = db.getCode(data['email'][0])
             code2 = data['code'][0]
@@ -206,11 +221,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 sendHeaders()
                 db.createUser(data['email'][0], data['password'][0], data['code'][0])
                 self.wfile.write('["registration succeeded"]'.encode())
-                print("{} is now registered".format(data['email'][0]))
+                log("{} is now registered".format(data['email'][0]))
             else:
                 sendHeaders(401)
                 self.wfile.write('["registration failed"]'.encode())
-                print("{} failed to register".format(data['email'][0]))
+                log("{} failed to register".format(data['email'][0]))
         elif(fileName == "authentication"):
             theEmail, success = authenticate()
             if success:
@@ -221,11 +236,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(theEmail.encode())
                 self.wfile.write(";".encode())
                 self.wfile.write(data.encode())
-                print("{} login succeeded".format(theEmail))                
+                log("{} login succeeded".format(theEmail))                
             else:
                 sendHeaders(401)
                 self.wfile.write('["login failed"]'.encode())
-                print("{} failed to login".format(theEmail))                
+                log("{} failed to login".format(theEmail))                
         else:
             def isInvalidRequest():
                 if(fileName == "client.html" and queryString != "auto"): return True
@@ -251,8 +266,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 except:
                     sendHeaders(404)
 
-g = MyGlobals()
 import server_database as sql
+my_logger = setupLogging()
 PORT = g.get("port")
 SERVER = g.get("server")
 try:

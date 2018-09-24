@@ -89,6 +89,7 @@ $(window).on('load', function () {
 		document.auto = false;	// normal
 	
 	setupHeadings();
+//	document.email = "manager";		// ********** REMOVE *******************
 	if(document.email==="manager") {
 		// charts
 		//displayCharts();
@@ -144,11 +145,13 @@ function setupTabs() {
 		hideTab("#questions-tab");		
 	} else {
 		tabObject["active"] = 0;
+		/*					// ********** REMOVE *******************
 		hideTab("#overview-tab");
 		hideTab("#responses-tab");
 		hideTab("#growth-tab");
 		hideTab("#checkbox-tab");
 		hideTab("#table-tab");
+		*/
 	}
 	$(function() {$("#tabs").tabs(tabObject);});
 }

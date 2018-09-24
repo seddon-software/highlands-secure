@@ -155,6 +155,9 @@ class Chart:
                 return { 'categories':categories, 'toolTips':toolTips, 'data':data }
 
             entries = generateResult()
+            for entry in entries['data']:
+                print(entry)
+            print(entries['categories'])
         finally:
             connection.close()
         return entries    # return a dict
@@ -166,6 +169,10 @@ class Chart:
         yaxis: [section, client]
         tooltip: email
         """
+#         try:
+#             client
+#         except NameError:
+#             client = ""
         connection = db.connect()
         try:
             with connection.cursor() as cursor:
