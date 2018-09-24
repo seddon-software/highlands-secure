@@ -4,6 +4,7 @@ GUY
 .project
 .pydevproject
 logs/
+certs/
 libs/__pycache__
 /.metadata/
 /RemoteSystemsTempFiles/
