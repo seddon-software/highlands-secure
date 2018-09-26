@@ -101,6 +101,7 @@ class Chart:
             chartData = chartData.to_dict()['marks']
 
             def getCompositeKeys(keyNo):
+                # keys are returned sorted
                 data = []
                 for key in chartData:
                     data.append(key[keyNo])
@@ -133,16 +134,24 @@ class Chart:
                     data.append(row)
                 return {'all' : data }
             
-            def getFilteredData(filter, keyNo):
+            def getFilteredData(_filter, keyNo):
                 data = []
                 for aspect in getCompositeKeys(0):
                     row = [aspect]
                     for key in chartData:
-                        if key[0] == aspect and key[keyNo] == filter:
+                        if key[0] == aspect and key[keyNo] == _filter:
                             row.append(int(chartData[key]))
                     data.append(row)
-                return {filter: data }
+                return {_filter: data }
 
+            def generateGroups():
+                aspects = getCompositeKeys(0)
+                groups = []
+                for aspect in aspects:
+                    if "*" not in aspect:
+                        groups.append([aspect, aspect + '*'])
+                return groups
+                
             def generateResult():
                 # chartData has composite keys: (<aspect>, <client>, <email>, <guid>) 
                 data = {}
@@ -152,7 +161,8 @@ class Chart:
                 for email in getCompositeKeys(2):
                     data[email] = getFilteredData(email, 2)
                 categories, toolTips = getCategoriesAndToolTips()
-                return { 'categories':categories, 'toolTips':toolTips, 'data':data }
+                
+                return { 'categories':categories, 'toolTips':toolTips, 'data':data, 'groups':generateGroups() }
 
             entries = generateResult()
         finally:
@@ -339,7 +349,7 @@ class Chart:
                             chartData = addItem(pair["checkbox"]["section"], pair["checkbox"]["marks"].split())
                         if 'table' in pair:
                             chartData = addItem(pair["table"]["section"], pair["table"]["marks"])
-            chartData[['marks']] = chartData[['marks']].apply(pd.to_numeric)  
+            chartData[['marks']] = chartData[['marks']].apply(pd.to_numeric)
             chartData = chartData.groupby(['section', 'client', 'email']).sum()
             chartData = chartData.to_dict()['marks']
             chartData = {"{},{},{}".format(compositeKey[0], compositeKey[1], compositeKey[2]):chartData[compositeKey] for compositeKey in chartData}
@@ -348,5 +358,15 @@ class Chart:
         return chartData
 
 if __name__ == "__main__": 
+    #   chartData is formed from
+    #       radio:    a single mark
+    #       checkbox: a string of marks
+    #       table:    a list of marks
+
     chart = Chart()
+    results = chart.getChartData7();
+    print(type(results))
+    for key in results:
+        print(key, results[key])
+    
     

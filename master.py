@@ -18,6 +18,9 @@ if __name__ == "__main__":
         cmd = "nohup python server.py {}".format(spreadsheet)
         subprocess.Popen(cmd.split())
 
-    time.sleep(10)
+    cmd = "ps -ef | grep '[pP]ython server.py'"
+    os.system("ps -ef | head -1")
+    os.system(cmd)
+    time.sleep(5)
     print("***** servers started *****")
     

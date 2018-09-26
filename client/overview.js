@@ -8,7 +8,7 @@
 ############################################################
 */
 
-//var clientsAndEmailsForCharts;
+var chartGroups;
 
 function displayCharts() {
 	let a1 = getAjaxData2("/emails-and-clients");
@@ -19,9 +19,7 @@ function displayCharts() {
 		let categories = chartDataResponse[0]['categories'];
 		let toolTips = chartDataResponse[0]['toolTips'];
 		let chartData = chartDataResponse[0]['data'];
-		console.log(clients);
-		console.log(toolTips);
-		console.log(chartData);
+		chartGroups = chartDataResponse[0]['groups'];
 		drawChart(emails, clients, chartData, categories, toolTips);
 	});
 }
@@ -89,11 +87,14 @@ function generateChart(categories, toolTips, data, selection) {
 	displayHeading();
 	let n = data[key][key][0].length - 0.5;
 	let height = n * screen.height / 10;
+	
+	// aspects are already sorted alphabetically
+	
 	let o = {};  // used to generate chart
 	o["bindto"] = '#chart';
 	o["axis"] = { rotated:true, x:{ type:'category', categories:categories}};
     o["bar"]  = { width:{ ratio: 0.5}}; // this makes bar width 50% of length between ticks
-	o["data"] = { columns: data[key][key], type: 'bar'};
+	o["data"] = { columns: data[key][key], groups: chartGroups, type: 'bar'};
 	o["size"] = { height: height },
     o["padding"] = { left: $(window).width()/8 },
     o["tooltip"] = {
@@ -104,3 +105,4 @@ function generateChart(categories, toolTips, data, selection) {
 	}
 	c3.generate(o);
 }
+

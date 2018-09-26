@@ -41,12 +41,11 @@ Routing commands to use default ports for http and https:
 	sudo iptables -A PREROUTING -t nat -i venet0 -p tcp --dport 443 -j REDIRECT --to-port 9097
 	sudo iptables -A PREROUTING -t nat -i venet0 -p tcp --dport 80 -j REDIRECT --to-port 9096
 
-To do:
-	install a valid SSL certificate on server
+To get updates:
+	sudo apt-get upgrade
 
 Note:
 	asssessmydeal.com is 68.66.241.111
-	assessmydeal.com is 209.124.74.241
 
 Certs:
 IMPORTANT NOTES:

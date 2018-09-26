@@ -81,7 +81,11 @@ input[type=text] {
 
 <script>
 
-$(window).on('load', function () {
+$(window).on('load', function () {	
+	loadPage();
+});
+
+function loadPage() {
 	//flag for automatic testing to make email field read/write
 	if($(location).attr('search')==="?auto")
 		document.auto = true;	// testing
@@ -89,6 +93,7 @@ $(window).on('load', function () {
 		document.auto = false;	// normal
 	
 	setupHeadings();
+//	document.email="manager";		// !!!!!!!!!!!!!!!! remove
 	if(document.email==="manager") {
 		// charts
 		//displayCharts();
@@ -97,6 +102,7 @@ $(window).on('load', function () {
 		displayScatterChart();
 		displayCheckboxData();
 		displayTableData();
+		setupRefresh();
 	} else {
 		// assessments
 		removeCookiesOnStartup();
@@ -109,7 +115,16 @@ $(window).on('load', function () {
 	setTimeout(function() {
 		positionCopyright();
 	}, 100);
-});
+}
+
+function setupRefresh() {
+	let refreshButton = div(`<input type="button" value="refresh">`, "do-refresh", 
+			{"float":"right", "margin-top":"2vh", "margin-right":"5vw"});
+	$("#refresh").html(refreshButton);
+	$("#do-refresh").click(function() {
+		loadPage();
+	});
+}
 
 function setupHeadings() {	
 	let image = div("<img src='client/images/highlands.png'/>", "highlands-image", {"float":"left"});
@@ -117,6 +132,7 @@ function setupHeadings() {
 	let headingTopFrame = div("", "heading-top-frame", {"width":BANNER_WIDTH, "border-style": "solid"});
 	let headingText = div(`${BANNER_TEXT}`, "heading-text", {"width":BANNER_WIDTH, "display":"inline-block", "text-align":"center"});
 	let headingBottomFrame = div("", "heading-bottom-frame", {"width":"60%", "border-style": "solid"});
+	$("#headings").empty();
 	$("#headings").append(image);
 	$("#headings").append(headingFrame);
 	$("#heading-frame").append(headingTopFrame);
@@ -166,6 +182,7 @@ function setupTabs() {
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#checkbox-tab" class="tabs-button" id="checkbox-button">Checkboxes</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#table-tab" class="tabs-button" id="table-button">Table Charts</a></li>
 	  </ul>
+    <div id="refresh"></div>
 	  <div id="questions-tab">
 		<div id='canvas' style='float:left'>
 		    <div id='questions'></div>

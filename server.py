@@ -40,12 +40,11 @@ g = MyGlobals()
 
 
 def setupLogging():
-    LOG_FILENAME = "logs/{2}-{3}-{4}-{0}-{1}.log".format(
-        g.get("server"), 
-        g.get("port"), 
+    LOG_FILENAME = "logs/{}-{}-{}-{}.log".format(
         g.get("database"), 
         g.get("table"), 
-        g.get("usersTable"))
+        g.get("usersTable"),
+        g.get("port"))
     # Set up a specific logger with our desired output level
     my_logger = logging.getLogger('MyLogger')
     my_logger.setLevel(logging.DEBUG)
