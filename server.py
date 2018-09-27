@@ -38,13 +38,13 @@ table = Table()
 db = Database()
 g = MyGlobals()
 
+LOG_FILENAME = "logs/{}-{}-{}-{}.log".format(
+    g.get("database"), 
+    g.get("table"), 
+    g.get("usersTable"),
+    g.get("port"))
 
 def setupLogging():
-    LOG_FILENAME = "logs/{}-{}-{}-{}.log".format(
-        g.get("database"), 
-        g.get("table"), 
-        g.get("usersTable"),
-        g.get("port"))
     # Set up a specific logger with our desired output level
     my_logger = logging.getLogger('MyLogger')
     my_logger.setLevel(logging.DEBUG)
@@ -245,6 +245,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 if(fileName == "client.html" and queryString != "auto"): return True
                 if(extension == "html" or extension == "js" or extension == "css"):
                     return False
+                elif(fileName == "log"):
+                    return False
                 else:
                     return True
                 
@@ -258,6 +260,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 sendHeaders(404) 
             else:
                 try:
+                    if fileName == "log": 
+                        fileName = LOG_FILENAME
                     f = open(fileName, "r", encoding="UTF-8")
                     data = f.read()
                     sendHeaders()

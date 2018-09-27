@@ -26,13 +26,24 @@ function getAjaxData(url, fn) {
 }
 
 function getAjaxData2(url, fn) {
-    let z = $.ajax(
+    let a = $.ajax(
     {
         url: url,
         type: 'GET',
         contentType:'application/json',
         dataType:'json'
     });
-    return z;
+    return a;
+}
+
+function getAjaxData3(url, fn) {
+    let a = $.ajax(
+    {
+        url: url,
+        type: 'GET',
+        contentType:'application/text',
+        dataType:'text'
+    });
+    return a;
 }
 

@@ -31,6 +31,7 @@
 <script src="client/checkbox.js"></script>
 <script src="client/client.js"></script>
 <script src="client/constants.js"></script>
+<script src="client/log.js"></script>
 <script src="client/overview.js"></script>
 <script src="client/piecharts.js"></script>
 <script src="client/scatter.js"></script>
@@ -77,6 +78,10 @@ input[type=text] {
 {
   font-size: 15px; //change the size of the fonts
 }
+
+#theLog {
+	white-space: pre-line
+}
 </style>
 
 <script>
@@ -85,7 +90,7 @@ $(window).on('load', function () {
 	loadPage();
 });
 
-function loadPage() {
+function loadPage(activeTab) {
 	//flag for automatic testing to make email field read/write
 	if($(location).attr('search')==="?auto")
 		document.auto = true;	// testing
@@ -93,15 +98,15 @@ function loadPage() {
 		document.auto = false;	// normal
 	
 	setupHeadings();
-//	document.email="manager";		// !!!!!!!!!!!!!!!! remove
+	document.email="manager";		// !!!!!!!!!!!!!!!! remove (this is for testing only)
 	if(document.email==="manager") {
 		// charts
-		//displayCharts();
 		displayCharts();
 		displayPieCharts();
 		displayScatterChart();
 		displayCheckboxData();
 		displayTableData();
+		displayLog();
 		setupRefresh();
 	} else {
 		// assessments
@@ -110,7 +115,8 @@ function loadPage() {
 		getOptions();
 		addClickHandlers();
 	}
-	setupTabs();
+	if(activeTab === undefined) activeTab = 1;
+	setupTabs(activeTab);
 	setStyles();
 	setTimeout(function() {
 		positionCopyright();
@@ -122,7 +128,8 @@ function setupRefresh() {
 			{"float":"right", "margin-top":"2vh", "margin-right":"5vw"});
 	$("#refresh").html(refreshButton);
 	$("#do-refresh").click(function() {
-		loadPage();
+		activeTab = $("#tabs").tabs('option', 'active');
+		loadPage(activeTab);
 	});
 }
 
@@ -141,7 +148,7 @@ function setupHeadings() {
 
 	$("#charts-title").text(`${OVERVIEW_TAB_TEXT}`);
 	$("#piecharts-title").text(`${RESPONSES_TAB_TEXT}`);
-
+	
     $("#assessment-button").text(ASSESSMENT_TAB_TITLE);
     $("#charts-button").text(OVERVIEW_TAB_TITLE);
     $("#piecharts-button").text(RESPONSES_TAB_TITLE);
@@ -150,13 +157,13 @@ function setupHeadings() {
     $("#table-button").text(TABLE_CHARTS_TAB_TITLE);
 }
 
-function setupTabs() {
+function setupTabs(activeTab) {
 	function hideTab(selector) {
 		$(`[href="${selector}"]`).closest('li').hide();		
 	}
 	let tabObject = {};
 	if(document.email==="manager") {
-		tabObject["active"] = 1;
+		tabObject["active"] = activeTab;
 		hideTab("#questions-tab");		
 	} else {
 		tabObject["active"] = 0;
@@ -181,6 +188,7 @@ function setupTabs() {
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#growth-tab" class="tabs-button" id="growth-button">Growth</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#checkbox-tab" class="tabs-button" id="checkbox-button">Checkboxes</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#table-tab" class="tabs-button" id="table-button">Table Charts</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#log-tab" class="tabs-button" id="log-button">Log</a></li>
 	  </ul>
     <div id="refresh"></div>
 	  <div id="questions-tab">
@@ -216,6 +224,11 @@ function setupTabs() {
 	    <div class="tab-title" id="table-title"></div>
 		<div id="table-filter-drop-down"></div>
 		<div id="tablecharts"></div>
+	  </div>
+	  <div id="log-tab">
+	    <div class="tab-title" id="log-title"></div>
+		<div id="log-filter-drop-down"></div>
+		<div id="theLog"></div>
 	  </div>
 	</div>    
 	<div id="modal_dialog"></div>
