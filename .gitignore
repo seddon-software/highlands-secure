@@ -3,8 +3,10 @@ GUY
 *.tar
 .project
 .pydevproject
+*.Json
 logs/
 certs/
+test*.html
 libs/__pycache__
 /.metadata/
 /RemoteSystemsTempFiles/
