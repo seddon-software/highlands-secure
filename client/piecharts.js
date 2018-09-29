@@ -24,7 +24,7 @@ function displayPieCharts() {
 	positionCopyright();
 	pieChartData = undefined;
 	pieChartQuestionsAndOptions = undefined;
-	getAjaxData('/piechart-data2', getPieChartData);
+	getAjaxData('/piechart-data', getPieChartData);
 	getAjaxData('/piechart-questions-options', getPieChartQuestionsAndOptions);
 }
 

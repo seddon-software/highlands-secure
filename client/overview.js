@@ -12,7 +12,7 @@ var chartGroups;
 
 function displayCharts() {
 	let a1 = getAjaxData2("/emails-and-clients");
-	let a2 = getAjaxData2("/chart-data-7");
+	let a2 = getAjaxData2("/chart-data");
 	$.when(a1, a2).done(function(emailsAndClientsResponse, chartDataResponse) {
 		let emails = emailsAndClientsResponse[0][0];
 		let clients = emailsAndClientsResponse[0][1];

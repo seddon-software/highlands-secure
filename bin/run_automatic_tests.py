@@ -69,15 +69,15 @@ def enterTextArea(question, text):
     element.send_keys(text);   
 
 def clickTable(question, row, col):
-    selector = "input#radio-{}-{}-{}".format(question, row, col)
+    selector = "input#piechart-{}-{}-{}".format(question, row, col)
     clickIt(selector)
     
 def clickTable2(question, row, col):
-    selector = "input#radio-{}-{}-{}".format(question, row, col)
+    selector = "input#piechart-{}-{}-{}".format(question, row, col)
     clickIt(selector)
     
 def clickRadio(question, col):
-    selector = "input#radio-{}-{}".format(question, col-1)
+    selector = "input#piechart-{}-{}".format(question, col-1)
     clickIt(selector)
 
 def clickCheckbox(question, col):
@@ -135,7 +135,7 @@ def doValidation(table):
             optionCount = row["OptionCount"]
             data = "Test{}".format(testNo)
             values = row[data]
-            if category == "radio":
+            if category == "piechart":
                 if optionCount < values or values < 1: 
                     print("Option out of range in test {}, question {}".format(testNo, question))
                     sys.exit()
@@ -234,7 +234,7 @@ try:
             values = row[data]
             if category == "text":     enterText(question, values)
             if category == "textarea": enterTextArea(question, values)
-            if category == "radio":    clickRadio(question, values)
+            if category == "piechart":    clickRadio(question, values)
             if category == "email":    enterText(question, values)
             if category == "client":   enterText(question, values)
             if category == "table":

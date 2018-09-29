@@ -20,54 +20,11 @@ class Radio:
         
     def refresh(self):
         self.pieChartData = self.setPieChartData()
-        self.pieChartData2 = self.setPieChartData2()
     
     def getPieChartData(self):
         return self.pieChartData
     
-    def getPieChartData2(self):
-        return self.pieChartData2
-    
     def setPieChartData(self):
-        ''' this routine returns pie chart data for the query:
-                frequencies for all questions
-                
-            results are returned as a 2D list in the form:
-                [ [frequencies for all questions-1], [frequencies for all questions-2], ...]
-        '''
-        results = db.getDatabaseResults()
-        
-        chartData = []
-        for row in results:
-            arr = []
-            keyValuePairs = literal_eval(row['result'])
-            for pair in keyValuePairs:
-                if 'radio' in pair:
-                    arr.append((pair["radio"]["selection"],pair["radio"]["optionCount"]))
-            chartData.append(arr)    
-        chartData = pd.DataFrame(chartData)
-        
-        def seriesAsFrequencies(series):
-            # pd.value_count doesn't return anything for missing indices and sorts highest frequency first
-            # so convert to a list in order including zero counts
-            optionCount = int(series.index.values.tolist()[0][1])
-            frequencies = [0]*optionCount
-            for (value,size),count in series.iteritems():   #@UnusedVariable
-                frequencies[int(value)] = count
-            return frequencies
-            
-        recordCount = chartData.shape[1]
-        frequencies = []
-        for i in range(recordCount):
-            series = pd.value_counts(chartData[i])
-            frequencies.append(seriesAsFrequencies(series))
-        chartData = pd.DataFrame(frequencies)
-        chartData.fillna(-1, inplace=True)
-        chartData = chartData.astype(int)
-    
-        return pd.DataFrame(chartData).values.tolist()
-
-    def setPieChartData2(self):
         ''' this routine returns pie chart data for three types of query:
                 all: frequencies for all questions
                 email: frequencies for questions filtered by email
@@ -164,3 +121,4 @@ class Radio:
             return allPies
 
         return gatherPieInformation()
+

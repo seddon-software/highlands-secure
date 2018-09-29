@@ -23,7 +23,7 @@ sys.path.append("libs")
 from myglobals import MyGlobals
 from checkbox import Checkbox
 from scatter import Scatter
-from radio import Radio
+from piechart import Radio
 from chart import Chart
 from excel import Excel
 from table import Table
@@ -57,7 +57,9 @@ def setupLogging():
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def log_message(self, format, *args):
-        # supress log messages from http.server
+        # this routine handles log messages from http.server
+        # by leaving this function empty we effectively block server messages
+        # remove or rename this routine to see sever messages
         return
    
     def do_POST(self):
@@ -163,11 +165,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
             jsonString = json.dumps(chart.getChartData())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
-        elif(fileName == "chart-data-7"):
-            sendHeaders()
-            jsonString = json.dumps(chart.getChartData7())
-            jsonAsBytes = jsonString.encode("UTF-8")
-            self.wfile.write(jsonAsBytes)
         elif(fileName == "table-data"):
             sendHeaders()
             jsonString = json.dumps(table.getTableData())
@@ -183,9 +180,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
             jsonString = json.dumps(scatter.getScatterChartData())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
-        elif(fileName == "piechart-data2"):
-            sendHeaders()
-            jsonString = json.dumps(radio.getPieChartData2())
+        elif(fileName == "piechart-data"):
+            sendHeaders()   
+            jsonString = json.dumps(radio.getPieChartData())
             jsonAsBytes = jsonString.encode("UTF-8")
             self.wfile.write(jsonAsBytes)
         elif(fileName == "piechart-questions-options"):

@@ -73,7 +73,7 @@ def getExcelData():
                                         else:
                                             section = theValue
                                     if key == 'selection':
-                                        if k == 'radio': theValue = int(theValue) + 1
+                                        if k == 'piechart': theValue = int(theValue) + 1
                                         if k == 'table': pass # theValue is correct
                                         if k == 'table2':  pass # theValue is correct
                                         if k == 'checkbox':  pass # theValue is correct
