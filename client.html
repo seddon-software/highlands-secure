@@ -98,7 +98,7 @@ function loadPage(activeTab) {
 		document.auto = false;	// normal
 	
 	setupHeadings();
-//	document.email="manager";		// !!!!!!!!!!!!!!!! remove (this is for testing only)
+	document.email="manager";		// !!!!!!!!!!!!!!!! remove (this is for testing only)
 	if(document.email==="manager") {
 		// charts
 		displayCharts();
@@ -162,6 +162,7 @@ function setupTabs(activeTab) {
 		$(`[href="${selector}"]`).closest('li').hide();		
 	}
 	let tabObject = {};
+//	if("manager".localeCompare(document.email, 'en', {sensitivity: 'base'}) === 0) {
 	if(document.email==="manager") {
 		tabObject["active"] = activeTab;
 		hideTab("#questions-tab");		

@@ -54,7 +54,6 @@ function generateChart(categories, toolTips, data, selection) {
 			$("#filter-drop-down").append(heading);
 		}
 	}
-	
 	// x-axis: <Aspect>, <values array>
 	// y-axis: <categories>
 	// axes are swapped
@@ -62,7 +61,7 @@ function generateChart(categories, toolTips, data, selection) {
 	let group = selection[1];
 	let columns = data[key][key];
 	
-	// now filter categories and tooltips
+	// filter categories and tooltips ...
 	// group will be 'client' or 'email' 
 	// swap tooltips and categories if group is email
 	if(key != 'all') {
@@ -94,15 +93,30 @@ function generateChart(categories, toolTips, data, selection) {
 	o["bindto"] = '#chart';
 	o["axis"] = { rotated:true, x:{ type:'category', categories:categories}};
     o["bar"]  = { width:{ ratio: 0.5}}; // this makes bar width 50% of length between ticks
-	o["data"] = { columns: data[key][key], groups: chartGroups, type: 'bar'};
+	o["data"] = { columns: data[key][key], groups: chartGroups, type: 'bar', labels: true };
 	o["size"] = { height: height },
     o["padding"] = { left: $(window).width()/8 },
-    o["tooltip"] = {
-		format: {
-			title: function(i) { return toolTips[i]; }
-//			value: function(value, ratio, id) { return value; }
-		}
+    o["tooltip"] = { contents: 
+    	function (d) {
+        	let index = d[0].x;
+        	let title = toolTips[index];
+            let text = `<table class="${this.CLASS.tooltip}"><tr><th colspan="2">${title}</th></tr>`;
+
+	        for (let i = 0; i < d.length; i++) {
+	        	// aspects are on the even rows and important aspects on the odd rows
+	            if(i%2===0) {	// even rows
+		            let valueText = `total = ${d[i].value}: important = ${d[i+1].value}`;
+		            text += `<tr>
+		                         <td>${d[i].name}</td>
+		                         <td>${valueText}</td>
+		                     </tr>`;
+	            }
+	        }
+	        text += "</table>";
+	        return text;
+	    }	
 	}
 	c3.generate(o);
 }
+
 

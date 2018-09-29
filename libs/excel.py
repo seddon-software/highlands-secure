@@ -31,7 +31,7 @@ class Excel:
     
     
     def extractOptions(self, df):
-        df.drop(['Number', 'Important', 'Section', 'Question','Type'], axis = 1, inplace = True)
+        df.drop(['Number', 'Section', 'Question','Type'], axis = 1, inplace = True)
         df = df.fillna(value='')
         options = []
         row = []
@@ -112,6 +112,10 @@ class Excel:
         pd.set_option('display.width', 1000)
         table = pd.read_excel(excelFile, 'questions', converters={'Number':str})
         table = table.drop(['Comments'], axis=1)
+        try:
+            table = table.drop(['Important'], axis=1)
+        except:
+            pass        # may have left this (unused) column in old spreadsheet
         table[['Number']] = table[['Number']].fillna(value="")
         table[['Section']] = table[['Section']].fillna(value="")
         validate()

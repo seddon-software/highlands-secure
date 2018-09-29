@@ -7,7 +7,6 @@
 ############################################################
 
 
-#import logging
 import logging.handlers
 import datetime
 import sys
@@ -16,9 +15,11 @@ import random
 import hashlib
 import string
 from email.mime.text import MIMEText
-sys.path.append("libs")
 import http.server
 import urllib.parse, json
+
+# my libraries
+sys.path.append("libs")
 from myglobals import MyGlobals
 from checkbox import Checkbox
 from scatter import Scatter
@@ -55,7 +56,7 @@ def setupLogging():
     return my_logger
 
 class Handler(http.server.BaseHTTPRequestHandler):
-    def log_message(self, format, *args):
+    def log_messagex(self, format, *args):
         # supress log messages from http.server
         return
    
@@ -275,6 +276,7 @@ my_logger.debug("server started at {}".format(datetime.datetime.now()))
 
 PORT = g.get("port")
 SERVER = g.get("server")
+
 try:
     httpd = http.server.HTTPServer((SERVER, PORT), Handler)
 except OSError as e:

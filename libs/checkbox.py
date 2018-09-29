@@ -61,7 +61,6 @@ class Checkbox:
         # this routine assumes the client always comes before other results        
         questions = xl.filterQuestions("checkbox")
         options = xl.filterOptions("checkbox")
-        print(questions)
         questions.columns = ["Number", "Section", "Question", "Type", "Ignore"]
         options.columns = ["Options", "Marks"]
     

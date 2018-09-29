@@ -7,7 +7,7 @@
 ############################################################
 
 import pymysql.cursors
-import os
+import os, sys
 from myglobals import MyGlobals
 
 if __name__ == "__main__": os.chdir("..")
@@ -26,6 +26,21 @@ class Database:
                                      charset='utf8mb4',
                                      cursorclass=pymysql.cursors.DictCursor)
         return connection
+
+    def checkIfTableExists(self):
+        connection = self.connect()
+        try:
+            with connection.cursor() as cursor:
+                try:
+                    sql = "SELECT * FROM `{}`".format(g.get("table"))
+                    cursor.execute(sql)
+                except Exception as e:
+                    print("Can't fire up server")
+                    print(e)
+                    print("Have you run initialize_database.py?")
+                    sys.exit()
+        finally:
+            connection.close()
 
     def getDatabaseResults(self):
         connection = self.connect()
@@ -119,6 +134,7 @@ class Database:
 
 if __name__ == "__main__": 
     db = Database()
+    db.checkIfTableExists()
     print(g.get("usersTable"))
     db.createUser("John", "Highway", "123")
     db.createUser("John", "Highways", "123")
