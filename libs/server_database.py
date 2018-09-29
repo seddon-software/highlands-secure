@@ -89,7 +89,7 @@ def getEmailsAndClients():
     results = db.getDatabaseResults()
     emails = getEmails(results)
     clients = getClients(results)
-    return emails, clients
+    return sorted(emails), sorted(clients)
 
 
 if __name__ == "__main__":
