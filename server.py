@@ -56,7 +56,7 @@ def setupLogging():
     return my_logger
 
 class Handler(http.server.BaseHTTPRequestHandler):
-    def log_messagex(self, format, *args):
+    def log_message(self, format, *args):
         # supress log messages from http.server
         return
    

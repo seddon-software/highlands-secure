@@ -103,9 +103,21 @@ function generateChart(categories, toolTips, data, selection) {
             let text = `<table class="${this.CLASS.tooltip}"><tr><th colspan="2">${title}</th></tr>`;
 
 	        for (let i = 0; i < d.length; i++) {
-	        	// aspects are on the even rows and important aspects on the odd rows
-	            if(i%2===0) {	// even rows
-		            let valueText = `total = ${d[i].value}: important = ${d[i+1].value}`;
+	        	// some aspects may not haveimportant questions
+		        let aspect = data[key][key][i][0];
+	            console.log(aspect, data[key][key]);
+	            if(!aspect.includes("*")) {	// not an important aspect
+	            	let value = d[i].value;
+	            	let importantValue = 0;
+	            	try {
+	            		let nextAspect = data[key][key][i+1][0];
+	            		if(nextAspect.includes("*")) {
+	            		    importantValue = d[i+1].value;
+	            		}
+	            	} catch(e) {
+	            		// no next aspect, so ignore error
+	            	}
+	            	let valueText = `total = ${value}: important = ${importantValue}`;
 		            text += `<tr>
 		                         <td>${d[i].name}</td>
 		                         <td>${valueText}</td>
