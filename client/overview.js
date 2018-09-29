@@ -91,11 +91,11 @@ function generateChart(categories, toolTips, data, selection) {
 	
 	let o = {};  // used to generate chart
 	o["bindto"] = '#chart';
-	o["axis"] = { rotated:true, x:{ type:'category', categories:categories}};
+	o["axis"] = { rotated:true, x:{ type:'category', tick: { width:3000, multiline: false }, categories:categories}};
     o["bar"]  = { width:{ ratio: 0.5}}; // this makes bar width 50% of length between ticks
 	o["data"] = { columns: data[key][key], groups: chartGroups, type: 'bar', labels: true };
 	o["size"] = { height: height },
-    o["padding"] = { left: $(window).width()/8 },
+    o["padding"] = { left: $(window).width()/6 },
     o["tooltip"] = { contents: 
     	function (d) {
         	let index = d[0].x;
@@ -105,7 +105,6 @@ function generateChart(categories, toolTips, data, selection) {
 	        for (let i = 0; i < d.length; i++) {
 	        	// some aspects may not haveimportant questions
 		        let aspect = data[key][key][i][0];
-	            console.log(aspect, data[key][key]);
 	            if(!aspect.includes("*")) {	// not an important aspect
 	            	let value = d[i].value;
 	            	let importantValue = 0;
@@ -117,7 +116,7 @@ function generateChart(categories, toolTips, data, selection) {
 	            	} catch(e) {
 	            		// no next aspect, so ignore error
 	            	}
-	            	let valueText = `total = ${value}: important = ${importantValue}`;
+	            	let valueText = `total = ${value + importantValue}: important = ${importantValue}, other = ${value}`;
 		            text += `<tr>
 		                         <td>${d[i].name}</td>
 		                         <td>${valueText}</td>
