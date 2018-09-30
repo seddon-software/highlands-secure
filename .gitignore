@@ -8,6 +8,7 @@ nohup.out
 logs/
 certs/
 test*.html
+__pycache__
 libs/__pycache__
 /.metadata/
 /RemoteSystemsTempFiles/
