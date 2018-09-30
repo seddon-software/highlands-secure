@@ -7,15 +7,23 @@
 ############################################################
 
 import glob
-import os
+import os, sys
 import subprocess
 import time
 
 if __name__ == "__main__":
+    reply = input("switch on automatic testing? [y/n] ")
+    if reply == 'y':
+        auto = "-auto"
+    else:
+        auto = ""
+        
+    print(auto)
+
     cmdk = "kill $(ps -ef | grep '[p]ython server.py' | awk '{print $2}') 2>/dev/null"
     os.system(cmdk)
     for spreadsheet in glob.glob('[A-Za-z]*.xlsx'):
-        cmd = "nohup python server.py {}".format(spreadsheet)
+        cmd = "nohup python server.py {} {}".format(spreadsheet, auto)
         subprocess.Popen(cmd.split())
 
     cmd = "ps -ef | grep '[pP]ython server.py'"

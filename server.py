@@ -240,8 +240,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 log("{} failed to login".format(theEmail))                
         else:
             def isInvalidRequest():
-                if(fileName == "client.html" and queryString != "auto"): return True
-                if(extension == "html" or extension == "js" or extension == "css"):
+                # check for automatic testing
+                if fileName == "client.html": 
+                    return not g.get("auto")
+                elif(extension == "html" or extension == "js" or extension == "css"):
                     return False
                 elif(fileName == "log"):
                     return False
@@ -294,6 +296,7 @@ print("port:", PORT)
 print("database:", g.get("database"))
 print("table:", g.get("table"))
 print("users table:", g.get("usersTable"))
+if(g.get("auto")): print("automatic testing")
 print("")
 httpd.serve_forever()
 

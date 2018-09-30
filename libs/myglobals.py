@@ -9,6 +9,8 @@
 import sys, os
 import pandas as pd
 
+if __name__ == "__main__": os.chdir("..")
+
 class MyGlobals:
     def __init__(self):
         self.parseCommandLine()
@@ -46,14 +48,43 @@ class MyGlobals:
             if name == "port": return self.port
             if name == "excelFile": return self.excelFile
             if name == "usersTable": return self.usersTable
+            if name == "auto": return self.auto
+
+#     def parseCommandLine2(self):
+#         # default excel file is "highlands.xlsx", but can be changed on command line:
+#         #    python server.py [excel-file]
+#         if len(sys.argv) > 2:
+#             print("Useage: python server.py [excel-file]")
+#             sys.exit()
+#         if len(sys.argv) == 1:
+#             excelFile = "highlands.xlsx"
+#         else:
+#             excelFile = sys.argv[1].replace(".xlsx", "") + ".xlsx"
+#         
+#         if not os.path.isfile(excelFile):
+#             print("{} does not exist".format(excelFile))
+#             sys.exit()
+#     
+#         self.excelFile = excelFile
 
     def parseCommandLine(self):
         # default excel file is "highlands.xlsx", but can be changed on command line:
         #    python server.py [excel-file]
-        if len(sys.argv) > 2:
+
+        # check for automatic testing (must supply "-auto" as last command line arg
+        lastArg = sys.argv[-1]
+        if lastArg == "-auto":
+            self.auto = True
+        else:
+            self.auto = False
+
+        argLengthWithoutAuto = len(sys.argv)
+        if self.auto: argLengthWithoutAuto -= 1
+        
+        if argLengthWithoutAuto > 2:
             print("Useage: python server.py [excel-file]")
             sys.exit()
-        if len(sys.argv) == 1:
+        if argLengthWithoutAuto == 1:
             excelFile = "highlands.xlsx"
         else:
             excelFile = sys.argv[1].replace(".xlsx", "") + ".xlsx"
@@ -63,3 +94,7 @@ class MyGlobals:
             sys.exit()
     
         self.excelFile = excelFile
+
+if __name__ == "__main__":
+    g = MyGlobals()
+    

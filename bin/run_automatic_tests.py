@@ -9,10 +9,19 @@
 import socket
 import pandas as pd
 import os, sys, re
+import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+os.chdir("..")
+sys.path.append("libs")
+
+from myglobals import MyGlobals
+g = MyGlobals()
 
 browser = None
 
@@ -31,8 +40,13 @@ def startBrowser(url):
         browser = webdriver.Chrome(executable_path=r"chromedriver_macos")
     except: pass
     try:
+        r = requests.get(url, verify=False)
+        if r.status_code == 404:
+            raise Exception("Page not found: have you switched on automatic testing?")
+
         browser.get(url)
         wait = WebDriverWait(browser, 60)
+        
         wait.until(lambda browser: browser.execute_script("return jQuery.active == 0"))
     except Exception as e:
         print(e)
@@ -69,15 +83,15 @@ def enterTextArea(question, text):
     element.send_keys(text);   
 
 def clickTable(question, row, col):
-    selector = "input#piechart-{}-{}-{}".format(question, row, col)
+    selector = "input#radio-{}-{}-{}".format(question, row, col)
     clickIt(selector)
     
 def clickTable2(question, row, col):
-    selector = "input#piechart-{}-{}-{}".format(question, row, col)
+    selector = "input#radio-{}-{}-{}".format(question, row, col)
     clickIt(selector)
     
 def clickRadio(question, col):
-    selector = "input#piechart-{}-{}".format(question, col-1)
+    selector = "input#radio-{}-{}".format(question, col-1)
     clickIt(selector)
 
 def clickCheckbox(question, col):
@@ -109,8 +123,10 @@ def clickIt(selector):
     scrollTo(element)
     element.click();   
 
-def isServerRunning():
+def isServerRunning(g):
     theSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server = g.get("server")
+    port = g.get("port")
     result = theSocket.connect_ex((server, port))
     if result == 0:
         return True
@@ -135,7 +151,7 @@ def doValidation(table):
             optionCount = row["OptionCount"]
             data = "Test{}".format(testNo)
             values = row[data]
-            if category == "piechart":
+            if category == "radio":
                 if optionCount < values or values < 1: 
                     print("Option out of range in test {}, question {}".format(testNo, question))
                     sys.exit()
@@ -168,62 +184,26 @@ def doValidation(table):
                     print("Option out of range in test {}, question {}".format(testNo, question))
                     sys.exit()
     
-def getNamesAndPasswords():
-    pd.set_option('display.width', 1000)
-    table = readExcelFile('setup')
-    rootFrame = table[(table.TYPE == "user") & (table.NAME == "root")]
-    managerFrame = table[(table.TYPE == "user") & (table.NAME == "manager")]
-    databaseFrame = table[table.TYPE == "database"]
-    hostFrame = table[table.TYPE == "host"]
-
-    root = rootFrame["NAME"].tolist()[0]
-    rootPassword = rootFrame["OPTION"].tolist()[0]
-    manager = managerFrame["NAME"].tolist()[0]
-    managerPassword = managerFrame["OPTION"].tolist()[0]
-    database = databaseFrame["NAME"].tolist()[0]
-    table = databaseFrame["OPTION"].tolist()[0]
-    server = hostFrame["NAME"].tolist()[0]
-    port = hostFrame["OPTION"].tolist()[0]
-    return [root, rootPassword, manager, managerPassword, database, table, server, port]
-
-def parseCommandLine():
-    # default excel file is "highlands.xlsx", but can be changed on command line:
-    #    python run_tests.py [excel-file]
-    if len(sys.argv) > 2:
-        print("Useage: python run_tests.py [excel-file]")
-        sys.exit()
-    if len(sys.argv) == 1:
-        excelFile = "highlands.xlsx"
-    else:
-        excelFile = sys.argv[1].replace(".xlsx", "") + ".xlsx"
-    
-    if not os.path.isfile(excelFile):
-        print("{} does not exist".format(excelFile))
-        sys.exit()
-    return excelFile
-    
-os.chdir("..")
-excelFile = parseCommandLine()
-root, rootPassword, manager, managerPassword, database, tableName, server, port = getNamesAndPasswords()
+excelFile = g.get("excelFile")
 pd.set_option('display.width', 1000)
 table = readExcelFile('tests')
 table = table[pd.notnull(table['Question'])]
 doValidation(table)
 table = table.dropna(axis="columns")
 table.drop(axis=1, labels="Text", inplace=True)
-if not isServerRunning(): 
+if not isServerRunning(g): 
     print("Server not running ...\nexiting")
     sys.exit()
 
-print("server:", server)
-print("port:", port)
-print("database:", database)
-print("table:", tableName)
+print("server:", g.get("server"))
+print("port:", g.get("port"))
+print("database:", g.get("database"))
+print("table:", g.get("table"))
 
 try:
     rows, cols = table.shape
     
-    startBrowser("https://{}:{}/client.html?auto".format(server, port))
+    startBrowser("https://{}:{}/client.html?auto".format(g.get("server"), g.get("port")))
     for testNo in range(1, cols-1):  # 1 non test column
         print("Starting Test {}".format(testNo))
         data = "Test{}".format(testNo)
@@ -234,7 +214,7 @@ try:
             values = row[data]
             if category == "text":     enterText(question, values)
             if category == "textarea": enterTextArea(question, values)
-            if category == "piechart":    clickRadio(question, values)
+            if category == "radio":    clickRadio(question, values)
             if category == "email":    enterText(question, values)
             if category == "client":   enterText(question, values)
             if category == "table":
