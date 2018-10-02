@@ -114,12 +114,15 @@ function doLogin() {
 			dataType: 'text',
 			data: {},
 			success: function(data, status) {
-				// data is of the form:   <token>;<document for client.html>
-				let n = data.indexOf(";");
-				let token = data.slice(0, n);
-				let html = data.slice(n+1);
+				// data is of the form:   <email>;<manager-type>;<document for client.html>
+				let n = data.indexOf(":");
+				let m = data.indexOf(";");
+				let email = data.slice(0, n);
+				let managerType = data.slice(n+1, m);
+				let html = data.slice(m+1);
 				document.open();
-				document.email = token;
+				document.email = email;
+				document.managerType = managerType;
 				document.write(html);
 				document.close();
 			},

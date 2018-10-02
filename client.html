@@ -98,25 +98,21 @@ function loadPage(activeTab) {
 		document.auto = false;	// normal
 	
 	setupHeadings();
-	if(location.href.includes("127.0.0.1")) {
-//		document.email="manager";		// !!!!!!!!!!!!!!!! remove (this is for testing only)		
-	}
-	if(document.email==="manager") {
-		// charts
-		displayCharts();
-		displayPieCharts();
-		displayScatterChart();
-		displayCheckboxData();
-		displayTableData();
-		displayLog();
-		setupRefresh();
-	} else {
-		// assessments
-		removeCookiesOnStartup();
-		getQuestions();
-		getOptions();
-		addClickHandlers();
-	}
+
+	// charts
+	displayCharts();
+	displayPieCharts();
+	displayScatterChart();
+	displayCheckboxData();
+	displayTableData();
+	displayLog();
+	setupRefresh();
+	// assessments
+	removeCookiesOnStartup();
+	getQuestions();
+	getOptions();
+	addClickHandlers();
+
 	if(activeTab === undefined) activeTab = 1;
 	setupTabs(activeTab);
 	setStyles();
@@ -164,11 +160,14 @@ function setupTabs(activeTab) {
 		$(`[href="${selector}"]`).closest('li').hide();		
 	}
 	let tabObject = {};
-//	if("manager".localeCompare(document.email, 'en', {sensitivity: 'base'}) === 0) {
-	if(document.email==="manager") {
+	if(document.managerType==="chart") {
 		tabObject["active"] = activeTab;
 		hideTab("#questions-tab");		
-	} else {
+	} 
+	if(document.managerType==="both") {
+		tabObject["active"] = activeTab;
+	} 
+	if(document.managerType==="assessment") {
 		tabObject["active"] = 0;
 		hideTab("#overview-tab");
 		hideTab("#responses-tab");

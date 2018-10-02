@@ -62,7 +62,16 @@ class Excel:
     
     def getOptions(self):
         return self.options
-    
+ 
+    def getManagerType(self, theManager):
+        table = pd.read_excel(excelFile, 'managers')
+        table = table[['MANAGER','TYPE']]
+        table = table[table.MANAGER.notnull()]
+        
+        for _, row in table.iterrows():
+            if row['MANAGER'] == theManager: return row['TYPE']
+        return "assessment"
+               
     def __init__(self):
         def validate():
             validated = True
@@ -123,8 +132,15 @@ class Excel:
         self.questions = self.extractQuestions(table[['Number', 'Section', 'Question', 'Type', 'Option1']])
         self.options = self.extractOptions(table)
 
+            
+
 if __name__ == "__main__":
     xl = Excel()
-    print(xl)
+    print(xl.getManagerType("seddon-software@keme.co.uk"))
+    print(xl.getManagerType("manager"))
+    print(xl.getManagerType("pter.smith@ibm.com"))
+    print(xl.getManagerType("pterx.smith@ibm.com"))
+    
+    
     
     

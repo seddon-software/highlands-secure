@@ -228,10 +228,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
             if success:
                 fileName = "client.html"
                 sendHeaders()
+                # reply with <email : manager-type ; html>
+                self.wfile.write(theEmail.encode())
+                self.wfile.write(":".encode())
+                managerType = xl.getManagerType(theEmail)
+                self.wfile.write(managerType.encode())
+                self.wfile.write(";".encode())
                 f = open(fileName, "r", encoding="UTF-8")
                 data = f.read()
-                self.wfile.write(theEmail.encode())
-                self.wfile.write(";".encode())
                 self.wfile.write(data.encode())
                 log("{} login succeeded".format(theEmail))                
             else:
