@@ -11,7 +11,9 @@
 <html>
 <head>
 <link rel="stylesheet" href="client/css/jquery-ui-1.12.1.css">
+<link rel="stylesheet" href="client/css/jquery-ui.theme.css">
 <script src="client/js/jquery-3.2.1.js"></script>
+<script src="client/js/jquery-ui-1.12.1.js"></script>
 <!--
   <script src="client/js/jquery_cookie.js"></script>
 -->
@@ -30,21 +32,25 @@ input[type="password"] {
 	padding-left: 2vw;
 	width: 100%;
   	text-align: left;
-s}
+}
+
 #message {
 	font-size: xx-large;
 	padding-bottom: 2vh;
 }
+
 input[type="button"] {
     color: brown;
-	padding-top: 2vh;
-	padding-left: 5vw;
-	margin-left: 2vw;
-	float: left;
   	text-align: center;
+	margin-left: 2vw;
 	width: 20%;
-	font-size: large;
+	float: left;
+	padding-top: 1vh;
+	padding-bottom: 1vh;
 }
+
+.ui-state-default { font-size: large; }
+
 .grid-container {
     display: grid;
     grid-template-columns: 25% 35%}");
@@ -64,12 +70,13 @@ $(window).on('load', function () {
 	}, 100);
 	let html = div("what do you want to do?", "message");
 	$("body").append(html);
-	let loginButton = div(`<input type="button" value="login">`, "login");
-	let changePasswordButton = div(`<input type="button" value="change password">`, "changePassword");
-	let registerButton = div(`<input type="button" value="register">`, "register");
+	let loginButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="login">`, "login");
+	let changePasswordButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="change password">`, "changePassword");
+	let registerButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="register">`, "register");
 	let blockDiv = div("", "block");
 	$("body").append(blockDiv);
 	$("#block").append(loginButton);
+	$("#login-button").button();
 	$("#block").append(changePasswordButton);
 	$("#block").append(registerButton);
 	$("#login").click(doLogin);
@@ -106,7 +113,7 @@ function doLogin() {
 			["email",    `<input type="text" style="font-size:large" id="email">`], 
 			["password", `<input type="password" style="font-size:large" id="password">`]
 	);
-	let submitButton = div(`<input type="button" value="submit">`, "do-login");
+	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="submit">`, "do-login");
 	$("#block").append(submitButton);	
 	$("#do-login").click(function() {
 		$.ajax({
@@ -153,7 +160,7 @@ function doChangePassword() {
             ["new password",     `<input type="password" id="password1">`],
             ["confirm password", `<input type="password" id="password2">`]
 	);
-	let submitButton = div(`<input type="button" id="do-changePassword" value="submit">`);
+	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="do-changePassword" value="submit">`);
 	$("#block").append(submitButton);
 	$("#do-changePassword").click(function() {
 		let email = $("#email").val();
@@ -209,7 +216,7 @@ function doRegister() {
 	                       ["confirm password", `<input type="password" id="password2">`],
 	                       ["enter code",       `<input type="text" id="code">`]
 				);
-				let submitButton = div(`<input type="button" id="complete-registration" value="submit">`);
+				let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="complete-registration" value="submit">`);
 				$("#block").append(submitButton);	
 				$("#complete-registration").click(completeRegistration);
 			},
@@ -258,7 +265,7 @@ function doRegister() {
 	grid("do-login", "#block", ["email", `<input type="text" id="email">`]);
 	let passwordBox1 = $(`<div>password<input type="password" id="password1"></div>`);
 	let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
-	let submitButton = div(`<input type="button" id="start-registration" value="submit">`);
+	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="start-registration" value="submit">`);
 	$("#block").append(submitButton);	
 	$("#messageBox").html("");	
 	$("#start-registration").click(startRegistration);

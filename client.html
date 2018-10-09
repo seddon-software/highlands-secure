@@ -122,9 +122,10 @@ function loadPage(activeTab) {
 }
 
 function setupRefresh() {
-	let refreshButton = div(`<input type="button" value="refresh">`, "do-refresh", 
+	let refreshButton = div(`<input type="button" id="refresh-button" value="refresh">`, "do-refresh", 
 			{"float":"right", "margin-top":"2vh", "margin-right":"5vw"});
 	$("#refresh").html(refreshButton);
+	$("#refresh-button").hide();
 	$("#do-refresh").click(function() {
 		activeTab = $("#tabs").tabs('option', 'active');
 		loadPage(activeTab);
@@ -165,7 +166,7 @@ function setupTabs(activeTab) {
 		hideTab("#questions-tab");		
 	} 
 	if(document.managerType==="both") {
-		tabObject["active"] = activeTab;
+		tabObject["active"] = 0;
 	} 
 	if(document.managerType==="assessment") {
 		tabObject["active"] = 0;
@@ -177,6 +178,18 @@ function setupTabs(activeTab) {
 		hideTab("#log-tab");
 	}
 	$(function() {$("#tabs").tabs(tabObject);});
+	$("#tabs").tabs({
+	    activate: function(event, ui) {
+//	    	console.log(ui.oldTab);
+//	    	console.log(ui.newTab);
+//	    	console.log(ui.newTab[0].innerText);
+	    	if(ui.newTab[0].innerText !== "Assessment") {
+	    		$("#refresh-button").show();
+	    	} else {
+	    		$("#refresh-button").hide();
+	    	}
+	    }
+	});
 }
 </script>
 
@@ -193,7 +206,7 @@ function setupTabs(activeTab) {
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#table-tab" class="tabs-button" id="table-button">Table Charts</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#log-tab" class="tabs-button" id="log-button">Log</a></li>
 	  </ul>
-    <div id="refresh"></div>
+      <div id="refresh"></div>
 	  <div id="questions-tab">
 		<div id='canvas' style='float:left'>
 		    <div id='questions'></div>

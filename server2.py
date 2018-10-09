@@ -41,10 +41,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
             sendHeaders()
             self.wfile.write(data.encode())
         except:
-            sendHeaders(404)
+            sendHeaders(200)
 
 PORT = 9096
-SERVER = "assessmydeal.com"
+SERVER = "localhost" # "assessmydeal.com"
 server = http.server.HTTPServer((SERVER, PORT), Handler)
 
 print("server:", SERVER)

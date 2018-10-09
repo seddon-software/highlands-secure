@@ -47,7 +47,7 @@ def startBrowser(url):
         browser.get(url)
         wait = WebDriverWait(browser, 60)
         
-        wait.until(lambda browser: browser.execute_script("return jQuery.active == 0"))
+#        wait.until(lambda browser: browser.execute_script("return jQuery.active == 0"))
     except Exception as e:
         print(e)
         print("aborting ...")
@@ -126,7 +126,7 @@ def clickIt(selector):
 def isServerRunning(g):
     theSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server = g.get("server")
-    port = g.get("port")
+    port = int(g.get("port"))
     result = theSocket.connect_ex((server, port))
     if result == 0:
         return True
