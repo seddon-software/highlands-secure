@@ -6,6 +6,7 @@
 #
 ############################################################
 
+import urllib.parse
 import http.server
 
 class Handler(http.server.BaseHTTPRequestHandler):
