@@ -18,7 +18,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-type", "text/html")
 
-        fileName = "redirect.html"
+        parsedUrl = urllib.parse.urlparse(self.path) # returns a 6-tuple
+        fileName = parsedUrl[2]
+        fileName = fileName[1:]  # remove leading '/'
         try:
             f = open(fileName, "r", encoding="UTF-8")
             data = f.read()
