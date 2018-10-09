@@ -31,21 +31,43 @@ To run server on A2Hosting server:
 	cd /opt/highlands/h-workshop/Python/src/_Highlands/highlands-secure
 	python -u server.py [excelFile]
 
-To run http server (to request redirect to https):
-	python -u server2.py
+To get updates:
+	sudo apt-get update
+
+Installing a new A2 Server:
+
+1. To create a new user on Ubuntu:
+	sudo adduser chris
 	
-To start ftp server:
+2. To add user to the sudo group:
+	sudo usermod -aG sudo
+
+3. To install and start ftp server:
+	sudo apt-get install vsftpd
 	sudo systemctl start vsftpd
 
-Routing commands to use default ports for http and https:
+4. Routing commands to use default ports for http and https:
 	sudo iptables -A PREROUTING -t nat -i venet0 -p tcp --dport 443 -j REDIRECT --to-port 9097
 	sudo iptables -A PREROUTING -t nat -i venet0 -p tcp --dport 80 -j REDIRECT --to-port 9096
 
-To get updates:
-	sudo apt-get upgrade
+5. To install git:
+	sudo apt-get install git-core
+	git clone https://github.com/seddon-software/highlands-secure.git
 
+6. To install and start MySQL:
+	sudo apt-get install mysql-server
+	mysql_secure_installation
+	sudo systemctl start mysql
+
+7. To install Anaconda 3.4:
+	wget http://repo.continuum.io/archive/Anaconda3-4.3.0-Linux-x86_64.sh
+   	bash Anaconda3-4.3.0-Linux-x86_64.sh
+   	pip install pymysql
+	must create log directory
+	must set up certs   
 Note:
 	asssessmydeal.com is 68.66.241.111
+	assessmydeal.com is 199.195.116.16
 
 Certs:
 IMPORTANT NOTES:

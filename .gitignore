@@ -8,6 +8,7 @@ nohup.out
 logs/
 certs/
 test*.html
+update_spreadsheet.py
 __pycache__
 libs/__pycache__
 /.metadata/

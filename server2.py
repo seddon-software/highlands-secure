@@ -27,9 +27,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
         except:
             sendHeaders(404)
 
-PORT = 9096
+PORT = 80
 SERVER = "assessmydeal.com"
-SERVER = "209.124.74.241"
 server = http.server.HTTPServer((SERVER, PORT), Handler)
 
 print("server:", SERVER)
