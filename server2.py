@@ -15,9 +15,22 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.do_GET()
 
     def do_GET(self):
-        def sendHeaders():
-            self.send_response(200)
-            self.send_header("Content-type", "text/html")
+        def getMimeType():
+            extension = fileName.split(".")[-1]
+            if(extension == "ico"): return "image/x-icon"
+            if(extension == "css"): return "text/css"
+            if(extension == "jpg"): return "image/jpeg"
+            if(extension == "png"): return "image/png"
+            if(extension == "svg"): return "image/svg+xml"
+            return "text/html"
+            
+        def sendHeaders(code=200):
+            if code == 200:
+                self.send_response(code)
+                self.send_header("Content-type", getMimeType())
+            else:
+                self.send_response(code)
+            self.end_headers()
 
         parsedUrl = urllib.parse.urlparse(self.path) # returns a 6-tuple
         fileName = parsedUrl[2]
@@ -30,7 +43,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         except:
             sendHeaders(404)
 
-PORT = 80
+PORT = 9096
 SERVER = "assessmydeal.com"
 server = http.server.HTTPServer((SERVER, PORT), Handler)
 
