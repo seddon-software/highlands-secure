@@ -31,6 +31,7 @@
 <script src="client/checkbox.js"></script>
 <script src="client/client.js"></script>
 <script src="client/constants.js"></script>
+<script src="client/excel.js"></script>
 <script src="client/log.js"></script>
 <script src="client/overview.js"></script>
 <script src="client/piecharts.js"></script>
@@ -40,7 +41,7 @@
 
 <style type="text/css">
 body {
-    overscroll-behavior: none;
+	overscroll-behavior: none;
 }
 
 .select2-container, .select2-result-label {
@@ -105,6 +106,7 @@ function loadPage(activeTab, mode) {
 		displayScatterChart();
 		displayCheckboxData();
 		displayTableData();
+		displayExcelData();
 		displayLog();
 		setupRefresh();
 	}
@@ -127,7 +129,6 @@ function setupRefresh() {
 	let refreshButton = div(`<input type="button" id="refresh-button" value="refresh">`, "do-refresh", 
 			{"float":"right", "margin-top":"2vh", "margin-right":"5vw"});
 	$("#refresh").html(refreshButton);
-//	$("#refresh-button").hide();
 	$("#do-refresh").click(function() {
 		activeTab = $("#tabs").tabs('option', 'active');
 		loadPage(activeTab, "refresh");
@@ -203,6 +204,7 @@ function setupTabs(activeTab) {
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#growth-tab" class="tabs-button" id="growth-button">Growth</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#checkbox-tab" class="tabs-button" id="checkbox-button">Checkboxes</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#table-tab" class="tabs-button" id="table-button">Table Charts</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#excel-tab" class="tabs-button" id="excel-button">Excel</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#log-tab" class="tabs-button" id="log-button">Log</a></li>
 	  </ul>
       <div id="refresh"></div>
@@ -239,6 +241,11 @@ function setupTabs(activeTab) {
 	    <div class="tab-title" id="table-title"></div>
 		<div id="table-filter-drop-down"></div>
 		<div id="tablecharts"></div>
+	  </div>
+	  <div id="excel-tab">
+	    <div class="tab-title" id="excel-title"></div>
+		<div id="excel-filter-drop-down"></div>
+		<div id="excelcharts"></div>
 	  </div>
 	  <div id="log-tab">
 	    <div class="tab-title" id="log-title"></div>

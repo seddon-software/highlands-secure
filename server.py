@@ -204,6 +204,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 jsonString = json.dumps(sql.getPieChartQuestionsAndOptions())
                 jsonAsBytes = jsonString.encode("UTF-8")
                 self.wfile.write(jsonAsBytes)
+            elif(fileName == "excel-data"):
+                if not managerMode: raise Exception()
+                self.send_response(200)
+                self.send_header("Content-type", "application/json")
+                self.end_headers()
+                jsonString = json.dumps(db.getExcelData())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
             elif(fileName == "change-password"):
                 oldPassword1hash = db.getPassword(data['email'][0])
                 oldPassword2 = data['oldPassword'][0]

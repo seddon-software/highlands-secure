@@ -8,6 +8,10 @@
 
 import pymysql.cursors
 import os, sys
+import re
+import pandas as pd
+from ast import literal_eval
+import collections
 from myglobals import MyGlobals
 
 if __name__ == "__main__": os.chdir("..")
@@ -16,8 +20,8 @@ g = MyGlobals()
 
 class Database:
     def __init__(self):
-        pass
-    
+        self.setExcelData()
+        
     def connect(self):
         connection = pymysql.connect(host='localhost',
                                      user=g.get("manager"),
@@ -132,16 +136,75 @@ class Database:
         finally:
             connection.close()
 
+    def getExcelData(self):
+        return self.excelData
+    
+    def setExcelData(self):
+        connection = self.connect()
+        try:
+            with connection.cursor() as cursor:
+                sql = "SELECT `*` FROM `{}`".format(g.get("table"))
+                cursor.execute(sql)
+                results = cursor.fetchall()
+     
+                resultsArray = []
+                for row in results:
+                    orderedDict = collections.OrderedDict()
+                    
+                    section = ""
+                    for key in row:
+                        if key == 'result':
+                            keyValuePairs = literal_eval(row['result'])
+                            for key in keyValuePairs:
+                                for k in key:   # should only be 1 key
+                                    entry = key[k]
+                                    question = entry['question']
+                                    for key in entry:
+                                        theKey = "{}-{}".format(question, key)
+                                        theValue = entry[key]
+                                        
+                                        if key == 'question': continue
+                                        if key == 'optionCount': continue
+                                        if key == 'section': 
+                                            if (theValue == section): 
+                                                continue
+                                            else:
+                                                section = theValue
+                                        if key == 'selection':
+                                            if k == 'piechart': theValue = int(theValue) + 1
+                                            if k == 'table': pass # theValue is correct
+                                            if k == 'table2':  pass # theValue is correct
+                                            if k == 'checkbox':  pass # theValue is correct
+                                        orderedDict[theKey] = theValue
+                                    pass
+                        else:
+                            orderedDict[key] = row[key]
+                    resultsArray.append(orderedDict)
+            chartData = pd.DataFrame(resultsArray)
+        finally:
+            connection.close()
+        excelData = chartData.values.tolist()       # convert values to 2D list
+        columnNames = list(chartData.head(0))       # get column headings
+        excelData.insert(0, columnNames)            # add column names to front of 2D list
+        excelData = str(excelData)                  # convert to string
+        excelData = excelData.replace("'",'"')      # change single quoutes into double (for JSON)
+        def convertTimestamps(s):
+            pattern = r'Timestamp[(]([^)]+)[)]'
+            replacement = r"\1"
+            return re.sub(pattern, replacement, s)
+            excelData = convertTimestamps(excelData)
+            return excelData
+#         s = '[1, "83c5eb88-ccb2-48e6-b812-7fecb11686b6", Timestamp("2018-09-29 17:34:14"), "chris@def.com"'
+#         t = convertTimestamps(s)
+#        print(t)
+        self.excelData = convertTimestamps(excelData)
+            
 if __name__ == "__main__": 
+    import json, re
     db = Database()
-    db.checkIfTableExists()
-    print(g.get("usersTable"))
-    db.createUser("John", "Highway", "123")
-    db.createUser("John", "Highways", "123")
-    db.createUser("Peter", "S", "123")
-    db.createUser("Peter", "Smith", "456")
-    print(db.getPassword("John"))
-    print(db.getPassword("Johnny"))
-    db.printUsers()
+    data = db.getExcelData()
+    json.dumps(data)
+    print(data)
+    
     
     
