@@ -8,6 +8,7 @@
 
 import pandas as pd
 import sys, os
+from validate_email import validate_email
 from myglobals import MyGlobals
 
 if __name__ == "__main__": os.chdir("..")
@@ -71,6 +72,20 @@ class Excel:
         for _, row in table.iterrows():
             if row['MANAGER'] == theManager: return row['TYPE']
         return "assessment"
+               
+    def getDenyDomains(self, email):
+        try:
+            if not validate_email(email): return True
+        except:
+            return False
+        domain = email.split('@')[1]
+        table = pd.read_excel(excelFile, 'deny')
+        table = table[['DENY']]
+        table = table[table.DENY.notnull()]
+        
+        for _, row in table.iterrows():
+            if row['DENY'] == domain: return True
+        return False
                
     def __init__(self):
         def validate():
@@ -136,10 +151,14 @@ class Excel:
 
 if __name__ == "__main__":
     xl = Excel()
-    print(xl.getManagerType("seddon-software@keme.co.uk"))
-    print(xl.getManagerType("manager"))
-    print(xl.getManagerType("pter.smith@ibm.com"))
-    print(xl.getManagerType("pterx.smith@ibm.com"))
+    print(xl.getDenyDomains("john@rita.co.jk"))
+    print(xl.getDenyDomains("peter@keme.co.uk"))
+    
+    print(xl.getDenyDomains("john@google.com"))
+    print(xl.getDenyDomains("john@john@rita.co.jk"))
+    print(xl.getDenyDomains("jim@hotmail.com"))
+    print(xl.getDenyDomains("keme.co.uk"))
+    print(xl.getDenyDomains("hotmail.com"))
     
     
     

@@ -140,7 +140,7 @@ function doLogin() {
 			},
 			error: function(data, status, error) {
 				console.log("error data", data, status, error);	  
-				$("#message").html("wrong password, try again")
+				$("#message").html("invalid login attempt(wrong password, invalid email), try again")
 				$("#password").val("");
 			},
 			beforeSend: function(xhr, settings) { 

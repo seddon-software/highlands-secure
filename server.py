@@ -104,7 +104,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
             for entry in self.headers._headers:
                 if entry[0] == "Authorization": 
                     email, password1 = entry[1].split("+")
-
+                    # check for invalid emails and invalid email domains
+                    if xl.getDenyDomains(email):
+                        return email, None
+                    
                     # passwords are stored as SHA1 hashes in the database                    
                     password1hash = hashPassword(password1)
                     password2hash = db.getPassword(email)
