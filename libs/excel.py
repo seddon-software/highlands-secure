@@ -79,12 +79,15 @@ class Excel:
         except:
             return False
         domain = email.split('@')[1]
-        table = pd.read_excel(excelFile, 'deny')
-        table = table[['DENY']]
-        table = table[table.DENY.notnull()]
-        
-        for _, row in table.iterrows():
-            if row['DENY'] == domain: return True
+        try:
+            table = pd.read_excel(excelFile, 'deny')
+            table = table[['DENY']]
+            table = table[table.DENY.notnull()]
+            for _, row in table.iterrows():
+                if row['DENY'] == domain: return True
+        except:
+            # no deny table present
+            return False        
         return False
                
     def __init__(self):
