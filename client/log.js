@@ -10,7 +10,7 @@
 
 
 function displayLog() {
-	let a = getAjaxData3("/log");
+	let a = getAjaxData3(`/log?${document.uuid}`);
 	$.when(a).done(function(logFile) {
 		var lines = logFile.split("\n");
 		var result = "";

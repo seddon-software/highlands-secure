@@ -18,12 +18,12 @@ var scatterFrequencies;
 var scatterData;
 
 function displayScatterChart() {
-	getAjaxData("/scatter-data", setScatterData);
+	getAjaxData(`/scatter-data?${document.uuid}`, setScatterData);
 }
 
 function setScatterData(data) {
 	scatterData = data;
-	getAjaxData("/emails-and-clients", scatterChartCallback);
+	getAjaxData(`/emails-and-clients?${document.uuid}`, scatterChartCallback);
 }
 
 function scatterChartCallback(data) {

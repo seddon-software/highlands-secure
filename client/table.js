@@ -12,12 +12,12 @@ var tableData;
 
 
 function displayTableData() {
-	getAjaxData("/table-data", setTableData);
+	getAjaxData(`/table-data?${document.uuid}`, setTableData);
 }
 
 function setTableData(data) {
 	tableData = data;
-	getAjaxData("/emails-and-clients", drawTableCharts);
+	getAjaxData(`/emails-and-clients?${document.uuid}`, drawTableCharts);
 }
 
 function drawTableCharts(data) {

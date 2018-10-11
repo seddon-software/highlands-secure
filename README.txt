@@ -46,10 +46,12 @@ Installing a new A2 Server:
 	sudo apt-get install vsftpd
 	sudo systemctl start vsftpd
 
-4. Routing commands to use default ports for http and https:
+4. Routing commands to use default ports for https:
 	sudo iptables -A PREROUTING -t nat -i venet0 -p tcp --dport 443 -j REDIRECT --to-port 9097
-	sudo iptables -A PREROUTING -t nat -i venet0 -p tcp --dport 80 -j REDIRECT --to-port 9096
 
+	sudo iptables -t nat --line-numbers -L		# list routings
+	sudo iptables -t nat -D PREROUTING 3		# remove routing number 3
+	
 5. To install git:
 	sudo apt-get install git-core
 	git clone https://github.com/seddon-software/highlands-secure.git

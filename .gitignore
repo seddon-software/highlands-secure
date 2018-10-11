@@ -5,7 +5,6 @@ nohup.out
 .project
 .pydevproject
 *.Json
-logs/
 certs/
 test*.html
 update_spreadsheet.py

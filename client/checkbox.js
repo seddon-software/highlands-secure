@@ -26,12 +26,12 @@
 var checkboxData;
 
 function displayCheckboxData() {
-	getAjaxData("/checkbox-data", setCheckboxData);
+	getAjaxData(`/checkbox-data?${document.uuid}`, setCheckboxData);
 }
 
 function setCheckboxData(data) {
 	checkboxData = data;
-	getAjaxData("/emails-and-clients", drawCheckboxCharts);
+	getAjaxData(`/emails-and-clients?${document.uuid}`, drawCheckboxCharts);
 }
 
 function drawCheckboxCharts(data) {

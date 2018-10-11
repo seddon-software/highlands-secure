@@ -17,6 +17,7 @@ import string
 from email.mime.text import MIMEText
 import http.server
 import urllib.parse, json
+import uuid
 
 # my libraries
 sys.path.append("libs")
@@ -30,6 +31,7 @@ from table import Table
 from database import Database
 
 
+UUID = str(uuid.uuid4())
 checkbox = Checkbox()
 scatter = Scatter()
 radio = Radio()
@@ -135,6 +137,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         parsedUrl = urllib.parse.urlparse(self.path) # returns a 6-tuple
         fileName = parsedUrl[2]
         queryString = parsedUrl[4]
+        managerMode = queryString == UUID       # charts are only available if query string contains UUID
         fileName = fileName[1:]  # remove leading '/'
 
         # make login.html the default pages
@@ -142,136 +145,150 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if fileName == "login.html": log("website accessed")
         data = urllib.parse.parse_qs(queryString)
 
-        if(fileName == "favicon.ico"):
-            sendHeaders()
-            return
-        elif(fileName == "questions"):
-            sendHeaders()
-            jsonString = json.dumps(xl.getQuestions())
-            jsonAsBytes = jsonString.encode("UTF-8")
-            self.wfile.write(jsonAsBytes)
-        elif(fileName == "options"):
-            sendHeaders()
-            jsonString = json.dumps(xl.getOptions())
-            jsonAsBytes = jsonString.encode("UTF-8")
-            self.wfile.write(jsonAsBytes)
-        elif(fileName == "emails-and-clients"):
-            sendHeaders()
-            jsonString = json.dumps(sql.getEmailsAndClients())
-            jsonAsBytes = jsonString.encode("UTF-8")
-            self.wfile.write(jsonAsBytes)
-        elif(fileName == "chart-data"):
-            sendHeaders()
-            jsonString = json.dumps(chart.getChartData())
-            jsonAsBytes = jsonString.encode("UTF-8")
-            self.wfile.write(jsonAsBytes)
-        elif(fileName == "table-data"):
-            sendHeaders()
-            jsonString = json.dumps(table.getTableData())
-            jsonAsBytes = jsonString.encode("UTF-8")
-            self.wfile.write(jsonAsBytes)
-        elif(fileName == "checkbox-data"):
-            sendHeaders()
-            jsonString = json.dumps(checkbox.getCheckboxData())
-            jsonAsBytes = jsonString.encode("UTF-8")
-            self.wfile.write(jsonAsBytes)
-        elif(fileName == "scatter-data"):
-            sendHeaders()
-            jsonString = json.dumps(scatter.getScatterChartData())
-            jsonAsBytes = jsonString.encode("UTF-8")
-            self.wfile.write(jsonAsBytes)
-        elif(fileName == "piechart-data"):
-            sendHeaders()   
-            jsonString = json.dumps(radio.getPieChartData())
-            jsonAsBytes = jsonString.encode("UTF-8")
-            self.wfile.write(jsonAsBytes)
-        elif(fileName == "piechart-questions-options"):
-            sendHeaders()
-            jsonString = json.dumps(sql.getPieChartQuestionsAndOptions())
-            jsonAsBytes = jsonString.encode("UTF-8")
-            self.wfile.write(jsonAsBytes)
-        elif(fileName == "change-password"):
-            oldPassword1hash = db.getPassword(data['email'][0])
-            oldPassword2 = data['oldPassword'][0]
-            oldPassword2hash = hashPassword(oldPassword2)
-
-            if oldPassword1hash == oldPassword2hash:
+        try:
+            if(fileName == "favicon.ico"):
                 sendHeaders()
-                db.createUser(data['email'][0], data['newPassword'][0], "")
-                self.wfile.write('["password changed"]'.encode())
-                log("password updated for {}".format(data['email'][0]))
-            else:
-                sendHeaders(401)
-                self.wfile.write('["incorrect password"]'.encode())
-                log("password update failed for {}".format(data['email'][0]))
-        elif(fileName == "start-registration"):
-            sendHeaders()
-            code = generateCode()
-            sendCodeInEmail(data['email'][0], code)
-            db.createUser(data['email'][0], "", code)
-            self.wfile.write('["registration code sent"]'.encode())
-            log("registration code {} sent to {}".format(code, data['email'][0]))
-        elif(fileName == "complete-registration"):
-            code1 = db.getCode(data['email'][0])
-            code2 = data['code'][0]
-            if code1 == code2:
+                return
+            elif(fileName == "questions"):
                 sendHeaders()
-                db.createUser(data['email'][0], data['password'][0], data['code'][0])
-                self.wfile.write('["registration succeeded"]'.encode())
-                log("{} is now registered".format(data['email'][0]))
-            else:
-                sendHeaders(401)
-                self.wfile.write('["registration failed"]'.encode())
-                log("{} failed to register".format(data['email'][0]))
-        elif(fileName == "authentication"):
-            theEmail, success = authenticate()
-            if success:
-                fileName = "client.html"
+                jsonString = json.dumps(xl.getQuestions())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "options"):
                 sendHeaders()
-                # reply with <email : manager-type ; html>
-                self.wfile.write(theEmail.encode())
-                self.wfile.write(":".encode())
-                managerType = xl.getManagerType(theEmail)
-                self.wfile.write(managerType.encode())
-                self.wfile.write(";".encode())
-                f = open(fileName, "r", encoding="UTF-8")
-                data = f.read()
-                self.wfile.write(data.encode())
-                log("{} login succeeded".format(theEmail))                
-            else:
-                sendHeaders(401)
-                self.wfile.write('["login failed"]'.encode())
-                log("{} failed to login".format(theEmail))                
-        else:
-            def isInvalidRequest():
-                # check for automatic testing
-                if fileName == "client.html": 
-                    return not g.get("auto")
-                elif(extension == "html" or extension == "js" or extension == "css"):
-                    return False
-                elif(fileName == "log"):
-                    return False
+                jsonString = json.dumps(xl.getOptions())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "emails-and-clients"):
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(sql.getEmailsAndClients())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "chart-data"):
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(chart.getChartData())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "table-data"):
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(table.getTableData())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "checkbox-data"):
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(checkbox.getCheckboxData())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "scatter-data"):
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(scatter.getScatterChartData())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "piechart-data"):
+                if not managerMode: raise Exception()
+                sendHeaders()   
+                jsonString = json.dumps(radio.getPieChartData())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "piechart-questions-options"):
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(sql.getPieChartQuestionsAndOptions())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "change-password"):
+                oldPassword1hash = db.getPassword(data['email'][0])
+                oldPassword2 = data['oldPassword'][0]
+                oldPassword2hash = hashPassword(oldPassword2)
+    
+                if oldPassword1hash == oldPassword2hash:
+                    sendHeaders()
+                    db.createUser(data['email'][0], data['newPassword'][0], "")
+                    self.wfile.write('["password changed"]'.encode())
+                    log("password updated for {}".format(data['email'][0]))
                 else:
-                    return True
-                
-            extension = fileName.split(".")[-1]        
-            if(extension == "png" or extension == "jpg" or extension == "gif" ):
+                    sendHeaders(401)
+                    self.wfile.write('["incorrect password"]'.encode())
+                    log("password update failed for {}".format(data['email'][0]))
+            elif(fileName == "start-registration"):
                 sendHeaders()
-                f = open(fileName, "rb")
-                data = f.read()
-                self.wfile.write(data)
-            elif(isInvalidRequest()):
-                sendHeaders(404) 
-            else:
-                try:
-                    if fileName == "log": 
-                        fileName = LOG_FILENAME
+                code = generateCode()
+                sendCodeInEmail(data['email'][0], code)
+                db.createUser(data['email'][0], "", code)
+                self.wfile.write('["registration code sent"]'.encode())
+                log("registration code {} sent to {}".format(code, data['email'][0]))
+            elif(fileName == "complete-registration"):
+                code1 = db.getCode(data['email'][0])
+                code2 = data['code'][0]
+                if code1 == code2:
+                    sendHeaders()
+                    db.createUser(data['email'][0], data['password'][0], data['code'][0])
+                    self.wfile.write('["registration succeeded"]'.encode())
+                    log("{} is now registered".format(data['email'][0]))
+                else:
+                    sendHeaders(401)
+                    self.wfile.write('["registration failed"]'.encode())
+                    log("{} failed to register".format(data['email'][0]))
+            elif(fileName == "authentication"):
+                theEmail, success = authenticate()
+                if success:
+                    fileName = "client.html"
+                    self.send_response(200)
+                    self.send_header("Content-type", "application/json")
+                    self.end_headers()
+                    managerType = xl.getManagerType(theEmail)
                     f = open(fileName, "r", encoding="UTF-8")
                     data = f.read()
+                    reply = {}
+                    reply["uuid"] = UUID
+                    reply["email"] = theEmail
+                    reply["manager-type"] = managerType
+                    reply["source"] = data
+                    reply = json.dumps(reply)
+                    self.wfile.write(str(reply).encode())
+                    log("{} login succeeded".format(theEmail))                
+                else:
+                    sendHeaders(401)
+                    self.wfile.write('["login failed"]'.encode())
+                    log("{} failed to login".format(theEmail))                
+            else:
+                def isInvalidRequest():
+                    # check for automatic testing
+                    if fileName == "client.html": 
+                        return not g.get("auto")
+                    elif(extension == "html" or extension == "js" or extension == "css"):
+                        return False
+                    elif(fileName == "log"):
+                        return False
+                    else:
+                        return True
+                    
+                extension = fileName.split(".")[-1]        
+                if(extension == "png" or extension == "jpg" or extension == "gif" ):
                     sendHeaders()
-                    self.wfile.write(data.encode())
-                except:
-                    sendHeaders(404)
+                    f = open(fileName, "rb")
+                    data = f.read()
+                    self.wfile.write(data)
+                elif(isInvalidRequest()):
+                    sendHeaders(404) 
+                else:
+                    try:
+                        if fileName == "log": 
+                            if not managerMode: raise Exception()
+                            fileName = LOG_FILENAME
+                        f = open(fileName, "r", encoding="UTF-8")
+                        data = f.read()
+                        sendHeaders()
+                        self.wfile.write(data.encode())
+                    except:
+                        sendHeaders(404)
+        except:
+            sendHeaders(403)    
 
 import server_database as sql
 my_logger = setupLogging()

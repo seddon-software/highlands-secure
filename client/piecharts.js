@@ -24,8 +24,8 @@ function displayPieCharts() {
 	positionCopyright();
 	pieChartData = undefined;
 	pieChartQuestionsAndOptions = undefined;
-	getAjaxData('/piechart-data', getPieChartData);
-	getAjaxData('/piechart-questions-options', getPieChartQuestionsAndOptions);
+	getAjaxData(`/piechart-data?${document.uuid}`, getPieChartData);
+	getAjaxData(`/piechart-questions-options?${document.uuid}`, getPieChartQuestionsAndOptions);
 }
 
 function getPieChartData(data) {
@@ -48,7 +48,7 @@ function cleanupSelectText(text) {
 }
 
 function drawPieChart() {
-	getAjaxData("/emails-and-clients", pieChartCallback);
+	getAjaxData(`/emails-and-clients?${document.uuid}`, pieChartCallback);
 }
 
 function pieChartCallback(data) {
