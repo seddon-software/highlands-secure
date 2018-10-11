@@ -20,8 +20,8 @@ g = MyGlobals()
 
 class Database:
     def __init__(self):
-        self.setExcelData()
-        
+        pass
+    
     def connect(self):
         connection = pymysql.connect(host='localhost',
                                      user=g.get("manager"),
@@ -137,9 +137,6 @@ class Database:
             connection.close()
 
     def getExcelData(self):
-        return self.excelData
-    
-    def setExcelData(self):
         connection = self.connect()
         try:
             with connection.cursor() as cursor:
@@ -194,10 +191,7 @@ class Database:
             return re.sub(pattern, replacement, s)
             excelData = convertTimestamps(excelData)
             return excelData
-#         s = '[1, "83c5eb88-ccb2-48e6-b812-7fecb11686b6", Timestamp("2018-09-29 17:34:14"), "chris@def.com"'
-#         t = convertTimestamps(s)
-#        print(t)
-        self.excelData = convertTimestamps(excelData)
+        return convertTimestamps(excelData)
             
 if __name__ == "__main__": 
     import json, re
