@@ -104,17 +104,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
             for entry in self.headers._headers:
                 if entry[0] == "Authorization": 
                     email, password1 = entry[1].split("+")
-                    # check for invalid emails and invalid email domains
-                    if xl.getDenyDomains(email):
-                        return email, None
-                    
+
                     # passwords are stored as SHA1 hashes in the database                    
                     password1hash = hashPassword(password1)
                     password2hash = db.getPassword(email)
                     if password1hash == password2hash: 
                         return email, "valid"
                     else:
-                        return email, None
+                        return email, "invalid password, please try again"
             return None
         
         def sendCodeInEmail(email, code):
@@ -213,26 +210,41 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 jsonAsBytes = jsonString.encode("UTF-8")
                 self.wfile.write(jsonAsBytes)
             elif(fileName == "change-password"):
-                oldPassword1hash = db.getPassword(data['email'][0])
-                oldPassword2 = data['oldPassword'][0]
-                oldPassword2hash = hashPassword(oldPassword2)
-    
-                if oldPassword1hash == oldPassword2hash:
-                    sendHeaders()
-                    db.createUser(data['email'][0], data['newPassword'][0], "")
-                    self.wfile.write('["password changed"]'.encode())
-                    log("password updated for {}".format(data['email'][0]))
-                else:
+                email = data['email'][0]
+                oldPassword1hash = db.getPassword(email)
+                if oldPassword1hash == "":      # not registered
                     sendHeaders(401)
-                    self.wfile.write('["incorrect password"]'.encode())
-                    log("password update failed for {}".format(data['email'][0]))
+                    message = "change password attempted for unregistered email: {}".format(email);
+                    self.wfile.write(message.encode())
+                    log(message)
+                else:
+                    oldPassword2 = data['oldPassword'][0]
+                    oldPassword2hash = hashPassword(oldPassword2)
+        
+                    if oldPassword1hash == oldPassword2hash:
+                        sendHeaders()
+                        db.createUser(data['email'][0], data['newPassword'][0], "")
+                        self.wfile.write('["password changed"]'.encode())
+                        log("password updated for {}".format(data['email'][0]))
+                    else:
+                        sendHeaders(401)
+                        self.wfile.write('["incorrect password"]'.encode())
+                        log("password update failed for {}".format(data['email'][0]))
             elif(fileName == "start-registration"):
-                sendHeaders()
-                code = generateCode()
-                sendCodeInEmail(data['email'][0], code)
-                db.createUser(data['email'][0], "", code)
-                self.wfile.write('["registration code sent"]'.encode())
-                log("registration code {} sent to {}".format(code, data['email'][0]))
+                # check for invalid emails and invalid email domains
+                invalidDomain = "Please use a business email.  You won't be able to register using the email you entered below"
+                email = data['email'][0]
+                if xl.getDenyDomains(email):
+                    sendHeaders(401)
+                    self.wfile.write(invalidDomain.encode())
+                    log("registration rejected for {}".format(email))
+                else:    
+                    sendHeaders()
+                    code = generateCode()
+                    sendCodeInEmail(email, code)
+                    db.createUser(email, "", code)
+                    self.wfile.write('["registration code sent"]'.encode())
+                    log("registration code {} sent to {}".format(code, data['email'][0]))
             elif(fileName == "complete-registration"):
                 code1 = db.getCode(data['email'][0])
                 code2 = data['code'][0]
@@ -246,8 +258,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     self.wfile.write('["registration failed"]'.encode())
                     log("{} failed to register".format(data['email'][0]))
             elif(fileName == "authentication"):
-                theEmail, success = authenticate()
-                if success:
+                theEmail, response = authenticate()
+                if response == "valid":
                     fileName = "client.html"
                     self.send_response(200)
                     self.send_header("Content-type", "application/json")
@@ -328,6 +340,7 @@ print("port:", PORT)
 print("database:", g.get("database"))
 print("table:", g.get("table"))
 print("users table:", g.get("usersTable"))
+print("spreadsheet:", g.get("excelFile"))
 if(g.get("auto")): print("automatic testing")
 print("")
 httpd.serve_forever()

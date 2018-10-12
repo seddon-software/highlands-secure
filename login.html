@@ -14,9 +14,6 @@
 <link rel="stylesheet" href="client/css/jquery-ui.theme.css">
 <script src="client/js/jquery-3.2.1.js"></script>
 <script src="client/js/jquery-ui-1.12.1.js"></script>
-<!--
-  <script src="client/js/jquery_cookie.js"></script>
--->
 <script src="client/utilities.js"></script>
 <script src="client/constants.js"></script>
 <script src="client/client.js"></script>
@@ -114,7 +111,10 @@ function doLogin() {
 			["password", `<input type="password" style="font-size:large" id="password">`]
 	);
 	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="submit">`, "do-login");
-	$("#block").append(submitButton);	
+	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
+	$("#block").append(submitButton);
+	$("#block").append(restartButton);	
+	$("#do-restart").click(function() { location.reload(); });
 	$("#do-login").click(function() {
 		$.ajax({
 			url: "authentication",
@@ -126,12 +126,7 @@ function doLogin() {
 				let email = response["email"];
 				let managerType = response["manager-type"];
 				let html = response["source"];
-/* 				let n = data.indexOf(":");
-				let m = data.indexOf(";");
-				let email = data.slice(0, n);
-				let managerType = data.slice(n+1, m);
-				let html = data.slice(m+1);
- */				document.open();
+				document.open();
 				document.uuid = uuid;
 				document.email = email;
 				document.managerType = managerType;
@@ -160,18 +155,27 @@ function doChangePassword() {
 	let passwordBox1 = $(`<div>new password<input type="password" id="password1"></div>`);
 	let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
 	grid("do-change-password", "#block",
-			["email",            `<input type="text" id="email">`],
-            ["old password",     `<input type="password" id="password0">`],
-            ["new password",     `<input type="password" id="password1">`],
-            ["confirm password", `<input type="password" id="password2">`]
+			["email",            `<input type="text" style="font-size:large" id="email">`],
+            ["old password",     `<input type="password" style="font-size:large" id="password0">`],
+            ["new password",     `<input type="password" style="font-size:large" id="password1">`],
+            ["confirm password", `<input type="password" style="font-size:large" id="password2">`]
 	);
 	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="do-changePassword" value="submit">`);
+	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
 	$("#block").append(submitButton);
+	$("#block").append(restartButton);
+	$("#do-restart").click(function() { location.reload(); });
 	$("#do-changePassword").click(function() {
 		let email = $("#email").val();
 		let password0 = $("#password0").val();
 		let password1 = $("#password1").val();
 		let password2 = $("#password2").val();
+		if(password0.trim() === "" || password1.trim() === "" || password2.trim() === "") {
+			$("#message").html("passwords can't be empty, try again");
+			$("#password1").val("");
+			$("#password2").val("");
+			return;			
+		}
 		if(password1 !== password2) {
 			$("#message").html("passwords different, try again");
 			$("#password1").val("");
@@ -194,7 +198,7 @@ function doChangePassword() {
 	    		}, 3000);
 			},
 			error: function(data, status, error) {
-				$("#message").html("wrong password, try again")
+				$("#message").html(data.responseText);
 				$("#password0").val("");
 				$("#password1").val("");
 				$("#password2").val("");
@@ -217,16 +221,18 @@ function doRegister() {
 				$("#message").html("Please enter a password for your account and the code sent to you by email")
 				let codeBox = div(`enter code<input type="text" id="code">`);
 				grid("do-register2", "#block", 
-	                       ["password",         `<input type="password" id="password1">`],
-	                       ["confirm password", `<input type="password" id="password2">`],
-	                       ["enter code",       `<input type="text" id="code">`]
+	                       ["password",         `<input type="password" style="font-size:large" id="password1">`],
+	                       ["confirm password", `<input type="password" style="font-size:large" id="password2">`],
+	                       ["enter code",       `<input type="text" style="font-size:large" id="code">`]
 				);
 				let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="complete-registration" value="submit">`);
-				$("#block").append(submitButton);	
+				let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
+				$("#block").append(submitButton);
+				$("#block").append(restartButton);	
 				$("#complete-registration").click(completeRegistration);
 			},
 			error: function(data, status, error) {
-				$("#message").html("Registration failed")
+				$("#message").html(data.responseJSON);
 			} 
 		});
 		
@@ -267,11 +273,14 @@ function doRegister() {
 	$("#message").html("Please register for assessmydeal")
 	$("#block").empty();
 	let emailBox = $(`<div>email<input type="text" id="email"></div>`);
-	grid("do-login", "#block", ["email", `<input type="text" id="email">`]);
+	grid("do-login", "#block", ["email", `<input type="text" style="font-size:large" id="email">`]);
 	let passwordBox1 = $(`<div>password<input type="password" id="password1"></div>`);
 	let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
 	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="start-registration" value="submit">`);
-	$("#block").append(submitButton);	
+	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
+	$("#block").append(submitButton);
+	$("#block").append(restartButton);	
+	$("#do-restart").click(function() { location.reload(); });
 	$("#messageBox").html("");	
 	$("#start-registration").click(startRegistration);
 }

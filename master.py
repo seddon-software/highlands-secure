@@ -7,7 +7,7 @@
 ############################################################
 
 import glob
-import os, sys
+import os
 import subprocess
 import time
 
