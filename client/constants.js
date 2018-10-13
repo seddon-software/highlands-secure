@@ -16,6 +16,7 @@ var options;
 var chartData;
 var android = navigator.appVersion.indexOf("Android") !== -1;
 
+// let title = div(`${REGISTERED_USERS_TAB_TEXT}`, "", { color:`${REGISTERED_USERS_TITLE_COLOR}`});
 
 // colors
 var ACTIVE_TAB_BUTTON_BORDER_COLOR = "black";
@@ -37,6 +38,7 @@ var EXCEL_HEADINGS_BACKGROUND_COLOR = "darkgoldenrod";
 var EXCEL_HEADINGS_COLOR = "white";
 var EXCEL_ODD_ROWS_BACKGROUND_COLOR = "wheat";
 var EXCEL_ODD_ROWS_COLOR = "black";
+var EXCEL_TITLE_COLOR = "darkmagenta";
 var GROWTH_HEADING_COLOR = "darkmagenta";
 var GROWTH_QUESTIONS_COLOR = "blue";
 var GROWTH_TITLES_COLOR = "darkmagenta";
@@ -49,6 +51,7 @@ var QUESTION_ANSWER_INVALID_COLOR = "Thistle";
 var QUESTION_ANSWERED_COLOR = 'cornflowerblue';
 var QUESTION_BODY_COLOR = "DarkSeaGreen";
 var QUESTION_HEADER_COLOR = "azure";
+var REGISTERED_USERS_TITLE_COLOR = "darkmagenta";
 var SYSLOG_TITLE_COLOR = "darkmagenta";
 var TAB_BUTTON_COLOR = "black";
 var TAB_BUTTON_BACKGROUND_COLOR = "cornflowerblue";
@@ -89,9 +92,11 @@ var TABLE_CHARTS_TAB_TITLE = "Table Charts";
 
 // Tab Text
 var CHECKBOXES_TAB_TEXT = "Checkboxes:";
+var EXCEL_TAB_TEXT = "Database Record Dump";
 var LOG_TAB_TEXT = "Highlands Assessment Log";
 var OVERVIEW_TAB_TEXT = "Forensics:";
 var RESPONSES_TAB_TEXT = "Frequency of Answer:";
+var REGISTERED_USERS_TAB_TEXT = "Registered Users:";
 var SCATTER_TAB_TEXT = "Growth:";
 var SYSLOG_TAB_TEXT = "System Logs";
 var TABLE_CHARTS_TAB_TEXT = "Table Charts:";

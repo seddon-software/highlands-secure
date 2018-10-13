@@ -10,10 +10,12 @@
 
 
 function displayExcelData() {
+	let title = div(`${EXCEL_TAB_TEXT}`, "", { color:`${EXCEL_TITLE_COLOR}`});
+	$("#excel-title").html(title);
+
 	let a = getAjaxData2(`/excel-data?${document.uuid}`);
 	$.when(a).done(function(excelData) {
 		var jsonObject = $.parseJSON(excelData);
-//		var uri_decoded = decodeURIComponent(jsonObject);
 		displaySpreadsheet(jsonObject);
 	});
 }
