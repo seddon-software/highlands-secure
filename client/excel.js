@@ -19,6 +19,7 @@ function displayExcelData() {
 }
 
 function displaySpreadsheet(data) {
+	$("#excelcharts").empty();
 	d3.select("#excelcharts")
         .selectAll("tr")
 	    .data(data)
@@ -32,17 +33,17 @@ function displaySpreadsheet(data) {
 			.each(function(d, col) {
 				if(row === 0) { 
             		d3.select(this)
-            		    .style("color", "red")
-            			.style("background-color", "blue")
+            		    .style("color", EXCEL_HEADINGS_COLOR)
+            			.style("background-color", EXCEL_HEADINGS_BACKGROUND_COLOR)
             			.style("text-align", "center");
             	} else if(row % 2 === 0) { 
             		d3.select(this)
-            		    .style("color", "black")
-            		    .style("background-color", "cornsilk");
+            		    .style("color", EXCEL_EVEN_ROWS_COLOR)
+            		    .style("background-color", EXCEL_EVEN_ROWS_BACKGROUND_COLOR);
             	} else {
             		d3.select(this)
-        		    .style("color", "black")
-        		    .style("background-color", "wheat");            		
+        		    .style("color", EXCEL_ODD_ROWS_COLOR)
+        		    .style("background-color", EXCEL_ODD_ROWS_BACKGROUND_COLOR);            		
             	}
         		d3.select(this).style("border-style", "outset");
 			})	        
