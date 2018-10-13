@@ -65,7 +65,7 @@ $(window).on('load', function () {
 	setTimeout(function() {
 		positionCopyright();
 	}, 100);
-	let html = div("what do you want to do?", "message");
+	let html = div("What do you want to do?", "message");
 	$("body").append(html);
 	let loginButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="login">`, "login");
 	let changePasswordButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="change password">`, "changePassword");
@@ -79,6 +79,13 @@ $(window).on('load', function () {
 	$("#login").click(doLogin);
 	$("#changePassword").click(doChangePassword);
 	$("#register").click(doRegister);
+	let message = "<br/>Before you can login you must register.  We will send you a code via email for you to use during " +
+	              "the registration. You can change passwords with the facility provided, but if you forget your password " +
+	              "you will need to re-register." +
+	              "<p>Please note that you must use a business email.  We will not accept personal domains such as " + 
+	              "<em>'hotmail.com'</em> or <em>'google.com'</em>.";
+	html = div(message, "", {"clear":"both", "font-size":"x-large"});
+	$("body").append(html);
 });
 
 function grid(name, selector, args) {

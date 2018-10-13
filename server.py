@@ -327,7 +327,7 @@ except OSError as e:
     print("server:", SERVER)
     print("port:", PORT)
     sys.exit()
-    
+
 import ssl
 httpd.socket = ssl.wrap_socket(httpd.socket,
                                      server_side=True,
