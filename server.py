@@ -212,7 +212,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             elif(fileName == "system-logs"):
                 if not managerMode: raise Exception()
                 reply = {}
-                for fileName in ("alternatives.log", "auth.log", "dpkg.log", "fontconfig.log", "mail.log", "vsftpd.log"):
+                for fileName in ("syslog", "alternatives.log", "auth.log", "dpkg.log", "fontconfig.log", "mail.log", "vsftpd.log"):
                     fullName = f"/var/log/{fileName}"
                     try:
                         f = open(fullName, "r", encoding="UTF-8")
