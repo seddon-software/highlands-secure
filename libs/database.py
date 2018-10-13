@@ -12,11 +12,13 @@ import re
 import pandas as pd
 from ast import literal_eval
 import collections
-from myglobals import MyGlobals
 
 if __name__ == "__main__": os.chdir("..")
 
+from myglobals import MyGlobals
+from excel import Excel
 g = MyGlobals()
+xl = Excel()
 
 class Database:
     def __init__(self):
@@ -136,6 +138,24 @@ class Database:
         finally:
             connection.close()
 
+    def getRegisteredUsers(self):
+        connection = self.connect()
+        try:
+            with connection.cursor() as cursor:
+                sql = "SELECT * FROM `{}`".format(g.get("usersTable"))
+                cursor.execute(sql)
+                results = cursor.fetchall()
+        finally:
+            connection.close()
+        users = []
+        for record in results:
+            email = record['email'].lower()
+            managerType = xl.getManagerType(email)
+            users.append([email, managerType])
+        users.sort()
+        users.insert(0, ["USER", "PERMISSIONS"])
+        return users
+        
     def getExcelData(self):
         connection = self.connect()
         try:
@@ -196,9 +216,6 @@ class Database:
 if __name__ == "__main__": 
     import json, re
     db = Database()
-    data = db.getExcelData()
-    json.dumps(data)
-    print(data)
-    
-    
+    records = db.getRegisteredUsers()
+    print(records)
     

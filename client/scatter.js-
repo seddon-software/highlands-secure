@@ -15,18 +15,20 @@
 // https://github.com/c3js/c3/issues/547#issuecomment-56292971
 
 var scatterFrequencies;
+var scatterData;
 
 function displayScatterChart() {
-	let a1 = getAjaxData2(`/emails-and-clients?${document.uuid}`);
-	let a2 = getAjaxData2(`/scatter-data?${document.uuid}`);
-	$.when(a1, a2).done(function(emailsAndClients, scatterData) {
-		scatterChartCallback(emailsAndClients[0], scatterData[0]);
-	});
+	getAjaxData(`/scatter-data?${document.uuid}`, setScatterData);
 }
 
-function scatterChartCallback(emailsAndClients, scatterData) {
-	let emails = emailsAndClients[0];
-	let clients = emailsAndClients[1];
+function setScatterData(data) {
+	scatterData = data;
+	getAjaxData(`/emails-and-clients?${document.uuid}`, scatterChartCallback);
+}
+
+function scatterChartCallback(data) {
+	let emails = data[0];
+	let clients = data[1];
 	let id = "scatter-filter";
 	buildMenu("#scatter-filter-drop-down", id, clients, emails);
 	let heading = div(`${SCATTER_TAB_TEXT}`, "", {'color':`${GROWTH_TITLES_COLOR}`});
@@ -40,7 +42,7 @@ function scatterChartCallback(emailsAndClients, scatterData) {
 
 	// initial draw
 	scatterFrequencies = scatterData.frequencies['all'];
-	drawAllScatterCharts(scatterData);	
+	drawAllScatterCharts();	
 	
 	$("#scatter-filter").on("change", function(e) { 
 		if(e.val === "-") {
@@ -55,11 +57,11 @@ function scatterChartCallback(emailsAndClients, scatterData) {
 	 	    $("#scatterchart").empty();
 		}
 		clearAllScatterCharts();
-		drawAllScatterCharts(scatterData);
+		drawAllScatterCharts();
 	});
 }
 
-function drawAllScatterCharts(scatterData) {
+function drawAllScatterCharts() {
 	function isInteger(n) {
 		let base = Math.floor(n);
 		let diff = Math.abs(base - n);

@@ -16,21 +16,47 @@ var AUTOFILL = 4;
 var OPTIONS = 5;
 var VALUES = 6;
 
+var pieChartData;
 var filteredPieChartData;
+var pieChartQuestionsAndOptions;
 
 function displayPieCharts() {
-	let a1 = getAjaxData2(`/emails-and-clients?${document.uuid}`);
-	let a2 = getAjaxData2(`/piechart-data?${document.uuid}`);
-	let a3 = getAjaxData2(`/piechart-questions-options?${document.uuid}`);
-	$.when(a1, a2, a3).done(function(emailsAndClients, pieChartData, pieChartQuestionsAndOptions) {
-		pieChartCallback(emailsAndClients[0], pieChartData[0], pieChartQuestionsAndOptions[0]);
-	});
+	positionCopyright();
+	pieChartData = undefined;
+	pieChartQuestionsAndOptions = undefined;
+	getAjaxData(`/piechart-data?${document.uuid}`, getPieChartData);
+	getAjaxData(`/piechart-questions-options?${document.uuid}`, getPieChartQuestionsAndOptions);
 }
 
-function pieChartCallback(emailsAndClients, pieChartData, pieChartQuestionsAndOptions) {
+function getPieChartData(data) {
+	pieChartData = data;
+	if (pieChartData && pieChartQuestionsAndOptions) {
+		drawPieChart(data);
+	}
+}
+
+function getPieChartQuestionsAndOptions(data) {
+	pieChartQuestionsAndOptions = data;
+	if (pieChartData && pieChartQuestionsAndOptions) {
+    	drawPieChart(data);
+	}
+}
+
+function cleanupSelectText(text) {
+	text = text.trim();
+	return text.replace(/ /g,"&nbsp;");
+}
+
+function drawPieChart() {
+	getAjaxData(`/emails-and-clients?${document.uuid}`, pieChartCallback);
+}
+
+function pieChartCallback(data) {
+	// uses globals: pieChartData, pieChartQuestionsAndOptions
+	// the server sends data values of -1 when there is no data
 	
-	let emails = emailsAndClients[0];
-	let clients = emailsAndClients[1];
+	let emails = data[0];
+	let clients = data[1];
 	
     function truncate(s, length) {
 	    if (s.length > length) {
@@ -131,5 +157,3 @@ function pieChartCallback(emailsAndClients, pieChartData, pieChartQuestionsAndOp
 		$("#piechart").append(endOfPiecharts);
 	}
 }
-
-

@@ -40,6 +40,7 @@ var EXCEL_ODD_ROWS_COLOR = "black";
 var GROWTH_HEADING_COLOR = "darkmagenta";
 var GROWTH_QUESTIONS_COLOR = "blue";
 var GROWTH_TITLES_COLOR = "darkmagenta";
+var LOG_TITLE_COLOR = "darkmagenta";
 var OVERVIEW_STATUS = "blue";
 var PIECHART_TITLES_COLOR = "blue";
 var PIECHART_BACKGROUND_COLOR = "Gainsboro";
@@ -87,10 +88,11 @@ var TABLE_CHARTS_TAB_TITLE = "Table Charts";
 
 
 // Tab Text
+var CHECKBOXES_TAB_TEXT = "Checkboxes:";
+var LOG_TAB_TEXT = "Highlands Assessment Log";
 var OVERVIEW_TAB_TEXT = "Forensics:";
 var RESPONSES_TAB_TEXT = "Frequency of Answer:";
 var SCATTER_TAB_TEXT = "Growth:";
-var CHECKBOXES_TAB_TEXT = "Checkboxes:";
 var SYSLOG_TAB_TEXT = "System Logs";
 var TABLE_CHARTS_TAB_TEXT = "Table Charts:";
 

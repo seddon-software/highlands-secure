@@ -35,6 +35,7 @@
 <script src="client/log.js"></script>
 <script src="client/overview.js"></script>
 <script src="client/piecharts.js"></script>
+<script src="client/registered_users.js"></script>
 <script src="client/scatter.js"></script>
 <script src="client/table.js"></script>
 <script src="client/utilities.js"></script>
@@ -109,6 +110,7 @@ function loadPage(activeTab, mode) {
 		displayExcelData();
 		displayLog();
 		displaySystemLogs();
+		displayRegisteredUsers();
 		setupRefresh();
 	}
 	if(mode === "init") {
@@ -151,7 +153,6 @@ function setupHeadings() {
 
 	$("#charts-title").text(`${OVERVIEW_TAB_TEXT}`);
 	$("#piecharts-title").text(`${RESPONSES_TAB_TEXT}`);
-	
     $("#assessment-button").text(ASSESSMENT_TAB_TITLE);
     $("#charts-button").text(OVERVIEW_TAB_TITLE);
     $("#piecharts-button").text(RESPONSES_TAB_TITLE);
@@ -181,6 +182,7 @@ function setupTabs(activeTab) {
 		hideTab("#table-tab");
 		hideTab("#excel-tab");
 		hideTab("#log-tab");
+		hideTab("#registered-users-tab");
 		hideTab("#syslog-tab");
 	}
 	$(function() {$("#tabs").tabs(tabObject);});
@@ -202,7 +204,7 @@ function setupTabs(activeTab) {
     <div id="tabs">
 	  <ul>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#questions-tab" class="tabs-button" id="assessment-button">Assessment</a></li>
-	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#overview-tab" class="tabs-button" id="charts-button">Overview</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#overview-tab"  title="q" class="tabs-button" id="charts-button">Overview</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#responses-tab" class="tabs-button" id="piecharts-button">Responses</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#growth-tab" class="tabs-button" id="growth-button">Growth</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#checkbox-tab" class="tabs-button" id="checkbox-button">Checkboxes</a></li>
@@ -210,6 +212,7 @@ function setupTabs(activeTab) {
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#excel-tab" class="tabs-button" id="excel-button">Excel</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#log-tab" class="tabs-button" id="log-button">Log</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#syslog-tab" class="tabs-button" id="syslog-button">System Logs</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#registered-users-tab" class="tabs-button" id="registered-users-button">Registered Users</a></li>
 	  </ul>
       <div id="refresh"></div>
 	  <div id="questions-tab">
@@ -260,6 +263,11 @@ function setupTabs(activeTab) {
 	    <div class="tab-title" id="syslog-title"></div>
 		<div id="syslog-filter-drop-down"></div>
 		<div id="theSyslog"></div>
+	  </div>
+	  <div id="registered-users-tab">
+	    <div class="tab-title" id="syslog-title"></div>
+		<div id="syslog-filter-drop-down"></div>
+		<div id="registerUsersInfo"></div>
 	  </div>
 	</div>    
 	<div id="modal_dialog"></div>

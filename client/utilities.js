@@ -79,12 +79,16 @@ function buildMenu3(selector, id, topics) {
 		menu += `<option value="topic,${topic.trim()}">${cleanupSelectText(topic)}</option>`;
 		});
 	menu += `</optgroup></select></div>`;
-	console.log(menu);
 	let html = $(`${menu}`);
 	html.css({'width':'auto'});
 	$(selector).html(html);
 	$(`#${id}`).select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
 	return menu;
+}
+
+function cleanupSelectText(text) {
+	text = text.trim();
+	return text.replace(/ /g,"&nbsp;");
 }
 
 

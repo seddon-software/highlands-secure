@@ -10,6 +10,9 @@
 
 
 function displayLog() {
+	let title = div(`${LOG_TAB_TEXT}`, "", { color:`${LOG_TITLE_COLOR}`});
+	$("#log-title").html(title);
+
 	let a = getAjaxData3(`/log?${document.uuid}`);
 	$.when(a).done(function(logFile) {
 		var lines = logFile.split("\n");

@@ -88,7 +88,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
             if(extension == "svg"): return "image/svg+xml"
             return "text/html"
             
-        def sendHeaders(code=200):
+        def sendHeaders(**d):
+            code = d["code"] if "code" in d else 200
+            mimeType = d["mimeType"] if "mimeType" in d else getMimeType()
+            self.send_response(code)
+            self.send_header("Content-type", mimeType)
+            self.end_headers()
+
+        def sendHeaders2(code=200):
             if code == 200:
                 self.send_response(code)
                 self.send_header("Content-type", getMimeType())
@@ -203,10 +210,17 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(jsonAsBytes)
             elif(fileName == "excel-data"):
                 if not managerMode: raise Exception()
-                self.send_response(200)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
+#                 self.send_response(200)
+#                 self.send_header("Content-type", "application/json")
+#                 self.end_headers()
+                sendHeaders(mimeType="application/json")
                 jsonString = json.dumps(db.getExcelData())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "registered-users"):
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(db.getRegisteredUsers())
                 jsonAsBytes = jsonString.encode("UTF-8")
                 self.wfile.write(jsonAsBytes)
             elif(fileName == "system-logs"):
@@ -227,7 +241,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 email = data['email'][0]
                 oldPassword1hash = db.getPassword(email)
                 if oldPassword1hash == "":      # not registered
-                    sendHeaders(401)
+                    sendHeaders(code=401)
                     message = "change password attempted for unregistered email: {}".format(email);
                     self.wfile.write(message.encode())
                     log(message)
@@ -249,7 +263,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 invalidDomain = "Please use a business email.  You won't be able to register using the email you entered below"
                 email = data['email'][0]
                 if xl.getDenyDomains(email):
-                    sendHeaders(401)
+                    sendHeaders(code=401)
                     self.wfile.write(invalidDomain.encode())
                     log("registration rejected for {}".format(email))
                 else:    
@@ -268,16 +282,17 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     self.wfile.write('["registration succeeded"]'.encode())
                     log("{} is now registered".format(data['email'][0]))
                 else:
-                    sendHeaders(401)
+                    sendHeaders(code=401)
                     self.wfile.write('["registration failed"]'.encode())
                     log("{} failed to register".format(data['email'][0]))
             elif(fileName == "authentication"):
                 theEmail, response = authenticate()
                 if response == "valid":
                     fileName = "client.html"
-                    self.send_response(200)
-                    self.send_header("Content-type", "application/json")
-                    self.end_headers()
+#                     self.send_response(200)
+#                     self.send_header("Content-type", "application/json")
+#                     self.end_headers()
+                    sendHeaders(mimeType="application/json")
                     managerType = xl.getManagerType(theEmail)
                     f = open(fileName, "r", encoding="UTF-8")
                     data = f.read()
@@ -312,7 +327,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     data = f.read()
                     self.wfile.write(data)
                 elif(isInvalidRequest()):
-                    sendHeaders(404) 
+                    sendHeaders(code=404) 
                 else:
                     try:
                         if fileName == "log": 
@@ -323,9 +338,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
                         sendHeaders()
                         self.wfile.write(data.encode())
                     except:
-                        sendHeaders(404)
+                        sendHeaders(code=404)
         except:
-            sendHeaders(403)    
+            sendHeaders(code=403)    
 
 import server_database as sql
 my_logger = setupLogging()

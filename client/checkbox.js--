@@ -23,15 +23,10 @@
  *  	$("#checkbox-filter").on("change", function(e) { ...
  */
 
-//var checkboxData;
-//getAjaxData(`/checkbox-data?${document.uuid}`, setCheckboxData);
+var checkboxData;
 
 function displayCheckboxData() {
-	let a1 = getAjaxData2(`/emails-and-clients?${document.uuid}`);
-	let a2 = getAjaxData2(`/checkbox-data?${document.uuid}`);
-	$.when(a1, a2).done(function(emailsAndClients, checkboxData) {
-		drawCheckboxCharts(emailsAndClients[0], checkboxData[0]);
-	});
+	getAjaxData(`/checkbox-data?${document.uuid}`, setCheckboxData);
 }
 
 function setCheckboxData(data) {
@@ -39,12 +34,9 @@ function setCheckboxData(data) {
 	getAjaxData(`/emails-and-clients?${document.uuid}`, drawCheckboxCharts);
 }
 
-//$.when(a1, a2).done(function(emailsAndClients, checkboxData) {
-
-//function drawCheckboxCharts(data) {
-function drawCheckboxCharts(emailsAndClients, checkboxData) {
-	let emails = emailsAndClients[0];
-	let clients = emailsAndClients[1];
+function drawCheckboxCharts(data) {
+	let emails = data[0];
+	let clients = data[1];
 	let id = "checkbox-filter";
 	buildMenu("#checkbox-filter-drop-down", id, clients, emails);
 	let title = div(`${CHECKBOXES_TAB_TEXT}`, "", { color:`${CHECKBOX_TITLE_COLOR}`});
@@ -61,7 +53,7 @@ function drawCheckboxCharts(emailsAndClients, checkboxData) {
 			let html = div("", `checkbox-figure-${i}`);
 			$("#checkboxcharts").append(html);
 			
-			drawCheckboxChart(`#checkbox-figure-${i}`, checkboxData, clientOrEmail, i);
+			drawCheckboxChart(`#checkbox-figure-${i}`, clientOrEmail, i);
 		}
 	}
 	// initial draw
@@ -80,7 +72,7 @@ function drawCheckboxCharts(emailsAndClients, checkboxData) {
 
 }
 
-function drawCheckboxChart(selector, checkboxData, clientOrEmail, i) {
+function drawCheckboxChart(selector, clientOrEmail, i) {
 	let o = {
 		bindto: selector,
 		padding: {

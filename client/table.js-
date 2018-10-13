@@ -8,20 +8,21 @@
 ############################################################
 */
 
-//var tableData;
+var tableData;
 
 
 function displayTableData() {
-	let a1 = getAjaxData2(`/emails-and-clients?${document.uuid}`);
-	let a2 = getAjaxData2(`/table-data?${document.uuid}`);
-	$.when(a1, a2).done(function(emailsAndClients, tableData) {
-		drawTableCharts(emailsAndClients[0], tableData[0]);
-	});
+	getAjaxData(`/table-data?${document.uuid}`, setTableData);
 }
 
-function drawTableCharts(emailsAndClients, tableData) {
-	let emails = emailsAndClients[0];
-	let clients = emailsAndClients[1];
+function setTableData(data) {
+	tableData = data;
+	getAjaxData(`/emails-and-clients?${document.uuid}`, drawTableCharts);
+}
+
+function drawTableCharts(data) {
+	let emails = data[0];
+	let clients = data[1];
 	let id = "table-filter";
 	buildMenu("#table-filter-drop-down", id, clients, emails);
 	let title = div(`${TABLE_CHARTS_TAB_TEXT}`, "", { color:`${TABLE_CHARTS_TITLE_COLOR}`});
@@ -56,32 +57,33 @@ function drawTableCharts(emailsAndClients, tableData) {
 			}
 	}
 	
-	function drawAllTableCharts(tableData, clientOrEmail) {
+	function drawAllTableCharts(clientOrEmail) {
 	 	$("#tablecharts").empty();
 		for(let key in tableData) {
 			let question = div(`<p>${key}.${tableData[key]['question']}<br/>`, "", {"color":`${TABLE_CHARTS_QUESTIONS_COLOR}`});
+//			$("#tablecharts").append(`<p>ZZZ${key}.${tableData[key]['question']}<br/>`, "", {"color":`${TABLE_CHARTS_QUESTIONS_COLOR}`});			
 			$("#tablecharts").append(question)
-			createTabs(tableData, "#tablecharts", key);
+			createTabs("#tablecharts", key);
 			attachPieChart(key, clientOrEmail);
 		}
 	}
 	// initial draw
-	drawAllTableCharts(tableData, 'all');
+	drawAllTableCharts('all');
 
 	$("#table-filter").on("change", function(e) { 
 		if(e.val === "-") {
-			drawAllTableCharts(tableData, 'all');
+			drawAllTableCharts('all');
 		} else {
 			let parts = e.val.split(',');
 			let group = parts[0];
 			let clientOrEmail = parts[1];
-			drawAllTableCharts(tableData, clientOrEmail);
+			drawAllTableCharts(clientOrEmail);
 		}
 	});
 
 }
 
-function createTabs(tableData, selector, n) {
+function createTabs(selector, n) {
 	let tabs = div("", `table-tabs-${n}`);
 	$(selector).append(tabs);
 	let tabObject = {};
