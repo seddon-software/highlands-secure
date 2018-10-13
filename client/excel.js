@@ -12,9 +12,9 @@
 function displayExcelData() {
 	let a = getAjaxData2(`/excel-data?${document.uuid}`);
 	$.when(a).done(function(excelData) {
-		var jsonObj = $.parseJSON(excelData);
-		var uri_dec = decodeURIComponent(jsonObj);
-		displaySpreadsheet(jsonObj);
+		var jsonObject = $.parseJSON(excelData);
+//		var uri_decoded = decodeURIComponent(jsonObject);
+		displaySpreadsheet(jsonObject);
 	});
 }
 

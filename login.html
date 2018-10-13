@@ -79,12 +79,13 @@ $(window).on('load', function () {
 	$("#login").click(doLogin);
 	$("#changePassword").click(doChangePassword);
 	$("#register").click(doRegister);
-	let message = "<br/>Before you can login you must register.  We will send you a code via email for you to use during " +
-	              "the registration. You can change passwords with the facility provided, but if you forget your password " +
+	let message = "<br/><br/><br/>Before you can login you must register.  We will send you a code via email for you to use during " +
+	              "the registration. " + 
+	              "<p>You can change passwords with the facility provided, but if you forget your password " +
 	              "you will need to re-register." +
 	              "<p>Please note that you must use a business email.  We will not accept personal domains such as " + 
 	              "<em>'hotmail.com'</em> or <em>'google.com'</em>.";
-	html = div(message, "", {"clear":"both", "font-size":"x-large"});
+	html = div(message, "", {"clear":"both", "font-size":"large"});
 	$("body").append(html);
 });
 

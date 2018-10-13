@@ -70,4 +70,21 @@ function buildMenu2(data, id, clients, emails) {
 	return menu;
 }
 
+function buildMenu3(selector, id, topics) {
+	let menu = `
+		<div><label>Filter:</label>
+		<select id=${id}>
+		<optgroup label="by&nbsp;log file">`;
+	topics.forEach(function(topic) {
+		menu += `<option value="topic,${topic.trim()}">${cleanupSelectText(topic)}</option>`;
+		});
+	menu += `</optgroup></select></div>`;
+	console.log(menu);
+	let html = $(`${menu}`);
+	html.css({'width':'auto'});
+	$(selector).html(html);
+	$(`#${id}`).select2({theme: "classic", dropdownAutoWidth : 'true', width: 'auto'});
+	return menu;
+}
+
 

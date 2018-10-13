@@ -209,6 +209,20 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 jsonString = json.dumps(db.getExcelData())
                 jsonAsBytes = jsonString.encode("UTF-8")
                 self.wfile.write(jsonAsBytes)
+            elif(fileName == "system-logs"):
+                if not managerMode: raise Exception()
+                reply = {}
+                for fileName in ("alternatives.log", "auth.log", "dpkg.log", "fontconfig.log", "mail.log", "vsftpd.log"):
+                    fullName = f"/var/log/{fileName}"
+                    try:
+                        f = open(fullName, "r", encoding="UTF-8")
+                        data = f.read()
+                    except:
+                        data = f"{fileName}: not available"
+                    reply[fileName] = data
+                sendHeaders()
+                reply = json.dumps(reply)
+                self.wfile.write(str(reply).encode())
             elif(fileName == "change-password"):
                 email = data['email'][0]
                 oldPassword1hash = db.getPassword(email)

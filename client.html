@@ -108,6 +108,7 @@ function loadPage(activeTab, mode) {
 		displayTableData();
 		displayExcelData();
 		displayLog();
+		displaySystemLogs();
 		setupRefresh();
 	}
 	if(mode === "init") {
@@ -169,7 +170,7 @@ function setupTabs(activeTab) {
 		hideTab("#questions-tab");		
 	} 
 	if(document.managerType==="both") {
-		tabObject["active"] = activeTab;
+		tabObject["active"] = 8; //activeTab;
 	} 
 	if(document.managerType==="assessment") {
 		tabObject["active"] = 0;
@@ -180,6 +181,7 @@ function setupTabs(activeTab) {
 		hideTab("#table-tab");
 		hideTab("#excel-tab");
 		hideTab("#log-tab");
+		hideTab("#syslog-tab");
 	}
 	$(function() {$("#tabs").tabs(tabObject);});
 	$("#tabs").tabs({
@@ -207,6 +209,7 @@ function setupTabs(activeTab) {
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#table-tab" class="tabs-button" id="table-button">Table Charts</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#excel-tab" class="tabs-button" id="excel-button">Excel</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#log-tab" class="tabs-button" id="log-button">Log</a></li>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#syslog-tab" class="tabs-button" id="syslog-button">System Logs</a></li>
 	  </ul>
       <div id="refresh"></div>
 	  <div id="questions-tab">
@@ -252,6 +255,11 @@ function setupTabs(activeTab) {
 	    <div class="tab-title" id="log-title"></div>
 		<div id="log-filter-drop-down"></div>
 		<div id="theLog"></div>
+	  </div>
+	  <div id="syslog-tab">
+	    <div class="tab-title" id="syslog-title"></div>
+		<div id="syslog-filter-drop-down"></div>
+		<div id="theSyslog"></div>
 	  </div>
 	</div>    
 	<div id="modal_dialog"></div>

@@ -48,6 +48,7 @@ var QUESTION_ANSWER_INVALID_COLOR = "Thistle";
 var QUESTION_ANSWERED_COLOR = 'cornflowerblue';
 var QUESTION_BODY_COLOR = "DarkSeaGreen";
 var QUESTION_HEADER_COLOR = "azure";
+var SYSLOG_TITLE_COLOR = "darkmagenta";
 var TAB_BUTTON_COLOR = "black";
 var TAB_BUTTON_BACKGROUND_COLOR = "cornflowerblue";
 var TAB_HEADING_BACKGROUND_COLOR = "lightgray";
@@ -90,6 +91,7 @@ var OVERVIEW_TAB_TEXT = "Forensics:";
 var RESPONSES_TAB_TEXT = "Frequency of Answer:";
 var SCATTER_TAB_TEXT = "Growth:";
 var CHECKBOXES_TAB_TEXT = "Checkboxes:";
+var SYSLOG_TAB_TEXT = "System Logs";
 var TABLE_CHARTS_TAB_TEXT = "Table Charts:";
 
 //miscellaneous
