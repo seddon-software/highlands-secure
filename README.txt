@@ -42,6 +42,9 @@ Installing a new A2 Server:
 2. To add user to the sudo group:
 	sudo usermod -aG sudo
 
+2a. To add usr to adm group:
+	sudo usermod -a -G adm userName
+
 3. To install and start ftp server:
 	sudo apt-get install vsftpd
 	sudo systemctl start vsftpd
