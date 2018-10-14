@@ -19,6 +19,7 @@ if __name__ == "__main__":
         auto = ""
         
     print(auto)
+    os.system("rm nohup.out")
 
     cmdk = "kill $(ps -ef | grep '[p]ython server.py' | awk '{print $2}') 2>/dev/null"
     os.system(cmdk)
@@ -29,6 +30,7 @@ if __name__ == "__main__":
     cmd = "ps -ef | grep '[pP]ython server.py'"
     os.system("ps -ef | head -1")
     os.system(cmd)
+    os.system("cat nohup.out")
     time.sleep(5)
     print("***** servers started *****")
     
