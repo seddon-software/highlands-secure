@@ -85,8 +85,8 @@ $(window).on('load', function () {
 	              "you will need to re-register." +
 	              "<p>Please note that you must use a business email.  We will not accept personal domains such as " + 
 	              "<em>'hotmail.com'</em> or <em>'google.com'</em>.";
-	html = div(message, "", {"clear":"both", "font-size":"large"});
-	$("body").append(html);
+	html = div(message, "login-message", {"clear":"both", "font-size":"large"});
+	$("#block").append(html);
 });
 
 function grid(name, selector, args) {
@@ -226,6 +226,7 @@ function doRegister() {
 			},
 			success: function(data, status) {
 				$("#start-registration").remove();
+				$("#do-restart").remove();
 				$("#message").html("Please enter a password for your account and the code sent to you by email")
 				let codeBox = div(`enter code<input type="text" id="code">`);
 				grid("do-register2", "#block", 

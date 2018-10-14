@@ -183,7 +183,7 @@ if __name__ == "__main__":
     dropTable(usersTable, manager, managerPassword, database)
     createTable(table, manager, managerPassword, database)
     createUsersTable(usersTable, manager, managerPassword, database)
-    addManagerToUsersTable(usersTable, manager, managerPassword, database)
+    # addManagerToUsersTable(usersTable, manager, managerPassword, database)
     showTables(manager, managerPassword, database)
     showUsers(root, rootPassword, database)
     print("UsersTable")

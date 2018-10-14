@@ -89,6 +89,15 @@ class Excel:
             # no deny table present
             return False        
         return False
+    
+    def getEmailHighlandsAccountDetails(self):
+        table = pd.read_excel(excelFile, 'setup')
+        table = table[['TYPE', 'NAME', 'OPTION']]
+        table = table[table.TYPE == 'emailx']
+        if table.shape[0] == 1:
+            return table[['NAME', 'OPTION']].values[0]
+        else:
+            return ["assess.my.deal.2018", "My-team-is-spurs."]
                
     def __init__(self):
         def validate():
@@ -154,14 +163,15 @@ class Excel:
 
 if __name__ == "__main__":
     xl = Excel()
-    print(xl.getDenyDomains("john@rita.co.jk"))
-    print(xl.getDenyDomains("peter@keme.co.uk"))
-    
-    print(xl.getDenyDomains("john@google.com"))
-    print(xl.getDenyDomains("john@john@rita.co.jk"))
-    print(xl.getDenyDomains("jim@hotmail.com"))
-    print(xl.getDenyDomains("keme.co.uk"))
-    print(xl.getDenyDomains("hotmail.com"))
+    print(xl.getEmailHighlandsAccountDetails())
+#     print(xl.getDenyDomains("john@rita.co.jk"))
+#     print(xl.getDenyDomains("peter@keme.co.uk"))
+#     
+#     print(xl.getDenyDomains("john@google.com"))
+#     print(xl.getDenyDomains("john@john@rita.co.jk"))
+#     print(xl.getDenyDomains("jim@hotmail.com"))
+#     print(xl.getDenyDomains("keme.co.uk"))
+#     print(xl.getDenyDomains("hotmail.com"))
     
     
     

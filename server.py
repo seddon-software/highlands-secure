@@ -95,13 +95,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.send_header("Content-type", mimeType)
             self.end_headers()
 
-        def sendHeaders2(code=200):
-            if code == 200:
-                self.send_response(code)
-                self.send_header("Content-type", getMimeType())
-            else:
-                self.send_response(code)
-            self.end_headers()
+#         def sendHeaders2(code=200):     
+#             if code == 200:
+#                 self.send_response(code)
+#                 self.send_header("Content-type", getMimeType())
+#             else:
+#                 self.send_response(code)
+#             self.end_headers()
 
         def hashPassword(password):
             return hashlib.sha1(password.encode()).hexdigest()
@@ -124,7 +124,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         def sendCodeInEmail(email, code):
             try:
                 server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+                emailServer, emailPassword = xl.getEmailHighlandsAccountDetails()
                 server.login("assess.my.deal.2018", "My-team-is-spurs.")
+#                server.login(emailServer, emailPassword)
                 msg = MIMEText(str(code))
                 msg['Subject'] = 'Highlands AssessMyDeal Registration Code'
                 msg['From'] = 'assess my deal'

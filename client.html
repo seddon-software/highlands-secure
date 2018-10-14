@@ -100,18 +100,20 @@ function loadPage(activeTab, mode) {
 		document.auto = false;	// normal
 	
 	setupHeadings();
-	if(document.managerType === "chart" || document.managerType === "both") {
+	if(document.managerType === "chart" || document.managerType === "admin") {
 		// charts
 		displayCharts();
 		displayPieCharts();
 		displayScatterChart();
 		displayCheckboxData();
 		displayTableData();
+		setupRefresh();
+	}
+	if(document.managerType === "admin") {
 		displayExcelData();
 		displayLog();
 		displaySystemLogs();
 		displayRegisteredUsers();
-		setupRefresh();
 	}
 	if(mode === "init") {
 		// assessments
@@ -169,8 +171,12 @@ function setupTabs(activeTab) {
 	if(document.managerType==="chart") {
 		tabObject["active"] = activeTab;
 		hideTab("#questions-tab");		
+		hideTab("#excel-tab");
+		hideTab("#log-tab");
+		hideTab("#registered-users-tab");
+		hideTab("#syslog-tab");
 	} 
-	if(document.managerType==="both") {
+	if(document.managerType==="admin") {
 		tabObject["active"] = activeTab;
 	} 
 	if(document.managerType==="assessment") {
