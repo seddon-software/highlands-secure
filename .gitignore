@@ -12,3 +12,4 @@ __pycache__
 libs/__pycache__
 /.metadata/
 /RemoteSystemsTempFiles/
+sendgrid.env
