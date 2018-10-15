@@ -238,6 +238,7 @@ function doRegister() {
 				let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
 				$("#block").append(submitButton);
 				$("#block").append(restartButton);	
+				$("#do-restart").click(function() { location.reload(); });
 				$("#complete-registration").click(completeRegistration);
 			},
 			error: function(data, status, error) {

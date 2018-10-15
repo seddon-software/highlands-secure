@@ -93,12 +93,21 @@ class Excel:
     def getEmailHighlandsAccountDetails(self):
         table = pd.read_excel(excelFile, 'setup')
         table = table[['TYPE', 'NAME', 'OPTION']]
-        table = table[table.TYPE == 'emailx']
-        if table.shape[0] == 1:
-            return table[['NAME', 'OPTION']].values[0]
+        table = table[(table.TYPE == 'email') | (table.TYPE == 'email-server')]
+        email = {}
+        if table.shape[0] == 2:
+            table = table[['NAME', 'OPTION']].values.tolist()
+            email["smtp-server"] = table[0][0]
+            email["smtp-server-port"] = table[0][1]
+            email["email-account"] = table[1][0]
+            email["email-password"] = table[1][1] 
         else:
-            return ["assess.my.deal.2018", "My-team-is-spurs."]
-               
+            email["smtp-server"] = 'smtp.gmail.com'
+            email["smtp-server-port"] = 465
+            email["email-account"] = "assess.my.deal.2018"
+            email["email-password"] = "My-team-is-spurs."
+        return email
+    
     def __init__(self):
         def validate():
             validated = True
