@@ -123,10 +123,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
         
         def sendCodeInEmail(email, code):
             try:
-#                 server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-#                 server.login("assess.my.deal.2018", "My-team-is-spurs.")
-                server = smtplib.SMTP_SSL('localhost')
-                server.login("chris", "My-team-is-spurs")
+                server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+                server.login("assess.my.deal.2018", "My-team-is-spurs.")
+#                 server = smtplib.SMTP_SSL('localhost')
+#                 server.login("chris", "My-team-is-spurs")
 
 #                email = xl.getEmailHighlandsAccountDetails()
 #                 server = smtplib.SMTP_SSL(email["smtp-server"], email["smtp-server-port"])
