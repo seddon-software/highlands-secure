@@ -123,24 +123,22 @@ class Handler(http.server.BaseHTTPRequestHandler):
         
         def sendCodeInEmail(email, code):
             try:
-                server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                server.login("assess.my.deal.2018", "My-team-is-spurs.")
-#                 server = smtplib.SMTP_SSL('localhost')
-#                 server.login("chris", "My-team-is-spurs")
-
-#                email = xl.getEmailHighlandsAccountDetails()
-#                 server = smtplib.SMTP_SSL(email["smtp-server"], email["smtp-server-port"])
-#                 server.starttls()
-#                 server.login(email["email-account"], email["email-password"])
-                msg = MIMEText(str(code))
-                msg['Subject'] = 'Highlands AssessMyDeal Registration Code'
-                msg['From'] = 'assess my deal'
-                msg['To'] = email 
-                server.send_message(msg)
+                import sendgrid
+                from sendgrid.helpers.mail import Email, Content, Mail
+#                 server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+#                 server.login("assess.my.deal.2018", "My-team-is-spurs.")
+                SENDGRID_API_KEY = xl.getSendgridAPI_KEY()
+                if not SENDGRID_API_KEY: return 500
+                sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
+                from_email = Email("highlands@survey.com")
+                to_email = Email(email)
+                subject = "Highlands Registration Code"
+                content = Content("text/plain", str(code))
+                mail = Mail(from_email, subject, to_email, content)
+                response = sg.client.mail.send.post(request_body=mail.get())
+                return response.status_code
             except:
                 log("send email failed for {}".format(email))
-            finally:
-                server.quit()
                 
         def generateCode():
             return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
@@ -274,12 +272,17 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     self.wfile.write(invalidDomain.encode())
                     log("registration rejected for {}".format(email))
                 else:    
-                    sendHeaders()
                     code = generateCode()
-                    sendCodeInEmail(email, code)
-                    db.createUser(email, "", code)
-                    self.wfile.write('["registration code sent"]'.encode())
-                    log("registration code {} sent to {}".format(code, data['email'][0]))
+                    response = sendCodeInEmail(email, code)
+                    if response == 202:
+                        db.createUser(email, "", code)
+                        sendHeaders()
+                        self.wfile.write('["registration code sent"]'.encode())
+                        log("registration code {} sent to {}".format(code, data['email'][0]))
+                    else:
+                        sendHeaders(code=response)
+                        self.wfile.write('internal server error - please contact Highlands'.encode())
+                        log("internal server error: SENDGRID_API_KEY missing from setup tab on spreadsheet")
             elif(fileName == "complete-registration"):
                 code1 = db.getCode(data['email'][0])
                 code2 = data['code'][0]

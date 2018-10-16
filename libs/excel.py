@@ -90,6 +90,17 @@ class Excel:
             return False        
         return False
     
+    def getSendgridAPI_KEY(self):
+        try:
+            table = pd.read_excel(excelFile, 'setup')
+            table = table[['TYPE', 'NAME']]
+            table = table[table.TYPE.notnull()]
+            for _, row in table.iterrows():
+                if row['TYPE'] == 'SENDGRID_API_KEY': return row['NAME']
+        except:
+            return False        
+        return False
+        
     def __init__(self):
         def validate():
             validated = True
@@ -154,14 +165,7 @@ class Excel:
 
 if __name__ == "__main__":
     xl = Excel()
-    print(xl.getDenyDomains("john@rita.co.jk"))
-    print(xl.getDenyDomains("peter@keme.co.uk"))
-     
-    print(xl.getDenyDomains("john@google.com"))
-    print(xl.getDenyDomains("john@john@rita.co.jk"))
-    print(xl.getDenyDomains("jim@hotmail.com"))
-    print(xl.getDenyDomains("keme.co.uk"))
-    print(xl.getDenyDomains("hotmail.com"))
+    print(xl.getSendgridAPI_KEY())
     
     
     

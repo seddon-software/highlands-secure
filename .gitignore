@@ -7,6 +7,7 @@ nohup.out
 .pydevproject
 *.Json
 certs/
+c/
 test*.html
 update_spreadsheet.py
 __pycache__
