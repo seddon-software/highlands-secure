@@ -1,0 +1,10 @@
+#! /bin/bash
+printf "which server(ss, sss): "
+read server
+printf "file to copy: "
+read fileName
+server=a${server}essmydeal.com
+
+echo scp -P 7822 ${fileName} chris@${server}:/home/chris/h
+scp -P 7822 ${fileName} chris@${server}:/home/chris/h
+

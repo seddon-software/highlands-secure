@@ -242,7 +242,8 @@ function doRegister() {
 				$("#complete-registration").click(completeRegistration);
 			},
 			error: function(data, status, error) {
-				$("#message").html(data.responseJSON);
+//				$("#message").html(data.responseJSON);
+				$("#message").html(data.responseText);
 			} 
 		});
 		
