@@ -7,18 +7,17 @@
 ############################################################
 
 
-# need an admin mode
 import logging.handlers
 import datetime
 import sys
+import smtplib
 import random
 import hashlib
 import string
+from email.mime.text import MIMEText
 import http.server
 import urllib.parse, json
 import uuid
-import sendgrid
-from sendgrid.helpers.mail import Email, Content, Mail
 
 # my libraries
 sys.path.append("libs")
@@ -32,11 +31,7 @@ from table import Table
 from database import Database
 
 
-UUID1 = str(uuid.uuid4())
-UUID2 = str(uuid.uuid4())
-print(UUID1)
-print(UUID2)
-
+UUID = str(uuid.uuid4())
 checkbox = Checkbox()
 scatter = Scatter()
 radio = Radio()
@@ -100,6 +95,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.send_header("Content-type", mimeType)
             self.end_headers()
 
+#         def sendHeaders2(code=200):     
+#             if code == 200:
+#                 self.send_response(code)
+#                 self.send_header("Content-type", getMimeType())
+#             else:
+#                 self.send_response(code)
+#             self.end_headers()
+
         def hashPassword(password):
             return hashlib.sha1(password.encode()).hexdigest()
                     
@@ -120,6 +123,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
         
         def sendCodeInEmail(email, code):
             try:
+                import sendgrid
+                from sendgrid.helpers.mail import Email, Content, Mail
+#                 server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+#                 server.login("assess.my.deal.2018", "My-team-is-spurs.")
                 SENDGRID_API_KEY = xl.getSendgridAPI_KEY()
                 if not SENDGRID_API_KEY: return 500
                 sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
@@ -141,47 +148,88 @@ class Handler(http.server.BaseHTTPRequestHandler):
  
         parsedUrl = urllib.parse.urlparse(self.path) # returns a 6-tuple
         fileName = parsedUrl[2]
-        fileName = fileName[1:]  # remove leading '/'
         queryString = parsedUrl[4]
-        managerMode = queryString == UUID1 or queryString == UUID2       # charts are only available if query string contains UUID1 or UUID2
-        adminMode = queryString == UUID1                                 # admin info only available if query string contains UUID2
+        managerMode = queryString == UUID       # charts are only available if query string contains UUID
+        fileName = fileName[1:]  # remove leading '/'
 
         # make login.html the default pages
         if fileName == "": fileName = "login.html"
         if fileName == "login.html": log("website accessed")
         data = urllib.parse.parse_qs(queryString)
 
-        def writeToClient(method, security="assessment", mimeType=None):
-                if security == "manager":
-                    if not managerMode and not adminMode: raise Exception()
-                if security == "admin":
-                    if not adminMode:  raise Exception()
-                if mimeType:
-                    sendHeaders(mimeType=mimeType)
-                else:
-                    sendHeaders()
-                jsonString = json.dumps(method())
-                jsonAsBytes = jsonString.encode("UTF-8")
-                self.wfile.write(jsonAsBytes)
-            
         try:
             if(fileName == "favicon.ico"):
                 sendHeaders()
                 return
-            elif(fileName == "questions"):          writeToClient(xl.getQuestions)
-            elif(fileName == "options"):            writeToClient(xl.getOptions)
-            elif(fileName == "emails-and-clients"): writeToClient(sql.getEmailsAndClients, security="manager")
-            elif(fileName == "chart-data"):         writeToClient(chart.getChartData, security="manager")
-            elif(fileName == "table-data"):         writeToClient(table.getTableData, security="manager")           
-            elif(fileName == "checkbox-data"):      writeToClient(checkbox.getCheckboxData, security="manager")
-            elif(fileName == "scatter-data"):       writeToClient(scatter.getScatterChartData, security="manager")
-            elif(fileName == "piechart-data"):      writeToClient(radio.getPieChartData, security="manager")
+            elif(fileName == "questions"):
+                sendHeaders()
+                jsonString = json.dumps(xl.getQuestions())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "options"):
+                sendHeaders()
+                jsonString = json.dumps(xl.getOptions())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "emails-and-clients"):
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(sql.getEmailsAndClients())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "chart-data"):
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(chart.getChartData())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "table-data"):
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(table.getTableData())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "checkbox-data"):
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(checkbox.getCheckboxData())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "scatter-data"):
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(scatter.getScatterChartData())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "piechart-data"):
+                if not managerMode: raise Exception()
+                sendHeaders()   
+                jsonString = json.dumps(radio.getPieChartData())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
             elif(fileName == "piechart-questions-options"):
-                                                    writeToClient(sql.getPieChartQuestionsAndOptions, security="manager")
-            elif(fileName == "excel-data"):         writeToClient(db.getExcelData, security="admin", mimeType="application/json")
-            elif(fileName == "registered-users"):   writeToClient(db.getRegisteredUsers, security="admin")
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(sql.getPieChartQuestionsAndOptions())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "excel-data"):
+                if not managerMode: raise Exception()
+#                 self.send_response(200)
+#                 self.send_header("Content-type", "application/json")
+#                 self.end_headers()
+                sendHeaders(mimeType="application/json")
+                jsonString = json.dumps(db.getExcelData())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
+            elif(fileName == "registered-users"):
+                if not managerMode: raise Exception()
+                sendHeaders()
+                jsonString = json.dumps(db.getRegisteredUsers())
+                jsonAsBytes = jsonString.encode("UTF-8")
+                self.wfile.write(jsonAsBytes)
             elif(fileName == "system-logs"):
-                if not adminMode: raise Exception()
+                if not managerMode: raise Exception()
                 reply = {}
                 for fileName in ("syslog", "alternatives.log", "auth.log", "dpkg.log", "fontconfig.log", "mail.log", "vsftpd.log"):
                     fullName = f"/var/log/{fileName}"
@@ -216,30 +264,25 @@ class Handler(http.server.BaseHTTPRequestHandler):
                         self.wfile.write('["incorrect password"]'.encode())
                         log("password update failed for {}".format(data['email'][0]))
             elif(fileName == "start-registration"):
-                def sendRegistrationDetails(code, message, logMessage):
-                    sendHeaders(code=code)
-                    self.wfile.write(message.encode())
-                    log(logMessage)
-
+                # check for invalid emails and invalid email domains
+                invalidDomain = "Please use a business email.  You won't be able to register using the email you entered below"
                 email = data['email'][0]
-                code = generateCode()
-                msgInvalidDomain = "Please use a business email.  You won't be able to register using the email you entered below"  
-                logInvalidDomain = f"registration rejected for {email}"
-                msgRegistrationCodeSent = '["registration code sent"]'
-                logRegistrationCodeSent = f"registration code {code} sent to {email}"
-                msgInternalServerError = 'internal server error - please contact Highlands'
-                logInternalServerError = "internal server error: SENDGRID_API_KEY missing from setup tab on spreadsheet"
-                
-                # check for invalid emails and invalid email domains                
                 if xl.getDenyDomains(email):
-                    sendRegistrationDetails(401, msgInvalidDomain, logInvalidDomain)
+                    sendHeaders(code=401)
+                    self.wfile.write(invalidDomain.encode())
+                    log("registration rejected for {}".format(email))
                 else:    
+                    code = generateCode()
                     response = sendCodeInEmail(email, code)
                     if response == 202:
                         db.createUser(email, "", code)
-                        sendRegistrationDetails(200, msgRegistrationCodeSent, logRegistrationCodeSent)
+                        sendHeaders()
+                        self.wfile.write('["registration code sent"]'.encode())
+                        log("registration code {} sent to {}".format(code, data['email'][0]))
                     else:
-                        sendRegistrationDetails(response, msgInternalServerError, logInternalServerError)
+                        sendHeaders(code=response)
+                        self.wfile.write('internal server error - please contact Highlands'.encode())
+                        log("internal server error: SENDGRID_API_KEY missing from setup tab on spreadsheet")
             elif(fileName == "complete-registration"):
                 code1 = db.getCode(data['email'][0])
                 code2 = data['code'][0]
@@ -256,17 +299,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 theEmail, response = authenticate()
                 if response == "valid":
                     fileName = "client.html"
+#                     self.send_response(200)
+#                     self.send_header("Content-type", "application/json")
+#                     self.end_headers()
                     sendHeaders(mimeType="application/json")
                     managerType = xl.getManagerType(theEmail)
                     f = open(fileName, "r", encoding="UTF-8")
                     data = f.read()
                     reply = {}
-                    if managerType == "admin":
-                        reply["uuid"] = UUID1
-                    elif managerType == "chart":
-                        reply["uuid"] = UUID2
-                    else:
-                        reply["uuid"] = '0'                        
+                    reply["uuid"] = UUID
                     reply["email"] = theEmail
                     reply["manager-type"] = managerType
                     reply["source"] = data

@@ -174,11 +174,9 @@ function setupTabs(activeTab) {
 		hideTab("#log-tab");
 		hideTab("#registered-users-tab");
 		hideTab("#syslog-tab");
-	} 
-	if(document.managerType==="admin") {
+	} else if(document.managerType==="admin") {
 		tabObject["active"] = activeTab;
-	} 
-	if(document.managerType==="assessment") {
+	} else {
 		tabObject["active"] = 0;
 		hideTab("#overview-tab");
 		hideTab("#responses-tab");
