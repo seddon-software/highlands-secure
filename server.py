@@ -34,8 +34,6 @@ from database import Database
 
 UUID1 = str(uuid.uuid4())
 UUID2 = str(uuid.uuid4())
-print(UUID1)
-print(UUID2)
 
 checkbox = Checkbox()
 scatter = Scatter()
@@ -123,9 +121,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 SENDGRID_API_KEY = xl.getSendgridAPI_KEY()
                 if not SENDGRID_API_KEY: return 500
                 sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
-                from_email = Email("highlands@survey.com")
+                from_email = Email("registration@assessmydeal")
                 to_email = Email(email)
-                subject = "Highlands Registration Code"
+                subject = "Assess My Deal Registration Code"
                 content = Content("text/plain", str(code))
                 mail = Mail(from_email, subject, to_email, content)
                 response = sg.client.mail.send.post(request_body=mail.get())

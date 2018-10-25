@@ -58,6 +58,8 @@ input[type="button"] {
 </style>
 
 <script>
+var cookiesAccepted = false;
+var cookiesText = "please accept cookies before proceeding<br/>";
 
 $(window).on('load', function () {
 	setStyles();
@@ -76,10 +78,10 @@ $(window).on('load', function () {
 	$("#login-button").button();
 	$("#block").append(changePasswordButton);
 	$("#block").append(registerButton);
-	$("#login").click(doLogin);
+ 	$("#login").click(doLogin);
 	$("#changePassword").click(doChangePassword);
 	$("#register").click(doRegister);
-	let message = "<br/><br/><br/>Before you can login you must register.  We will send you a code via email for you to use during " +
+ 	let message = "<br/><br/><br/>Before you can login you must register.  We will send you a code via email for you to use during " +
 	              "the registration. " + 
 	              "<p>You can change passwords with the facility provided, but if you forget your password " +
 	              "you will need to re-register." +
@@ -87,6 +89,29 @@ $(window).on('load', function () {
 	              "<em>'hotmail.com'</em> or <em>'google.com'</em>.";
 	html = div(message, "login-message", {"clear":"both", "font-size":"large"});
 	$("#block").append(html);
+	let cookieCSS = { 
+			"color":"red",
+			"background-color":"blue",
+			"bottom":"5vh", 
+			"position":"fixed",
+			"text-align":"center",
+			"font-size":"large",
+			"margin-left":"5vw"
+	};
+	let cookieText = "This website uses cookies to ensure you get the best experience on our website.<br/>" +
+	        "We use cookies to save you repeating responses in the assessment you are about to complete.<br/>" +
+	        "Please click to agree to the use of these cookies";
+	//let cookieDiv = div("", "cookie-div", { "width":"90vw" });
+	let cookieMessage = div(cookieText, "cookie-message", cookieCSS);
+	let cookieButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="I agree to use of cookies">`);
+	//$("#block").append(cookieDiv);
+	$("#block").append(cookieMessage);
+	//$("#cookie-div").append(cookieMessage);
+	$("#cookie-message").addClass("ui-state-default ui-corner-all");
+	$("#cookie-message").click(function() { 
+	    cookiesAccepted = true;
+		$("#cookie-message").remove(); 
+	});
 });
 
 function grid(name, selector, args) {
@@ -111,7 +136,12 @@ function grid(name, selector, args) {
 	}
 }
 
+
 function doLogin() {
+	if(!cookiesAccepted) {
+		$("#message").html(cookiesText);
+		return;
+	}
 	$("#block").empty();
 	$("#message").html("login to assessmydeal<br/>")
 	grid("do-login", "#block", 
@@ -156,6 +186,10 @@ function doLogin() {
 }
 
 function doChangePassword() {
+	if(!cookiesAccepted) {
+		$("#message").html(cookiesText);
+		return;
+	}
 	$("#message").html("change password<br/>")
 	$("#block").empty();
 	let emailBox = $(`<div>email<input type="text" id="email"></div>`);
@@ -216,6 +250,10 @@ function doChangePassword() {
 }
 
 function doRegister() {
+	if(!cookiesAccepted) {
+		$("#message").html(cookiesText);
+		return;
+	}
 	function startRegistration() {
 		let email = $("#email").val();
 		$.ajax({
