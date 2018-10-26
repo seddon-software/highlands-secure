@@ -227,10 +227,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 logRegistrationCodeSent = f"registration code {code} sent to {email}"
                 msgInternalServerError = 'internal server error - please contact Highlands'
                 logInternalServerError = "internal server error: SENDGRID_API_KEY missing from setup tab on spreadsheet"
+                msgDomainNotAllowed = "The domain your are using for your email is not a permitted domain"
+                logDomainNotAllowed = "domain invalid - not on white list"
                 
-                # check for invalid emails and invalid email domains                
-                if xl.getDenyDomains(email):
+                # check for invalid emails and invalid and valid email domains
+                mode = xl.getAllowOrDenyMode()                
+                if mode == 'deny' and xl.getDenyDomains(email):
                     sendRegistrationDetails(401, msgInvalidDomain, logInvalidDomain)
+                elif mode == 'allow' and not xl.getAllowDomains(email):
+                    sendRegistrationDetails(401, msgDomainNotAllowed, logDomainNotAllowed)
                 else:    
                     response = sendCodeInEmail(email, code)
                     if response == 202:

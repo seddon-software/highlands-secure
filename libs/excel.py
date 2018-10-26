@@ -69,15 +69,45 @@ class Excel:
         table = table[['MANAGER','TYPE']]
         table = table[table.MANAGER.notnull()]
         
+        theManager = theManager.strip().lower()
         for _, row in table.iterrows():
-            if row['MANAGER'] == theManager: return row['TYPE']
+            if row['MANAGER'].strip().lower() == theManager: return row['TYPE'].strip().lower()
         return "assessment"
-               
+    
+    def getAllowOrDenyMode(self):
+        table = pd.read_excel(excelFile, 'setup')
+        table = table[['TYPE', 'NAME']]
+        table = table[table.TYPE.notnull()]
+        for _, row in table.iterrows():
+            if row['TYPE'] == 'allow_or_deny':
+                mode = row['NAME'].strip().lower()
+                if mode == 'allow' or mode == 'deny':
+                    return mode
+        return 'deny'
+        
+    def getAllowDomains(self, email):
+        try:
+            if not validate_email(email): return False
+        except:
+            return False
+        pass
+        domain = email.split('@')[1]
+        try:
+            table = pd.read_excel(excelFile, 'allow')
+            table = table[['ALLOW']]
+            table = table[table.ALLOW.notnull()]
+            for _, row in table.iterrows():
+                if domain.endswith(row['ALLOW']): return True
+        except:
+            # no allow table present
+            return False        
+        return False
+        
     def getDenyDomains(self, email):
         try:
             if not validate_email(email): return True
         except:
-            return False
+            return True
         domain = email.split('@')[1]
         try:
             table = pd.read_excel(excelFile, 'deny')
@@ -165,8 +195,9 @@ class Excel:
 
 if __name__ == "__main__":
     xl = Excel()
-    print(xl.getSendgridAPI_KEY())
-    
+    print(xl.getManagerType("  peter.SMith@highlands.com   "))
+    print(xl.getAllowOrDenyMode())
+    print(xl.getAllowDomains("peter.SMith@highlands.ibm.com"))
     
     
     
