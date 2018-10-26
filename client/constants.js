@@ -107,3 +107,21 @@ var COPYRIGHT_MESSAGE = "\u00A9 Highlands Negotiations, 2018, v1.0";
 var SCATTER_X_TITLE = 'Market Growth';
 var SCATTER_Y_TITLE = 'Client Revenue Growth';
 var WHERE_TO_GO_ON_EXIT = "http://www.highlandsnegotiations.com/";
+
+// login text
+var cookiesText = 
+	"This website uses cookies to ensure you get the best experience on our website.<br/>" +
+	"We use cookies to save you repeating responses in the assessment you are about to complete.<br/>" +
+	"Please click to agree to the use of these cookies";
+var doChangePasswordMessage = "change password<br/>"; 
+var doLoginErrorMessage = "invalid login attempt(wrong password, invalid email), try again"; 
+var doLoginMessage = "login to assessmydeal<br/>";
+var doRegisterMessage = "Please enter a password for your account and the code sent to you by email"; 
+var greeting = "What do you want to do?";
+var loginMessage = 
+	"<br/><br/><br/>Before you can login you must register.  We will send you a code via email for you to use during " +
+    "the registration. " + 
+    "<p>You can change passwords with the facility provided, but if you forget your password " +
+    "you will need to re-register." +
+    "<p>Please note that you must use a business email.  We will not accept personal domains such as " + 
+    "<em>'hotmail.com'</em> or <em>'google.com'</em>.";

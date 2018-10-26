@@ -59,7 +59,23 @@ input[type="button"] {
 
 <script>
 var cookiesAccepted = false;
-var cookiesText = "please accept cookies before proceeding<br/>";
+var cookiesWarning = "please accept cookies before proceeding<br/>";
+var cookiesText = 
+	"This website uses cookies to ensure you get the best experience on our website.<br/>" +
+	"We use cookies to save you repeating responses in the assessment you are about to complete.<br/>" +
+	"Please click to agree to the use of these cookies";
+var doChangePasswordMessage = "change password<br/>"; 
+var doLoginErrorMessage = "invalid login attempt(wrong password, invalid email), try again"; 
+var doLoginMessage = "login to assessmydeal<br/>";
+var doRegisterMessage = "Please enter a password for your account and the code sent to you by email"; 
+var greeting = "What do you want to do?";
+var loginMessage = 
+	"<br/><br/><br/>Before you can login you must register.  We will send you a code via email for you to use during " +
+    "the registration. " + 
+    "<p>You can change passwords with the facility provided, but if you forget your password " +
+    "you will need to re-register." +
+    "<p>Please note that you must use a business email.  We will not accept personal domains such as " + 
+    "<em>'hotmail.com'</em> or <em>'google.com'</em>.";
 
 $(window).on('load', function () {
 	setStyles();
@@ -67,7 +83,7 @@ $(window).on('load', function () {
 	setTimeout(function() {
 		positionCopyright();
 	}, 100);
-	let html = div("What do you want to do?", "message");
+	let html = div(greeting, "message");
 	$("body").append(html);
 	let loginButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="login">`, "login");
 	let changePasswordButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="change password">`, "changePassword");
@@ -81,14 +97,12 @@ $(window).on('load', function () {
  	$("#login").click(doLogin);
 	$("#changePassword").click(doChangePassword);
 	$("#register").click(doRegister);
- 	let message = "<br/><br/><br/>Before you can login you must register.  We will send you a code via email for you to use during " +
-	              "the registration. " + 
-	              "<p>You can change passwords with the facility provided, but if you forget your password " +
-	              "you will need to re-register." +
-	              "<p>Please note that you must use a business email.  We will not accept personal domains such as " + 
-	              "<em>'hotmail.com'</em> or <em>'google.com'</em>.";
-	html = div(message, "login-message", {"clear":"both", "font-size":"large"});
+	html = div(loginMessage, "login-message", {"clear":"both", "font-size":"large"});
 	$("#block").append(html);
+	if(!cookiesAccepted) setupCookieMessage();
+});
+
+function setupCookieMessage() {
 	let cookieCSS = { 
 			"color":"red",
 			"background-color":"blue",
@@ -98,21 +112,15 @@ $(window).on('load', function () {
 			"font-size":"large",
 			"margin-left":"5vw"
 	};
-	let cookieText = "This website uses cookies to ensure you get the best experience on our website.<br/>" +
-	        "We use cookies to save you repeating responses in the assessment you are about to complete.<br/>" +
-	        "Please click to agree to the use of these cookies";
-	//let cookieDiv = div("", "cookie-div", { "width":"90vw" });
-	let cookieMessage = div(cookieText, "cookie-message", cookieCSS);
+	let cookieMessage = div(cookiesText, "cookie-message", cookieCSS);
 	let cookieButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="I agree to use of cookies">`);
-	//$("#block").append(cookieDiv);
 	$("#block").append(cookieMessage);
-	//$("#cookie-div").append(cookieMessage);
 	$("#cookie-message").addClass("ui-state-default ui-corner-all");
 	$("#cookie-message").click(function() { 
 	    cookiesAccepted = true;
 		$("#cookie-message").remove(); 
 	});
-});
+}
 
 function grid(name, selector, args) {
 	// this only works for grids with 2 columns
@@ -139,11 +147,11 @@ function grid(name, selector, args) {
 
 function doLogin() {
 	if(!cookiesAccepted) {
-		$("#message").html(cookiesText);
+		$("#message").html(cookiesWarning);
 		return;
 	}
 	$("#block").empty();
-	$("#message").html("login to assessmydeal<br/>")
+	$("#message").html(doLoginMessage);
 	grid("do-login", "#block", 
 			["email",    `<input type="text" style="font-size:large" id="email">`], 
 			["password", `<input type="password" style="font-size:large" id="password">`]
@@ -173,7 +181,7 @@ function doLogin() {
 			},
 			error: function(data, status, error) {
 				console.log("error data", data, status, error);	  
-				$("#message").html("invalid login attempt(wrong password, invalid email), try again")
+				$("#message").html(doLoginErrorMessage);
 				$("#password").val("");
 			},
 			beforeSend: function(xhr, settings) { 
@@ -187,10 +195,10 @@ function doLogin() {
 
 function doChangePassword() {
 	if(!cookiesAccepted) {
-		$("#message").html(cookiesText);
+		$("#message").html(cookiesWarning);
 		return;
 	}
-	$("#message").html("change password<br/>")
+	$("#message").html(doChangePasswordMessage);
 	$("#block").empty();
 	let emailBox = $(`<div>email<input type="text" id="email"></div>`);
 	let passwordBox0 = $(`<div>old password<input type="password" id="password0"></div>`);
@@ -251,7 +259,7 @@ function doChangePassword() {
 
 function doRegister() {
 	if(!cookiesAccepted) {
-		$("#message").html(cookiesText);
+		$("#message").html(cookiesWarning);
 		return;
 	}
 	function startRegistration() {
@@ -265,7 +273,7 @@ function doRegister() {
 			success: function(data, status) {
 				$("#start-registration").remove();
 				$("#do-restart").remove();
-				$("#message").html("Please enter a password for your account and the code sent to you by email")
+				$("#message").html(doRegisterMessage);
 				let codeBox = div(`enter code<input type="text" id="code">`);
 				grid("do-register2", "#block", 
 	                       ["password",         `<input type="password" style="font-size:large" id="password1">`],
