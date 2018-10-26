@@ -113,6 +113,7 @@ var cookiesText =
 	"This website uses cookies to ensure you get the best experience on our website.<br/>" +
 	"We use cookies to save you repeating responses in the assessment you are about to complete.<br/>" +
 	"Please click to agree to the use of these cookies";
+var cookiesWarning = "please accept cookies before proceeding<br/>";
 var doChangePasswordMessage = "change password<br/>"; 
 var doLoginErrorMessage = "invalid login attempt(wrong password, invalid email), try again"; 
 var doLoginMessage = "login to assessmydeal<br/>";
