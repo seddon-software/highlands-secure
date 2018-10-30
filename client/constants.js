@@ -106,6 +106,7 @@ var BANNER_TEXT = "Highlands Negotiations LLC";
 var COPYRIGHT_MESSAGE = "\u00A9 Highlands Negotiations, 2018, v1.0";
 var SCATTER_X_TITLE = 'Market Growth';
 var SCATTER_Y_TITLE = 'Client Revenue Growth';
+var TERMS_AND_CONDITIONS = "http://www.highlandsnegotiations.com/";
 var WHERE_TO_GO_ON_EXIT = "http://www.highlandsnegotiations.com/";
 
 // login text
@@ -118,11 +119,13 @@ var doChangePasswordMessage = "change password<br/>";
 var doLoginErrorMessage = "invalid login attempt(wrong password, invalid email), try again"; 
 var doLoginMessage = "login to assessmydeal<br/>";
 var doRegisterMessage = "Please enter a password for your account and the code sent to you by email"; 
-var greeting = "What do you want to do?";
+var greeting = "Assess My Deal: What do you want to do?";
 var loginMessage = 
 	"<br/><br/><br/>Before you can login you must register.  We will send you a code via email for you to use during " +
     "the registration. " + 
-    "<p>You can change passwords with the facility provided, but if you forget your password " +
+    "<br/>You can change passwords with the facility provided, but if you forget your password " +
     "you will need to re-register." +
-    "<p>Please note that you must use a business email.  We will not accept personal domains such as " + 
-    "<em>'hotmail.com'</em> or <em>'google.com'</em>.";
+    "<br/>Please note that you must use a business email.  We will not accept personal domains such as " + 
+    "<em>'hotmail.com'</em> or <em>'google.com'</em>." +
+    "<p>Be aware that we collect certain data through the assessment that may be considered personally identifiable, " + 
+    `such as your IP address.  For full terms and conditions please click <a href="${TERMS_AND_CONDITIONS}">here.</a>`;
