@@ -119,7 +119,7 @@ var doChangePasswordMessage = "change password<br/>";
 var doLoginErrorMessage = "invalid login attempt(wrong password, invalid email), try again"; 
 var doLoginMessage = "login to assessmydeal<br/>";
 var doRegisterMessage = "Please enter a password for your account and the code sent to you by email"; 
-var greeting = "Assess My Deal: What do you want to do?";
+var greeting = "Assess My Deal: <em>what do you want to do?</em>";
 var loginMessage = 
 	"<br/><br/><br/>Before you can login you must register.  We will send you a code via email for you to use during " +
     "the registration. " + 
