@@ -128,4 +128,4 @@ var loginMessage =
     "<br/>Please note that you must use a business email.  We will not accept personal domains such as " + 
     "<em>'hotmail.com'</em> or <em>'google.com'</em>." +
     "<p>Be aware that we collect certain data through the assessment that may be considered personally identifiable, " + 
-    `such as your IP address.  For full terms and conditions please click <a href="${TERMS_AND_CONDITIONS}">here.</a>`;
+    `such as your IP address.  For full terms and conditions please click <a href="${TERMS_AND_CONDITIONS}">here</a>.`;
