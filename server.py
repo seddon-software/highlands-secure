@@ -121,10 +121,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 SENDGRID_API_KEY = xl.getSendgridAPI_KEY()
                 if not SENDGRID_API_KEY: return 500
                 sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
-                from_email = Email("registration@assessmydeal")
+                from_email = Email(xl.getEmailFrom())
                 to_email = Email(email)
-                subject = "Assess My Deal Registration Code"
-                content = Content("text/plain", str(code))
+                subject = xl.getEmailSubject()
+                body_part1, body_part2 = xl.getEmailBody()
+                content = Content("text/html", "{} {} {}".format(body_part1, code, body_part2))
+#                mail_html = Content(type_='text/html', value='<h1>Test Mail</h1><p>This is a test email message.</p>')
+                
                 mail = Mail(from_email, subject, to_email, content)
                 response = sg.client.mail.send.post(request_body=mail.get())
                 return response.status_code

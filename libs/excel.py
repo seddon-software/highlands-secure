@@ -131,6 +131,43 @@ class Excel:
             return False        
         return False
         
+    def getEmailFrom(self):
+        try:
+            table = pd.read_excel(excelFile, 'setup')
+            table = table[['TYPE', 'NAME']]
+            table = table[table.TYPE.notnull()]
+            for _, row in table.iterrows():
+                if row['TYPE'] == 'email_from': from_ = row['NAME']
+            if not validate_email(from_): raise Exception()
+            return from_
+        except:
+            # no entry present
+            return "registration@assessmydeal"        
+        
+    def getEmailSubject(self):
+        try:
+            table = pd.read_excel(excelFile, 'setup')
+            table = table[['TYPE', 'NAME']]
+            table = table[table.TYPE.notnull()]
+            for _, row in table.iterrows():
+                if row['TYPE'] == 'email_subject': return row['NAME']
+        except:
+            # no entry present
+            return "Assess My Deal Registration Code"        
+    
+    def getEmailBody(self):
+        try:
+            table = pd.read_excel(excelFile, 'setup')
+            table = table[['TYPE', 'NAME']]
+            table = table[table.TYPE.notnull()]
+            for _, row in table.iterrows():
+                if row['TYPE'] == 'email_body_part1': part1 = row['NAME']
+                if row['TYPE'] == 'email_body_part2': part2 = row['NAME']
+            return (part1, part2)
+        except:
+            # no entry present
+            return ""        
+    
     def __init__(self):
         def validate():
             validated = True
@@ -195,9 +232,13 @@ class Excel:
 
 if __name__ == "__main__":
     xl = Excel()
-    print(xl.getManagerType("  peter.SMith@highlands.com   "))
-    print(xl.getAllowOrDenyMode())
-    print(xl.getAllowDomains("peter.SMith@highlands.ibm.com"))
+#     print(xl.getManagerType("  peter.SMith@highlands.com   "))
+#     print(xl.getAllowOrDenyMode())
+#     print(xl.getAllowDomains("peter.SMith@highlands.ibm.com"))
+    print(xl.getEmailFrom())
+    print(xl.getEmailSubject())
+    print(xl.getEmailBody())
+
     
     
     
