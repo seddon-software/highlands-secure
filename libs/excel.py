@@ -145,28 +145,32 @@ class Excel:
             return "registration@assessmydeal"        
         
     def getEmailSubject(self):
+        subject = "Assess My Deal Registration Code"
         try:
             table = pd.read_excel(excelFile, 'setup')
             table = table[['TYPE', 'NAME']]
             table = table[table.TYPE.notnull()]
             for _, row in table.iterrows():
-                if row['TYPE'] == 'email_subject': return row['NAME']
+                if row['TYPE'] == 'email_subject': subject = row['NAME']
+            return subject
         except:
             # no entry present
-            return "Assess My Deal Registration Code"        
+            return subject
     
     def getEmailBody(self):
+        body = ("", "")
         try:
             table = pd.read_excel(excelFile, 'setup')
             table = table[['TYPE', 'NAME']]
             table = table[table.TYPE.notnull()]
             for _, row in table.iterrows():
-                if row['TYPE'] == 'email_body_part1': part1 = row['NAME']
-                if row['TYPE'] == 'email_body_part2': part2 = row['NAME']
-            return (part1, part2)
+                if row['TYPE'] == 'email_body_part1': part1 = row['NAME'].strip()
+                if row['TYPE'] == 'email_body_part2': part2 = row['NAME'].strip()
+                if part1 != "" and part2 != "": body = (part1, part2)
+            return body
         except:
             # no entry present
-            return ""        
+            return body        
     
     def __init__(self):
         def validate():
