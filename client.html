@@ -7,6 +7,8 @@
 #    © Highlands Negotiations, 2018, v1.0
 #
 ############################################################
+
+Note: Line 123 has the save button code commented out
 -->
 <html>
 <head>
@@ -120,6 +122,7 @@ function loadPage(activeTab, mode) {
 		removeCookiesOnStartup();
 		getQuestions();
 		getOptions();
+//		setupSaveButton();
 		addClickHandlers();
 	}
 	if(activeTab === undefined) activeTab = 1;
@@ -128,6 +131,23 @@ function loadPage(activeTab, mode) {
 	setTimeout(function() {
 		positionCopyright();
 	}, 100);
+}
+
+function setupSaveButton() {
+	let saveButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="save">`, "saveButton");
+	$("body").append(saveButton);
+    //$("#copyright").html(COPYRIGHT_MESSAGE);
+    $("#saveButton").css("color", COPYRIGHT_TEXT_COLOR)
+    			   .css("background-color", COPYRIGHT_BACKGROUND_COLOR)
+                   .css("bottom", "0px")
+                   .css("right", "0px")
+                   .css("position", "fixed")
+                   .css("margin-right", "2vw")
+                   .css("margin-bottom", "2vh")
+   				   .css("float", "right");
+    $("#saveButton").click(function() {
+    	console.log("save");
+    });
 }
 
 function setupRefresh() {

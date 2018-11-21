@@ -599,9 +599,8 @@ function positionCopyright() {
     $("#copyright").css("color", COPYRIGHT_TEXT_COLOR)
     			   .css("background-color", COPYRIGHT_BACKGROUND_COLOR)
                    .css("bottom", "0px")
-                   .css("position", "fixed")
-    $("#copyright").css("color", COPYRIGHT_TEXT_COLOR)
-        		   .css("background-color", COPYRIGHT_BACKGROUND_COLOR)}
+                   .css("position", "fixed");
+}
     
 function getQuestions() {
     $.ajax(
