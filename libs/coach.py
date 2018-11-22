@@ -8,23 +8,20 @@
 
 # testing GIT
 
-import os
+import os, re
 import pandas as pd
 from ast import literal_eval
 if __name__ == "__main__": os.chdir("..")
 from database import Database
 from myglobals import MyGlobals
 from excel import Excel
-from server_database import getResult
+from server_database import getResult, printResults
 
 g = MyGlobals()
 db = Database()
 xl = Excel()
 
-class Coach:
-    def getAssessment(self):
-        return getResult("chris@def.com")
-    
+class Coach:    
     def getAnswers(self, email):
         connection = db.connect()
         try:
@@ -53,11 +50,27 @@ class Coach:
                     d = pair["email"]
                     email = d["name"]
                     break
-                    
+
+    def selectRecordByGuid(self, guid):
+        records = db.getDatabaseResults()
+        for r in records:
+            pattern = r"{}$".format(guid)
+            match = re.search(pattern, r['guid'])
+            if match: return r
+        return None
+
+    def selectRecordsByEmail(self, email):
+        records = db.getDatabaseResults()
+        results = []
+        for r in records:
+            if r['email'] == email: results.append(r)
+        return results
 
               
 
 if __name__ == "__main__":
     c = Coach()
-    print(c.getAnswers("chris@def.com"))
+    for r in c.selectRecordsByEmail("chris@def.com"):
+        print(r)
+    print(c.selectRecordByGuid('5cca6'))
 
