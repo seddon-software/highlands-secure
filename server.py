@@ -126,7 +126,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 subject = xl.getEmailSubject()
                 body_part1, body_part2 = xl.getEmailBody()
                 content = Content("text/html", "{} {} {}".format(body_part1, code, body_part2))
-#                mail_html = Content(type_='text/html', value='<h1>Test Mail</h1><p>This is a test email message.</p>')
                 
                 mail = Mail(from_email, subject, to_email, content)
                 response = sg.client.mail.send.post(request_body=mail.get())

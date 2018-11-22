@@ -165,7 +165,6 @@ class Excel:
             table = pd.read_excel(excelFile, 'setup')
             table = table[['TYPE', 'NAME']]
             table = table[table.TYPE.notnull()]
-            print(table)
             for _, row in table.iterrows():
                 if row['TYPE'] == 'email_body_part1': part1 = row['NAME'].strip()
                 if row['TYPE'] == 'email_body_part2': part2 = row['NAME'].strip()

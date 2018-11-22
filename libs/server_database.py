@@ -6,13 +6,15 @@
 #
 ############################################################
 
-# import pymysql.cursors
 import pandas as pd
-# import numpy as np
 import uuid
 import datetime
+import os
 from ast import literal_eval
-#import server_excel as xl
+
+if __name__ == "__main__": 
+    os.chdir("..")
+
 from database import Database
 from myglobals import MyGlobals
 from excel import Excel
@@ -57,6 +59,13 @@ def printResults():
     for row in results:
         print(row)
 
+def getResult(email):
+    db = Database()
+    results = db.getDatabaseResults()
+    for row in results:
+        if row['email'] == email: return row
+    return None
+
 def getPieChartQuestionsAndOptions():
     questions = xl.filterQuestions("radio")
     options = xl.filterOptions("radio")
@@ -93,4 +102,5 @@ def getEmailsAndClients():
 
 
 if __name__ == "__main__":
-    xl.main("../highlands.xlsx")
+    print(getResult("chris@def.com"))
+    
