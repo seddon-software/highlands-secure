@@ -180,6 +180,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
                                                     writeToClient(sql.getPieChartQuestionsAndOptions, security="manager")
             elif(fileName == "excel-data"):         writeToClient(db.getExcelData, security="admin", mimeType="application/json")
             elif(fileName == "registered-users"):   writeToClient(db.getRegisteredUsers, security="admin")
+            elif(fileName == "completed-assessments"):
+                                                    writeToClient(xl.getQuestions)
             elif(fileName == "system-logs"):
                 if not adminMode: raise Exception()
                 reply = {}
