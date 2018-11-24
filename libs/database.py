@@ -216,6 +216,8 @@ class Database:
 if __name__ == "__main__": 
     import json, re
     db = Database()
+    results = db.getDatabaseResults()
     records = db.getRegisteredUsers()
     print(records)
-    
+    for r in results:
+        print(r)

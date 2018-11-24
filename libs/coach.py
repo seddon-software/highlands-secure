@@ -15,13 +15,16 @@ from ast import literal_eval
 from io import StringIO
 from io import BytesIO
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.pagesizes import letter, LETTER
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER,TA_LEFT, TA_JUSTIFY
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+
+PAGE_HEIGHT = LETTER[1]
+PAGE_WIDTH = LETTER[0]
 
 if __name__ == "__main__": os.chdir("..")
 from database import Database
@@ -91,8 +94,36 @@ class Coach:
         return results
 
     def generatePdf(self, guid):
+        def customColor(n):
+            n = float(n)
+            return colors.Color(red=(n/255),green=(n/255),blue=(n/255))
+                                
+        def myFirstPage(canvas, doc):
+            canvas.saveState()
+            # Footer
+            canvas.setFont('Times-Roman', 8)
+            canvas.drawString(MARGIN_LEFT, MARGIN_BOTTOM, f'Page {doc.page}')
+            canvas.drawRightString(PAGE_WIDTH - MARGIN_RIGHT, MARGIN_BOTTOM*0.95, "© Highlands Negotiations, 2018")
+            canvas.restoreState()
+        
+        def myOtherPages(canvas, doc):
+            canvas.saveState()
+            # Header
+            canvas.setFont('Times-Roman', 8)
+            canvas.drawString(MARGIN_LEFT, PAGE_HEIGHT - MARGIN_TOP, f'Page {doc.page}')
+            canvas.drawRightString(PAGE_WIDTH - MARGIN_LEFT, PAGE_HEIGHT - MARGIN_TOP, client)
+            # Footer.
+            canvas.drawString(MARGIN_LEFT, MARGIN_BOTTOM, f'Page {doc.page}')
+            canvas.drawRightString(PAGE_WIDTH - MARGIN_RIGHT, MARGIN_BOTTOM*0.95, "© Highlands Negotiations, 2018")
+            canvas.restoreState()
+            
+        MARGIN_LEFT = 0.5*inch
+        MARGIN_RIGHT = 0.5*inch
+        MARGIN_TOP = 0.3*inch
+        MARGIN_BOTTOM = 0.3*inch
+        
         buffer = BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=0.1*inch)
+        doc = SimpleDocTemplate(buffer, pagesize=LETTER, leftMargin=MARGIN_LEFT, rightMargin=MARGIN_RIGHT, bottomTop=MARGIN_TOP, bottomMargin=MARGIN_BOTTOM)
               
         # container for the 'Flowable' objects
         p = ParagraphStyle('myStyle', 
@@ -102,14 +133,16 @@ class Coach:
         
         p2 = ParagraphStyle('myStyle', 
                            alignment = TA_CENTER,
-                           fontSize = 32,
+                           fontSize = 16,
                            fontName="Times-Roman")
         
         elements = []         
         coach = Coach()
         answers = coach.extractAnswers(coach.selectRecordByGuid(guid))
 
-        headerText = Paragraph("This is the report for ...", p2)
+        record = self.selectRecordByGuid(guid)
+        client = self.determineClient(record)
+        headerText = Paragraph(f"This is the report for {client}", p2)
         elements.append(headerText)
         logo = 'client/images/highlands.png'
         image = Image(logo, 2*inch, 2*inch)
@@ -126,9 +159,9 @@ class Coach:
             t.setStyle(TableStyle(
                             [
                                 ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                                ('BACKGROUND', (0, 0), (1, 0), colors.yellow),
-                                ('BACKGROUND', (0, 1), (1, 1), colors.palegreen),
-                                ('BACKGROUND', (0, 2), (1, 2), colors.goldenrod),
+                                ('BACKGROUND', (0, 0), (1, 0), customColor(220)),
+                                ('BACKGROUND', (0, 1), (1, 1), customColor(220)),
+                                ('BACKGROUND', (0, 2), (1, 2), customColor(255)),
                                 ('FONTSIZE', (0, 0), (-1, -1), 8),
                                 ('ALIGN',(0,0),(-1,-1),'LEFT'),
                                 ('VALIGN',(0,0),(-1,-1),'TOP'),
@@ -138,24 +171,31 @@ class Coach:
             elements.append(Spacer(1,0.25*inch))
 
         # create the document in memory
-        doc.build(elements)
+        doc.build(elements, onFirstPage=myFirstPage, onLaterPages=myOtherPages )
         pdf = buffer.getvalue()
         buffer.close()
         return pdf
 
-    def getRecordSummaryByEmail(self, email):
-        records = self.selectRecordsByEmail(email)
-        summary = [["", "eMail", "Timestamp", "Client", "Report"]]
-        for i,r in enumerate(records):
+    def determineClient(self, r):
             client = ""
             keyValuePairs = literal_eval(r['result'])
             for pair in keyValuePairs:
                 if "client" in pair: 
                     client = pair["client"]["name"]
                     break
+            return client
+        
+    def getRecordSummaryByEmail(self, email):
+        records = self.selectRecordsByEmail(email)
+        summary = [["", "eMail", "Timestamp", "Client", "Report"]]
+        for i,r in enumerate(records):
+            client = self.determineClient(r)
             fileName = f"{r['guid']}.pdf"
-            downloadName = f"""Report on {client} ({r["timestamp"]:%d %B %Y %H:%M}).pdf"""
-            downloadHtml = f'''<a href="https://localhost:7001/{fileName}" download="{downloadName}">download</a>'''
+            server = g.get("server")
+            port = g.get("port")
+            url = f"https://{server}:{port}/{fileName}"
+            downloadName = f"""Report on {client} ({r["timestamp"]:%d %B %Y %H.%M}).pdf"""
+            downloadHtml = f'''<a href="{url}" download="{downloadName}">download</a>'''
             summary.append([i, r['email'], f'{r["timestamp"]:%d %B %Y %H:%M}', client, downloadHtml])
         return summary              
 

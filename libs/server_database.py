@@ -42,6 +42,8 @@ def saveResults(results, headers):
                                VALUES (   %s,          %s,      %s,      %s,       %s)""".format(g.get("table"))
             guid = str(uuid.uuid4())
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            print("**** {} ****".format(len(resultsAsString)))
+            print("**** {} ****".format(resultsAsString))
             cursor.execute(sql, (guid, timestamp, email, str(headers), resultsAsString))
         # connection is not autocommit by default. So you must commit to save your changes.
         connection.commit()    
