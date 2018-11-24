@@ -13,7 +13,7 @@ function displayCompletedAssessments() {
 	$("#completed-assessments").empty();
 	let title = div(`${REGISTERED_USERS_TAB_TEXT}`, "", { color:`${REGISTERED_USERS_TITLE_COLOR}`});
 	$("#completed-assessments-title").html(title);
-	let a = getAjaxData3(`/completed-assessments`);			//?${document.uuid}`);
+	let a = getAjaxData3(`/completed-assessments?${document.email}`);
 	$.when(a).done(function(data) {
 		var jsonObject = $.parseJSON(data);
 		doAssessmentTable(jsonObject);
@@ -38,17 +38,21 @@ function doAssessmentTable(data) {
             		    .style("color", EXCEL_HEADINGS_COLOR)
             			.style("background-color", EXCEL_HEADINGS_BACKGROUND_COLOR)
             			.style("text-align", "center");
-            	} else if(row % 2 === 0) { 
+            	} else if(row % 2 === 0) {
             		d3.select(this)
             		    .style("color", EXCEL_EVEN_ROWS_COLOR)
             		    .style("background-color", EXCEL_EVEN_ROWS_BACKGROUND_COLOR);
             	} else {
             		d3.select(this)
-        		    .style("color", EXCEL_ODD_ROWS_COLOR)
-        		    .style("background-color", EXCEL_ODD_ROWS_BACKGROUND_COLOR);            		
+            		    .style("color", EXCEL_ODD_ROWS_COLOR)
+            		    .style("background-color", EXCEL_ODD_ROWS_BACKGROUND_COLOR);            		
             	}
         		d3.select(this).style("border-style", "outset");
 			})	        
-	      	.text(function(d) { return unescape(d); });
+	      	.html(function(d) { return unescape(d); });
    	    });
+	$(".pdf").click(function() {
+		console.log(this.id);
+		let a = getAjaxData3(`/download-pdf?${this.id}`);
+	});
 }

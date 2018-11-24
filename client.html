@@ -97,10 +97,12 @@ $(window).on('load', function () {
 
 function loadPage(activeTab, mode) {
 	//flag for automatic testing to make email field read/write
-	if($(location).attr('search')==="?auto")
+	if($(location).attr('search')==="?auto") {
 		document.auto = true;	// testing
-	else
+		activeTab = 1;
+	} else {
 		document.auto = false;	// normal
+	}
 	
 	setupHeadings();
 	if(document.managerType === "chart" || document.managerType === "admin") {
@@ -198,6 +200,8 @@ function setupTabs(activeTab) {
 		hideTab("#syslog-tab");
 	} else if(document.managerType==="admin") {
 		tabObject["active"] = activeTab;
+	} else if($(location).attr('search')==="?auto") {
+		tabObject["active"] = 1;
 	} else {
 		tabObject["active"] = 0;
 		hideTab("#overview-tab");

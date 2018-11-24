@@ -11,13 +11,9 @@
 import os, re
 import pandas as pd
 from ast import literal_eval
-from PIL import Image
-
-if __name__ == "__main__": os.chdir("..")
-from database import Database
-from myglobals import MyGlobals
-from excel import Excel
-# from server_database import getResult, printResults
+#from PIL import Image
+from io import StringIO
+from io import BytesIO
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
@@ -26,6 +22,12 @@ from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER,TA_LEFT, TA_JUSTIFY
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+
+if __name__ == "__main__": os.chdir("..")
+from database import Database
+from myglobals import MyGlobals
+from excel import Excel
+# from server_database import getResult, printResults
 
 g = MyGlobals()
 db = Database()
@@ -63,7 +65,6 @@ class Coach:
             value = d[key]
             if key == "radio": 
                 questionId = value['question']
-#                 selectionId = "Option{}".format(str(int(value['selection'])+1))
                 selectionId = f"Option{int(value['selection'])+1}"
                 record = coaching.loc[coaching['Question'] == questionId]
                 questionSeries = questionsAndOptions.loc[questionsAndOptions['Id'] == questionId]
@@ -89,8 +90,11 @@ class Coach:
             if r['email'] == email: results.append(r)
         return results
 
-    def generatePdf(self): 
-        doc = SimpleDocTemplate("simple_table.pdf", pagesize=A4, leftMargin=0.1*inch)
+    def generatePdf(self, guid):
+        buffer = StringIO()
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=0.1*inch)
+              
         # container for the 'Flowable' objects
         p = ParagraphStyle('myStyle', 
                            alignment = TA_LEFT,
@@ -104,7 +108,7 @@ class Coach:
         
         elements = []         
         coach = Coach()
-        z = coach.extractAnswers(c.selectRecordByGuid('7087a85e'))
+        answers = coach.extractAnswers(coach.selectRecordByGuid(guid))
 
         headerText = Paragraph("This is the report for ...", p2)
         elements.append(headerText)
@@ -113,13 +117,13 @@ class Coach:
         image.hAlign = 'LEFT'
         elements.append(image)
         
-        for x in z:
-            questionId = Paragraph(f"Question: {x[0]}", p)
-            questionText = Paragraph(x[1], p)
-            yourAnswerText = Paragraph(x[2], p)
-            adviceText = Paragraph(x[3], p)
-            v = [[questionId, questionText],["Your Answer", yourAnswerText],["Advice", adviceText]]
-            t=Table(v, colWidths=[1 * inch, 6 * inch], hAlign='LEFT')
+        for answer in answers:
+            questionId = Paragraph(f"Question: {answer[0]}", p)
+            questionText = Paragraph(answer[1], p)
+            yourAnswerText = Paragraph(answer[2], p)
+            adviceText = Paragraph(answer[3], p)
+            data = [[questionId, questionText],["Your Answer", yourAnswerText],["Advice", adviceText]]
+            t=Table(data, colWidths=[1 * inch, 6 * inch], hAlign='LEFT')
             t.setStyle(TableStyle(
                             [
                                 ('GRID', (0, 0), (-1, -1), 1, colors.black),
@@ -134,18 +138,30 @@ class Coach:
             elements.append(t)
             elements.append(Spacer(1,0.25*inch))
 
-        # write the document to disk
+        # create the document in memory
         doc.build(elements)
+        pdf = buffer.getvalue()
+        buffer.close()
+        return pdf
 
-
-              
+    def getRecordSummaryByEmail(self, email):
+        records = self.selectRecordsByEmail(email)
+        summary = [["GUID", "eMail", "Timestamp", "Client", "Download PDF"]]
+        for r in records:
+            client = ""
+            keyValuePairs = literal_eval(r['result'])
+            for pair in keyValuePairs:
+                if "client" in pair: 
+                    client = pair["client"]["name"]
+                    break
+            fileName = f"{r['guid']}.pdf"
+            downloadHtml = f'''<a href="https://localhost:7001/{fileName}" download="{fileName}">download</a>'''
+            summary.append([r['guid'], r['email'], f'{r["timestamp"]:%d %B %Y %H:%M}', client, downloadHtml])
+        print(str(summary))
+        return summary              
 
 if __name__ == "__main__":
     c = Coach()
-    c.generatePdf()
-#     for r in c.selectRecordsByEmail("chris@def.com"):
-#         print(r)
-#     print(c.selectRecordByGuid('7087a85e'))
-#     z = c.extractAnswers(c.selectRecordByGuid('7087a85e'))
-#     for zz in z:
-#         print(zz)
+    summary = c.getRecordSummaryByEmail("seddon-software@keme.co.uk")
+    for s in summary:
+        print(s)

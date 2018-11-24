@@ -15,8 +15,10 @@ import random
 import hashlib
 import string
 import http.server
+from functools import partial
 import urllib.parse, json
 import uuid
+import re
 import sendgrid
 from sendgrid.helpers.mail import Email, Content, Mail
 
@@ -30,10 +32,11 @@ from chart import Chart
 from excel import Excel
 from table import Table
 from database import Database
-
+from coach import Coach
 
 UUID1 = str(uuid.uuid4())
 UUID2 = str(uuid.uuid4())
+guidPattern = r"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})[.]pdf$"
 
 checkbox = Checkbox()
 scatter = Scatter()
@@ -42,6 +45,7 @@ chart = Chart()
 xl = Excel()
 table = Table()
 db = Database()
+coach = Coach()
 g = MyGlobals()
 
 LOG_FILENAME = "logs/{}-{}-{}-{}.log".format(
@@ -160,9 +164,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     sendHeaders(mimeType=mimeType)
                 else:
                     sendHeaders()
-                jsonString = json.dumps(method())
-                jsonAsBytes = jsonString.encode("UTF-8")
-                self.wfile.write(jsonAsBytes)
+                try:
+                    jsonString = json.dumps(method())
+                    jsonAsBytes = jsonString.encode("UTF-8")
+                    self.wfile.write(jsonAsBytes)
+                except Exception as e:
+                    print(e)
+                    raise e
             
         try:
             if(fileName == "favicon.ico"):
@@ -181,7 +189,20 @@ class Handler(http.server.BaseHTTPRequestHandler):
             elif(fileName == "excel-data"):         writeToClient(db.getExcelData, security="admin", mimeType="application/json")
             elif(fileName == "registered-users"):   writeToClient(db.getRegisteredUsers, security="admin")
             elif(fileName == "completed-assessments"):
-                                                    writeToClient(xl.getQuestions)
+                                                    # must pass email as a parameter
+                                                    email = queryString
+                                                    fn = partial(Coach.getRecordSummaryByEmail, coach, email)
+                                                    writeToClient(fn, mimeType="application/json")
+            elif(re.search(guidPattern, fileName)):
+                match = re.search(guidPattern, fileName)
+                guid = match.group(1)
+                pdf = coach.generatePdf(guid)
+                self.send_response(200)
+                self.send_header("Content-type", 'application/pdf')
+#                self.send_header("Content-length", str(len(pdf)))
+                self.end_headers()
+                self.wfile.write(pdf)
+
             elif(fileName == "system-logs"):
                 if not adminMode: raise Exception()
                 reply = {}
