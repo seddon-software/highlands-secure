@@ -16,7 +16,6 @@ var options;
 var chartData;
 var android = navigator.appVersion.indexOf("Android") !== -1;
 
-// let title = div(`${REGISTERED_USERS_TAB_TEXT}`, "", { color:`${REGISTERED_USERS_TITLE_COLOR}`});
 
 // colors
 var ACTIVE_TAB_BUTTON_BORDER_COLOR = "black";
@@ -28,6 +27,7 @@ var CHART_BACKGROUND_COLOR = "Gainsboro";
 var CHART_BORDER_COLOR = "Gainsboro";
 var CHECKBOX_QUESTIONS_COLOR = "blue";
 var CHECKBOX_TITLE_COLOR = "darkmagenta";
+var COMPLETED_ASSESSMENTS_TITLE_COLOR = "darkmagenta";
 var COPYRIGHT_BACKGROUND_COLOR = "rgba(0, 0, 0, 0.1)"; 
 var COPYRIGHT_TEXT_COLOR = "rgba(0, 0, 0, 0.6)";
 var DIALOG_BACKGROUND_COLOR = 'rgb(255, 150, 200)'; 
@@ -83,6 +83,7 @@ var TABLE_SPACING_BETWEEN_ROWS = 5;
 
 // Tab Titles
 var ASSESSMENT_TAB_TITLE = "Assessment";
+var COMPLETED_ASSESSMENTS_TAB_TEXT = "Completed Assessments";
 var OVERVIEW_TAB_TITLE = "Overview";
 var RESPONSES_TAB_TITLE = "Responses";
 var SCATTER_TAB_TITLE = "Growth";

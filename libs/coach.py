@@ -91,7 +91,6 @@ class Coach:
         return results
 
     def generatePdf(self, guid):
-        buffer = StringIO()
         buffer = BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=0.1*inch)
               
@@ -146,8 +145,8 @@ class Coach:
 
     def getRecordSummaryByEmail(self, email):
         records = self.selectRecordsByEmail(email)
-        summary = [["GUID", "eMail", "Timestamp", "Client", "Download PDF"]]
-        for r in records:
+        summary = [["", "eMail", "Timestamp", "Client", "Report"]]
+        for i,r in enumerate(records):
             client = ""
             keyValuePairs = literal_eval(r['result'])
             for pair in keyValuePairs:
@@ -155,9 +154,9 @@ class Coach:
                     client = pair["client"]["name"]
                     break
             fileName = f"{r['guid']}.pdf"
-            downloadHtml = f'''<a href="https://localhost:7001/{fileName}" download="{fileName}">download</a>'''
-            summary.append([r['guid'], r['email'], f'{r["timestamp"]:%d %B %Y %H:%M}', client, downloadHtml])
-        print(str(summary))
+            downloadName = f"""Report on {client} ({r["timestamp"]:%d %B %Y %H:%M}).pdf"""
+            downloadHtml = f'''<a href="https://localhost:7001/{fileName}" download="{downloadName}">download</a>'''
+            summary.append([i, r['email'], f'{r["timestamp"]:%d %B %Y %H:%M}', client, downloadHtml])
         return summary              
 
 if __name__ == "__main__":
