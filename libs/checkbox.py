@@ -8,10 +8,11 @@
 
 import pandas as pd
 from ast import literal_eval
-#import server_excel as xl
 from database import Database
 from excel import Excel
+from myglobals import MyGlobals
 
+g = MyGlobals()
 xl = Excel()
 
 class Checkbox:
@@ -60,6 +61,10 @@ class Checkbox:
         '''
         # this routine assumes the client always comes before other results        
         questions = xl.filterQuestions("checkbox")
+        if questions.empty: 
+            g.getLogger().warning("no checkbox data")
+            return
+        
         options = xl.filterOptions("checkbox")
         questions.columns = ["Number", "Section", "Question", "Type", "Ignore"]
         options.columns = ["Options", "Marks"]
@@ -116,7 +121,6 @@ class Checkbox:
                     client = pair['client']['name']
                 if 'checkbox' in pair:
                     question = pair['checkbox']['question']
-#                    optionCount = pair['checkbox']['optionCount']
                     options = getOptions(df, question)
     
                     # update selections

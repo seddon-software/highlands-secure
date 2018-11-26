@@ -8,11 +8,9 @@
 
 # testing GIT
 
-import os, re
+import os, re, math
 import pandas as pd
 from ast import literal_eval
-#from PIL import Image
-from io import StringIO
 from io import BytesIO
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, LETTER
@@ -69,12 +67,15 @@ class Coach:
             if key == "radio": 
                 questionId = value['question']
                 selectionId = f"Option{int(value['selection'])+1}"
-                record = coaching.loc[coaching['Question'] == questionId]
                 questionSeries = questionsAndOptions.loc[questionsAndOptions['Id'] == questionId]
                 questionId = questionSeries['Id'].values[0]
                 question = questionSeries['Question'].values[0]
                 option = questionSeries[selectionId].values[0]
+            
+                record = coaching.loc[coaching['Question'] == questionId]
                 advice = record[["Question", selectionId]].values[0][1]
+                if not type(advice) is str: advice = "****"
+
                 results.append([questionId, question, option, advice])
         return results
     

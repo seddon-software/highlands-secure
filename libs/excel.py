@@ -47,12 +47,16 @@ class Excel:
         return options
     
     def extractCoaching(self):
-        excelFile = g.get("excelFile")
-        pd.set_option('display.width', 1000)
-        table = pd.read_excel(excelFile, 'coaching')
-        table = table[pd.notnull(table['Question'])]
-        table['Question'] = table['Question'].astype(str)
-        return table
+        try:
+            excelFile = g.get("excelFile")
+            pd.set_option('display.width', 1000)
+            table = pd.read_excel(excelFile, 'coaching')
+            table = table[pd.notnull(table['Question'])]
+            table['Question'] = table['Question'].astype(str)
+        except Exception as e:
+            g.getLogger().error(f"Excel error: {e}")
+        finally:
+            return table
     
     def filterQuestions(self, questionType):
         listQuestions = []

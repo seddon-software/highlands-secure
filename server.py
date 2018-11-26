@@ -7,9 +7,8 @@
 ############################################################
 
 
-# need an admin mode
-import logging.handlers
 import datetime
+import ssl
 import sys
 import random
 import hashlib
@@ -21,6 +20,7 @@ import uuid
 import re
 import sendgrid
 from sendgrid.helpers.mail import Email, Content, Mail
+from cgi import logfile
 
 # my libraries
 sys.path.append("libs")
@@ -33,6 +33,7 @@ from excel import Excel
 from table import Table
 from database import Database
 from coach import Coach
+import server_database as sql
 
 UUID1 = str(uuid.uuid4())
 UUID2 = str(uuid.uuid4())
@@ -48,21 +49,6 @@ db = Database()
 coach = Coach()
 g = MyGlobals()
 
-LOG_FILENAME = "logs/{}-{}-{}-{}.log".format(
-    g.get("database"), 
-    g.get("table"), 
-    g.get("usersTable"),
-    g.get("port"))
-
-def setupLogging():
-    # Set up a specific logger with our desired output level
-    my_logger = logging.getLogger('MyLogger')
-    my_logger.setLevel(logging.DEBUG)
-    
-    # Add the log message handler to the logger
-    handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=1000000, backupCount=10)
-    my_logger.addHandler(handler)
-    return my_logger
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def log_message(self, format, *args):
@@ -328,7 +314,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     try:
                         if fileName == "log": 
                             if not managerMode: raise Exception()
-                            fileName = LOG_FILENAME
+                            fileName = g.getLogFileName()
                         f = open(fileName, "r", encoding="UTF-8")
                         data = f.read()
                         sendHeaders()
@@ -336,11 +322,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     except:
                         sendHeaders(code=404)
         except:
-            print("****", fileName)
+            my_logger.error(f"**** Can't download {fileName}")
             sendHeaders(code=403)    
 
-import server_database as sql
-my_logger = setupLogging()
+my_logger = g.setupLogging()
 my_logger.debug("server started at {}".format(datetime.datetime.now()))
 
 PORT = g.get("port")
@@ -354,7 +339,6 @@ except OSError as e:
     print("port:", PORT)
     sys.exit()
 
-import ssl
 httpd.socket = ssl.wrap_socket(httpd.socket,
                                      server_side=True,
                                      keyfile='certs/privkey1.pem',
