@@ -336,7 +336,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     except:
                         sendHeaders(code=404)
         except:
-            sendHeaders(code=413)    
+            print("****", fileName)
+            sendHeaders(code=403)    
 
 import server_database as sql
 my_logger = setupLogging()
