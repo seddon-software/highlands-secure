@@ -80,7 +80,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         jsonAsString = jsonResponse.decode("UTF-8")
         results = json.loads(jsonAsString)
 
-        sql.saveResults(results, self.headers)
+        sql.saveResults(results, self.headers, my_logger)
         radio.refresh()
         chart.refresh()
         return
@@ -309,7 +309,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     # check for automatic testing
                     if fileName == "client.html": 
                         return not g.get("auto")
-                    elif(extension == "html" or extension == "js" or extension == "css"):
+                    elif(extension == "html" or extension == "js" or extension == "css" or extension == "pdf"):
                         return False
                     elif(fileName == "log"):
                         return False

@@ -23,7 +23,7 @@ db = Database()
 g = MyGlobals()
 xl = Excel()
 
-def saveResults(results, headers):
+def saveResults(results, headers, my_logger):
     connection = db.connect()
     try:
         resultsAsString = ','.join(str(e) for e in results)
@@ -35,7 +35,7 @@ def saveResults(results, headers):
                 d = keyValuePair["email"]
                 email = d["name"]
                 break
-            
+        raise Exception()
         with connection.cursor() as cursor:
             # Create a new record
             sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `headers`, `result`) 
@@ -50,7 +50,8 @@ def saveResults(results, headers):
         print("1 record committed")
     except Exception as e:
         print("rollback")
-        print(e)
+        print(f"Error saving results to database, {e}")
+        my_logger(f"Error saving results to database, {e}")
         connection.rollback()
     finally:
         connection.close()
@@ -104,5 +105,4 @@ def getEmailsAndClients():
 
 
 if __name__ == "__main__":
-    print(getResult("chris@def.com"))
-    
+    print(getResult("seddon-software@keme.co.uk"))
