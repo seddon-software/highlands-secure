@@ -60,10 +60,10 @@ class MyGlobals:
         return self.logger
 
     def getLogger(self):
-        return self.logger
+        return MyGlobals.logger
             
     def getLogFileName(self):
-        return self.logFileName
+        return MyGlobals.logFileName
             
     def get(self, name):
             if name == "root": return self.root

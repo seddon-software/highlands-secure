@@ -35,7 +35,6 @@ def saveResults(results, headers, my_logger):
                 d = keyValuePair["email"]
                 email = d["name"]
                 break
-        raise Exception()
         with connection.cursor() as cursor:
             # Create a new record
             sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `headers`, `result`) 
@@ -50,8 +49,7 @@ def saveResults(results, headers, my_logger):
         print("1 record committed")
     except Exception as e:
         print("rollback")
-        print(f"Error saving results to database, {e}")
-        my_logger(f"Error saving results to database, {e}")
+        g.getLogger().error(f"Error saving results to database, {e}")
         connection.rollback()
     finally:
         connection.close()

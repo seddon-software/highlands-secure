@@ -160,7 +160,7 @@ def doValidation(table):
                 values = [int(x) for x in re.split("[ ]+", values)]
                 items, Max = [int(x) for x in optionCount.split(",")]
                 if len(values) != items:
-                    print("Not enough values in test {}, question {}".format(testNo, question))
+                    print("Wrong number of values in test {}, question {}: should be {}".format(testNo, question, items))
                     sys.exit()
                 if max(values) > Max or min(values) < 1:
                     print("Option out of range in test {}, question {}".format(testNo, question))
