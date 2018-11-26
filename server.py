@@ -185,6 +185,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 pdf = coach.generatePdf(guid)
                 self.send_response(200)
                 self.send_header("Content-type", 'application/pdf')
+                self.send_header("Content-Disposition", 'attachment')
                 self.end_headers()
                 self.wfile.write(pdf)
 
