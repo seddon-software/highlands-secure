@@ -30,7 +30,7 @@ if __name__ == "__main__":
     cmd = "ps -ef | grep '[pP]ython server.py'"
     os.system("ps -ef | head -1")
     os.system(cmd)
-    os.system("cat nohup.out")
     time.sleep(5)
+    os.system("cat nohup.out > $(tty)")
     print("***** servers started *****")
     
