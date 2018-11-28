@@ -21,7 +21,7 @@ import re
 import sendgrid
 from sendgrid.helpers.mail import Email, Content, Mail
 from cgi import logfile
-from tkinter.simpledialog import _QueryDialog
+#from tkinter.simpledialog import _QueryDialog
 
 # my libraries
 sys.path.append("libs")
