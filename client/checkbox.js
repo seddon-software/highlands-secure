@@ -23,12 +23,10 @@
  *  	$("#checkbox-filter").on("change", function(e) { ...
  */
 
-//var checkboxData;
-//getAjaxData(`/checkbox-data?${document.uuid}`, setCheckboxData);
 
 function displayCheckboxData() {
-	let a1 = getAjaxData2(`/emails-and-clients?${document.uuid}`);
-	let a2 = getAjaxData2(`/checkbox-data?${document.uuid}`);
+	let a1 = getAjaxData2(`/emails-and-clients?uuid=${document.uuid}`);
+	let a2 = getAjaxData2(`/checkbox-data?uuid=${document.uuid}`);
 	$.when(a1, a2).done(function(emailsAndClients, checkboxData) {
 		drawCheckboxCharts(emailsAndClients[0], checkboxData[0]);
 	});
@@ -36,7 +34,7 @@ function displayCheckboxData() {
 
 function setCheckboxData(data) {
 	checkboxData = data;
-	getAjaxData(`/emails-and-clients?${document.uuid}`, drawCheckboxCharts);
+	getAjaxData(`/emails-and-clients?uuid=${document.uuid}`, drawCheckboxCharts);
 }
 
 function drawCheckboxCharts(emailsAndClients, checkboxData) {

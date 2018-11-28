@@ -12,8 +12,8 @@
 
 
 function displayTableData() {
-	let a1 = getAjaxData2(`/emails-and-clients?${document.uuid}`);
-	let a2 = getAjaxData2(`/table-data?${document.uuid}`);
+	let a1 = getAjaxData2(`/emails-and-clients?uuid=${document.uuid}`);
+	let a2 = getAjaxData2(`/table-data?uuid=${document.uuid}`);
 	$.when(a1, a2).done(function(emailsAndClients, tableData) {
 		drawTableCharts(emailsAndClients[0], tableData[0]);
 	});

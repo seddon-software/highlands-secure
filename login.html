@@ -144,7 +144,7 @@ function doLogin() {
 			["password", `<input type="password" style="font-size:large" id="password">`]
 	);
 	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="submit">`, "do-login");
-	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
+	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="cancel">`, "do-restart");
 	$("#block").append(submitButton);
 	$("#block").append(restartButton);	
 	$("#do-restart").click(function() { location.reload(); });
@@ -198,7 +198,7 @@ function doChangePassword() {
             ["confirm password", `<input type="password" style="font-size:large" id="password2">`]
 	);
 	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="do-changePassword" value="submit">`);
-	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
+	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="cancel">`, "do-restart");
 	$("#block").append(submitButton);
 	$("#block").append(restartButton);
 	$("#do-restart").click(function() { location.reload(); });
@@ -268,7 +268,7 @@ function doRegister() {
 	                       ["enter code",       `<input type="text" style="font-size:large" id="code">`]
 				);
 				let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="complete-registration" value="submit">`);
-				let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
+				let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="cancel">`, "do-restart");
 				$("#block").append(submitButton);
 				$("#block").append(restartButton);	
 				$("#do-restart").click(function() { location.reload(); });
@@ -321,7 +321,7 @@ function doRegister() {
 	let passwordBox1 = $(`<div>password<input type="password" id="password1"></div>`);
 	let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
 	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="start-registration" value="submit">`);
-	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
+	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="cancel">`, "do-restart");
 	$("#block").append(submitButton);
 	$("#block").append(restartButton);	
 	$("#do-restart").click(function() { location.reload(); });

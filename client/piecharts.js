@@ -19,9 +19,9 @@ var VALUES = 6;
 var filteredPieChartData;
 
 function displayPieCharts() {
-	let a1 = getAjaxData2(`/emails-and-clients?${document.uuid}`);
-	let a2 = getAjaxData2(`/piechart-data?${document.uuid}`);
-	let a3 = getAjaxData2(`/piechart-questions-options?${document.uuid}`);
+	let a1 = getAjaxData2(`/emails-and-clients?uuid=${document.uuid}`);
+	let a2 = getAjaxData2(`/piechart-data?uuid=${document.uuid}`);
+	let a3 = getAjaxData2(`/piechart-questions-options?uuid=${document.uuid}`);
 	$.when(a1, a2, a3).done(function(emailsAndClients, pieChartData, pieChartQuestionsAndOptions) {
 		pieChartCallback(emailsAndClients[0], pieChartData[0], pieChartQuestionsAndOptions[0]);
 	});

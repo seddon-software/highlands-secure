@@ -11,8 +11,8 @@
 var chartGroups;
 
 function displayCharts() {
-	let a1 = getAjaxData2(`/emails-and-clients?${document.uuid}`);
-	let a2 = getAjaxData2(`/chart-data?${document.uuid}`);
+	let a1 = getAjaxData2(`/emails-and-clients?uuid=${document.uuid}`);
+	let a2 = getAjaxData2(`/chart-data?uuid=${document.uuid}`);
 	$.when(a1, a2).done(function(emailsAndClientsResponse, chartDataResponse) {
 		let emails = emailsAndClientsResponse[0][0];
 		let clients = emailsAndClientsResponse[0][1];

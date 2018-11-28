@@ -87,11 +87,23 @@ class Coach:
             if match: return r
         return None
 
+    def getEmailByGuid(self, guid):
+        records = db.getDatabaseResults()
+        for r in records:
+            pattern = r"{}$".format(guid)
+            match = re.search(pattern, r['guid'])
+            if match: return r['email']
+        return None
+        
+        
     def selectRecordsByEmail(self, email):
         records = db.getDatabaseResults()
+        # return all records for mangers and admin (email will be None in this case)
+        if not email: return records
+        # only return their own records otherwise
         results = []
         for r in records:
-            if r['email'] == email: results.append(r)
+            if r['email'] == email or r['email'] == None: results.append(r)
         return results
 
     def generatePdf(self, guid):
@@ -143,7 +155,8 @@ class Coach:
 
         record = self.selectRecordByGuid(guid)
         client = self.determineClient(record)
-        headerText = Paragraph(f"This is the report for {client}", p2)
+        email = self.getEmailByGuid(guid)
+        headerText = Paragraph(f"This is the report on {client}<br/><br/>prepared for<br/><br/>{email}", p2)
         elements.append(headerText)
         logo = 'client/images/highlands.png'
         image = Image(logo, 2*inch, 2*inch)
@@ -155,7 +168,7 @@ class Coach:
             questionText = Paragraph(answer[1], p)
             yourAnswerText = Paragraph(answer[2], p)
             adviceText = Paragraph(answer[3], p)
-            data = [[questionId, questionText],["Your Answer", yourAnswerText],["Advice", adviceText]]
+            data = [[questionId, questionText],["Your Answer", yourAnswerText],["Coaching", adviceText]]
             t=Table(data, colWidths=[1 * inch, 6 * inch], hAlign='LEFT')
             t.setStyle(TableStyle(
                             [
@@ -188,7 +201,7 @@ class Coach:
         
     def getRecordSummaryByEmail(self, email):
         records = self.selectRecordsByEmail(email)
-        summary = [["", "eMail", "Timestamp", "Client", "Report"]]
+        summary = [["", "eMail", "Timestamp", "Client", "Report", "View"]]
         for i,r in enumerate(records):
             client = self.determineClient(r)
             fileName = f"{r['guid']}.pdf"
@@ -197,7 +210,8 @@ class Coach:
             url = f"https://{server}:{port}/{fileName}"
             downloadName = f"""Report on {client} ({r["timestamp"]:%d %B %Y %H.%M}).pdf"""
             downloadHtml = f'''<a href="{url}" download="{downloadName}">download</a>'''
-            summary.append([i, r['email'], f'{r["timestamp"]:%d %B %Y %H:%M}', client, downloadHtml])
+            viewPdf = f'''<input type="button" id="{r['guid']}" class="pdfView ui-state-default ui-corner-all" value="view">'''
+            summary.append([i, r['email'], f'{r["timestamp"]:%d %B %Y %H:%M}', client, downloadHtml, viewPdf])
         return summary              
 
 if __name__ == "__main__":

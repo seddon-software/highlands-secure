@@ -9,7 +9,7 @@
 
 import datetime
 import ssl
-import sys
+import sys, os
 import random
 import hashlib
 import string
@@ -21,6 +21,7 @@ import re
 import sendgrid
 from sendgrid.helpers.mail import Email, Content, Mail
 from cgi import logfile
+from tkinter.simpledialog import _QueryDialog
 
 # my libraries
 sys.path.append("libs")
@@ -35,8 +36,12 @@ from database import Database
 from coach import Coach
 import server_database as sql
 
+
+ssl._create_default_https_context = ssl._create_unverified_context
+
 UUID1 = str(uuid.uuid4())
 UUID2 = str(uuid.uuid4())
+UUID3 = str(uuid.uuid4())
 guidPattern = r"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})[.]pdf$"
 
 checkbox = Checkbox()
@@ -86,7 +91,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
             mimeType = d["mimeType"] if "mimeType" in d else getMimeType()
             self.send_response(code)
             self.send_header("Content-type", mimeType)
-            self.end_headers()
+            try:            # this is to suppress broken pipe warnings
+                self.end_headers()
+            except Exception as e:
+                pass            
 
         def hashPassword(password):
             return hashlib.sha1(password.encode()).hexdigest()
@@ -129,23 +137,212 @@ class Handler(http.server.BaseHTTPRequestHandler):
         def log(message):
             my_logger.debug("{}: ({}) {}".format(datetime.datetime.now(), self.client_address[0], message))
  
-        parsedUrl = urllib.parse.urlparse(self.path) # returns a 6-tuple
-        fileName = parsedUrl[2]
-        fileName = fileName[1:]  # remove leading '/'
-        queryString = parsedUrl[4]
-        managerMode = queryString == UUID1 or queryString == UUID2       # charts are only available if query string contains UUID1 or UUID2
-        adminMode = queryString == UUID1                                 # admin info only available if query string contains UUID2
+        def parseInputUrl():
+            parsedUrl = urllib.parse.urlparse(self.path) # returns a 6-tuple
+            fileName = parsedUrl[2]
+            fileName = fileName[1:] # remove leading '/'
 
-        # make login.html the default pages
-        if fileName == "": fileName = "login.html"
-        if fileName == "login.html": log("website accessed")
-        data = urllib.parse.parse_qs(queryString)
+            # make login.html the default pages
+            if fileName == "": fileName = "login.html"
+            if fileName == "login.html": log("website accessed")
+            
+            queryString = parsedUrl[4]
+            queryDictionary = urllib.parse.parse_qs(queryString)
+            if "uuid" in queryDictionary:
+                theUuid = queryDictionary["uuid"][0]
+            else:
+                theUuid = "0"
+            if "email" in queryDictionary:
+                email = queryDictionary["email"][0]
+            else:
+                email = None
+            return fileName, theUuid, queryDictionary
 
+        def doCompletedAssessments(queryDictionary, writeToClient):
+            # must pass email as a parameter
+            email = queryDictionary['email'][0]
+            if isAdmin() or isManager():
+                fn = partial(Coach.getRecordSummaryByEmail, coach, None)
+            else:
+                fn = partial(Coach.getRecordSummaryByEmail, coach, email)
+            writeToClient(fn, security="other", mimeType="application/json")
+
+        def doGenerateReport():
+            match = re.search(guidPattern, fileName)
+            guid = match.group(1)
+            pdf = coach.generatePdf(guid)
+            self.send_response(200)
+            self.send_header("Content-type", 'application/pdf')
+            self.send_header("Content-Disposition", 'attachment; filename="report.pdf"') 
+            self.end_headers()
+            self.wfile.write(pdf)
+
+        def doDownloadPdf():
+            guid = queryDictionary['pdf'][0];
+            pdf = coach.generatePdf(guid)
+            self.send_response(200)
+            self.send_header("Content-type", 'application/pdf')
+            self.send_header("Content-length", str(len(pdf)))
+            self.send_header("Content-Disposition", 'inline; filename="report.pdf"') 
+            self.end_headers()
+            self.wfile.write(pdf)
+
+        def doSystemLogs():
+            if not isAdmin():
+                raise Exception()
+            reply = {}
+            for fileName in "syslog", "alternatives.log", "auth.log", "dpkg.log", "fontconfig.log", "mail.log", "vsftpd.log":
+                fullName = "/var/log/{fileName}"
+                try:
+                    f = open(fullName, "r", encoding="UTF-8")
+                    data = f.read()
+                except:
+                    data = f"<p><p>{fileName}: not available"
+                reply[fileName] = data
+            
+            sendHeaders()
+            reply = json.dumps(reply)
+            self.wfile.write(str(reply).encode())
+
+
+        def doChangePassword():
+            email = queryDictionary['email'][0]
+            oldPassword1hash = db.getPassword(email)
+            if oldPassword1hash == "": # not registered
+                sendHeaders(code=401)
+                message = "change password attempted for unregistered email: {}".format(email)
+                self.wfile.write(message.encode())
+                log(message)
+            else:
+                oldPassword2 = queryDictionary['oldPassword'][0]
+                oldPassword2hash = hashPassword(oldPassword2)
+                if oldPassword1hash == oldPassword2hash:
+                    sendHeaders()
+                    db.createUser(queryDictionary['email'][0], queryDictionary['newPassword'][0], "")
+                    self.wfile.write('["password changed"]'.encode())
+                    log("password updated for {}".format(queryDictionary['email'][0]))
+                else:
+                    sendHeaders(401)
+                    self.wfile.write('["incorrect password"]'.encode())
+                    log("password update failed for {}".format(queryDictionary['email'][0]))
+    
+        def doStartRegistration():
+            def sendRegistrationDetails(code, message, logMessage):
+                sendHeaders(code=code)
+                self.wfile.write(message.encode())
+                log(logMessage)
+
+            email = queryDictionary['email'][0]
+            code = generateCode()
+            msgInvalidDomain = "Please use a business email.  You won't be able to register using the email you entered below"
+            logInvalidDomain = "registration rejected for {email}"
+            msgRegistrationCodeSent = '["registration code sent"]'
+            logRegistrationCodeSent = "registration code {code} sent to {email}"
+            msgInternalServerError = 'internal server error - please contact Highlands'
+            logInternalServerError = "internal server error: SENDGRID_API_KEY missing from setup tab on spreadsheet"
+            msgDomainNotAllowed = "The domain your are using for your email is not a permitted domain"
+            logDomainNotAllowed = "domain invalid - not on white list"
+
+            # check for invalid emails and invalid and valid email domains
+            mode = xl.getAllowOrDenyMode()
+            if mode == 'deny' and xl.getDenyDomains(email):
+                sendRegistrationDetails(401, msgInvalidDomain, logInvalidDomain)
+            elif mode == 'allow' and not xl.getAllowDomains(email):
+                sendRegistrationDetails(401, msgDomainNotAllowed, logDomainNotAllowed)
+            else:
+                response = sendCodeInEmail(email, code)
+                if response == 202:
+                    db.createUser(email, "", code)
+                    sendRegistrationDetails(200, msgRegistrationCodeSent, logRegistrationCodeSent)
+                else:
+                    sendRegistrationDetails(response, msgInternalServerError, logInternalServerError)
+            return code, response
+    
+        def doCompleteRegistration():
+            code1 = db.getCode(queryDictionary['email'][0])
+            code2 = queryDictionary['code'][0]
+            if code1 == code2:
+                sendHeaders()
+                db.createUser(queryDictionary['email'][0], queryDictionary['password'][0], queryDictionary['code'][0])
+                self.wfile.write('["registration succeeded"]'.encode())
+                log("{} is now registered".format(queryDictionary['email'][0]))
+            else:
+                sendHeaders(code=401)
+                self.wfile.write('["registration failed"]'.encode())
+                log("{} failed to register".format(queryDictionary['email'][0]))
+    
+        def doAuthenticate():
+            theEmail, response = authenticate()
+            if response == "valid":
+                fileName = "client.html"
+                sendHeaders(mimeType="application/json")
+                managerType = xl.getManagerType(theEmail)
+                f = open(fileName, "r", encoding="UTF-8")
+                data = f.read()
+                reply = {}
+                if managerType == "admin":
+                    reply["uuid"] = UUID1
+                elif managerType == "chart":
+                    reply["uuid"] = UUID2
+                else:
+                    reply["uuid"] = UUID3
+                reply["email"] = theEmail
+                reply["manager-type"] = managerType
+                reply["source"] = data
+                reply = json.dumps(reply)
+                self.wfile.write(str(reply).encode())
+                log("{} login succeeded".format(theEmail))
+            else:
+                sendHeaders(401)
+                self.wfile.write('["login failed"]'.encode())
+                log("{} failed to login".format(theEmail))
+
+
+        def doSendRegularFiles(fileName):
+            def isInvalidRequest():
+                # check for automatic testing
+                if fileName == "client.html": 
+                    return not g.get("auto")
+                elif(extension == "html" or extension == "js" or extension == "css" or extension == "pdf"):
+                    return False
+                elif(fileName == "log"):
+                    return False
+                else:
+                    return True
+
+            extension = fileName.split(".")[-1]
+            if (extension == "png" or extension == "jpg" or extension == "gif"):
+                sendHeaders()
+                f = open(fileName, "rb")
+                data = f.read()
+                self.wfile.write(data)
+            elif (isInvalidRequest()):
+                sendHeaders(code=404)
+            else:
+                try:
+                    if fileName == "log":
+                        if not (isAdmin() or isManager()):
+                            raise Exception()
+                        fileName = g.getLogFileName()
+                    f = open(fileName, "r", encoding="UTF-8")
+                    data = f.read()
+                    sendHeaders()
+                    self.wfile.write(data.encode())
+                except:
+                    sendHeaders(code=404)
+    
+        def isAdmin():   return theUuid == UUID1
+        def isManager(): return theUuid == UUID2
+        def isOther():   return theUuid == UUID3
+        
         def writeToClient(method, security="assessment", mimeType=None):
-                if security == "manager":
-                    if not managerMode and not adminMode: raise Exception()
-                if security == "admin":
-                    if not adminMode:  raise Exception()
+                if   security == "admin"   and not (isAdmin()):
+                    raise Exception()
+                elif security == "manager" and not (isAdmin() or isManager()):
+                    raise Exception()
+                elif security == "other"   and not (isAdmin() or isManager() or isOther()):
+                    raise Exception()
+            
                 if mimeType:
                     sendHeaders(mimeType=mimeType)
                 else:
@@ -157,172 +354,33 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 except Exception as e:
                     print(e)
                     raise e
-            
+
         try:
+            fileName, theUuid, queryDictionary = parseInputUrl()
             if(fileName == "favicon.ico"):
                 sendHeaders()
                 return
-            elif(fileName == "questions"):          writeToClient(xl.getQuestions)
-            elif(fileName == "options"):            writeToClient(xl.getOptions)
-            elif(fileName == "emails-and-clients"): writeToClient(sql.getEmailsAndClients, security="manager")
-            elif(fileName == "chart-data"):         writeToClient(chart.getChartData, security="manager")
-            elif(fileName == "table-data"):         writeToClient(table.getTableData, security="manager")           
-            elif(fileName == "checkbox-data"):      writeToClient(checkbox.getCheckboxData, security="manager")
-            elif(fileName == "scatter-data"):       writeToClient(scatter.getScatterChartData, security="manager")
-            elif(fileName == "piechart-data"):      writeToClient(radio.getPieChartData, security="manager")
-            elif(fileName == "piechart-questions-options"):
-                                                    writeToClient(sql.getPieChartQuestionsAndOptions, security="manager")
-            elif(fileName == "excel-data"):         writeToClient(db.getExcelData, security="admin", mimeType="application/json")
-            elif(fileName == "registered-users"):   writeToClient(db.getRegisteredUsers, security="admin")
-            elif(fileName == "completed-assessments"):
-                                                    # must pass email as a parameter
-                                                    email = queryString
-                                                    fn = partial(Coach.getRecordSummaryByEmail, coach, email)
-                                                    writeToClient(fn, mimeType="application/json")
-            elif(re.search(guidPattern, fileName)):
-                match = re.search(guidPattern, fileName)
-                guid = match.group(1)
-                pdf = coach.generatePdf(guid)
-                self.send_response(200)
-                self.send_header("Content-type", 'application/pdf')
-                self.send_header("Content-Disposition", 'attachment; filename="report.pdf"')
-#                self.send_header("Content-disposition", 'inline; filename="reort.pdf"' )
-                self.end_headers()
-                self.wfile.write(pdf)
-
-            elif(fileName == "system-logs"):
-                if not adminMode: raise Exception()
-                reply = {}
-                for fileName in ("syslog", "alternatives.log", "auth.log", "dpkg.log", "fontconfig.log", "mail.log", "vsftpd.log"):
-                    fullName = f"/var/log/{fileName}"
-                    try:
-                        f = open(fullName, "r", encoding="UTF-8")
-                        data = f.read()
-                    except:
-                        data = f"{fileName}: not available"
-                    reply[fileName] = data
-                sendHeaders()
-                reply = json.dumps(reply)
-                self.wfile.write(str(reply).encode())
-            elif(fileName == "change-password"):
-                email = data['email'][0]
-                oldPassword1hash = db.getPassword(email)
-                if oldPassword1hash == "":      # not registered
-                    sendHeaders(code=401)
-                    message = "change password attempted for unregistered email: {}".format(email);
-                    self.wfile.write(message.encode())
-                    log(message)
-                else:
-                    oldPassword2 = data['oldPassword'][0]
-                    oldPassword2hash = hashPassword(oldPassword2)
-        
-                    if oldPassword1hash == oldPassword2hash:
-                        sendHeaders()
-                        db.createUser(data['email'][0], data['newPassword'][0], "")
-                        self.wfile.write('["password changed"]'.encode())
-                        log("password updated for {}".format(data['email'][0]))
-                    else:
-                        sendHeaders(401)
-                        self.wfile.write('["incorrect password"]'.encode())
-                        log("password update failed for {}".format(data['email'][0]))
-            elif(fileName == "start-registration"):
-                def sendRegistrationDetails(code, message, logMessage):
-                    sendHeaders(code=code)
-                    self.wfile.write(message.encode())
-                    log(logMessage)
-
-                email = data['email'][0]
-                code = generateCode()
-                msgInvalidDomain = "Please use a business email.  You won't be able to register using the email you entered below"  
-                logInvalidDomain = f"registration rejected for {email}"
-                msgRegistrationCodeSent = '["registration code sent"]'
-                logRegistrationCodeSent = f"registration code {code} sent to {email}"
-                msgInternalServerError = 'internal server error - please contact Highlands'
-                logInternalServerError = "internal server error: SENDGRID_API_KEY missing from setup tab on spreadsheet"
-                msgDomainNotAllowed = "The domain your are using for your email is not a permitted domain"
-                logDomainNotAllowed = "domain invalid - not on white list"
-                
-                # check for invalid emails and invalid and valid email domains
-                mode = xl.getAllowOrDenyMode()                
-                if mode == 'deny' and xl.getDenyDomains(email):
-                    sendRegistrationDetails(401, msgInvalidDomain, logInvalidDomain)
-                elif mode == 'allow' and not xl.getAllowDomains(email):
-                    sendRegistrationDetails(401, msgDomainNotAllowed, logDomainNotAllowed)
-                else:    
-                    response = sendCodeInEmail(email, code)
-                    if response == 202:
-                        db.createUser(email, "", code)
-                        sendRegistrationDetails(200, msgRegistrationCodeSent, logRegistrationCodeSent)
-                    else:
-                        sendRegistrationDetails(response, msgInternalServerError, logInternalServerError)
-            elif(fileName == "complete-registration"):
-                code1 = db.getCode(data['email'][0])
-                code2 = data['code'][0]
-                if code1 == code2:
-                    sendHeaders()
-                    db.createUser(data['email'][0], data['password'][0], data['code'][0])
-                    self.wfile.write('["registration succeeded"]'.encode())
-                    log("{} is now registered".format(data['email'][0]))
-                else:
-                    sendHeaders(code=401)
-                    self.wfile.write('["registration failed"]'.encode())
-                    log("{} failed to register".format(data['email'][0]))
-            elif(fileName == "authentication"):
-                theEmail, response = authenticate()
-                if response == "valid":
-                    fileName = "client.html"
-                    sendHeaders(mimeType="application/json")
-                    managerType = xl.getManagerType(theEmail)
-                    f = open(fileName, "r", encoding="UTF-8")
-                    data = f.read()
-                    reply = {}
-                    if managerType == "admin":
-                        reply["uuid"] = UUID1
-                    elif managerType == "chart":
-                        reply["uuid"] = UUID2
-                    else:
-                        reply["uuid"] = '0'                        
-                    reply["email"] = theEmail
-                    reply["manager-type"] = managerType
-                    reply["source"] = data
-                    reply = json.dumps(reply)
-                    self.wfile.write(str(reply).encode())
-                    log("{} login succeeded".format(theEmail))                
-                else:
-                    sendHeaders(401)
-                    self.wfile.write('["login failed"]'.encode())
-                    log("{} failed to login".format(theEmail))                
-            else:
-                def isInvalidRequest():
-                    # check for automatic testing
-                    if fileName == "client.html": 
-                        return not g.get("auto")
-                    elif(extension == "html" or extension == "js" or extension == "css" or extension == "pdf"):
-                        return False
-                    elif(fileName == "log"):
-                        return False
-                    else:
-                        return True
-                    
-                extension = fileName.split(".")[-1]        
-                if(extension == "png" or extension == "jpg" or extension == "gif" ):
-                    sendHeaders()
-                    f = open(fileName, "rb")
-                    data = f.read()
-                    self.wfile.write(data)
-                elif(isInvalidRequest()):
-                    sendHeaders(code=404) 
-                else:
-                    try:
-                        if fileName == "log": 
-                            if not managerMode: raise Exception()
-                            fileName = g.getLogFileName()
-                        f = open(fileName, "r", encoding="UTF-8")
-                        data = f.read()
-                        sendHeaders()
-                        self.wfile.write(data.encode())
-                    except:
-                        sendHeaders(code=404)
+            elif(fileName == "questions"):                  writeToClient(xl.getQuestions)
+            elif(fileName == "options"):                    writeToClient(xl.getOptions)
+            elif(fileName == "emails-and-clients"):         writeToClient(sql.getEmailsAndClients, security="manager")
+            elif(fileName == "chart-data"):                 writeToClient(chart.getChartData, security="manager")
+            elif(fileName == "table-data"):                 writeToClient(table.getTableData, security="manager")           
+            elif(fileName == "checkbox-data"):              writeToClient(checkbox.getCheckboxData, security="manager")
+            elif(fileName == "scatter-data"):               writeToClient(scatter.getScatterChartData, security="manager")
+            elif(fileName == "piechart-data"):              writeToClient(radio.getPieChartData, security="manager")
+            elif(fileName == "piechart-questions-options"): writeToClient(sql.getPieChartQuestionsAndOptions, security="manager")
+            elif(fileName == "excel-data"):                 writeToClient(db.getExcelData, security="admin", mimeType="application/json")
+            elif(fileName == "registered-users"):           writeToClient(db.getRegisteredUsers, security="admin")
+            elif(fileName == "completed-assessments"):      doCompletedAssessments(queryDictionary, writeToClient)
+            elif(re.search(guidPattern, fileName)):         doGenerateReport()
+            elif(fileName == "download-pdf"):               doDownloadPdf()
+            elif(fileName == "system-logs"):                doSystemLogs()
+            elif(fileName == "change-password"):            doChangePassword()
+            elif(fileName == "start-registration"):         doStartRegistration()
+            elif(fileName == "complete-registration"):      doCompleteRegistration()
+            elif(fileName == "authentication"):             doAuthenticate()                
+            else:                                           
+                doSendRegularFiles(fileName)
         except:
             my_logger.error(f"**** Can't download {fileName}")
             sendHeaders(code=403)    
