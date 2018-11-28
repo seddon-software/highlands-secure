@@ -61,9 +61,7 @@ class Checkbox:
         '''
         # this routine assumes the client always comes before other results        
         questions = xl.filterQuestions("checkbox")
-        if questions.empty: 
-            g.getLogger().warning("no checkbox data")
-            return
+        if questions.empty: return
         
         options = xl.filterOptions("checkbox")
         questions.columns = ["Number", "Section", "Question", "Type", "Ignore"]

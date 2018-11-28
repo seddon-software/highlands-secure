@@ -84,6 +84,7 @@ var TABLE_SPACING_BETWEEN_ROWS = 5;
 // Tab Titles
 var ASSESSMENT_TAB_TITLE = "Assessment";
 var COMPLETED_ASSESSMENTS_TAB_TEXT = "Completed Assessments";
+var HOME_TAB_TITLE = "Coaching"
 var OVERVIEW_TAB_TITLE = "Overview";
 var RESPONSES_TAB_TITLE = "Responses";
 var SCATTER_TAB_TITLE = "Growth";
@@ -104,7 +105,7 @@ var TABLE_CHARTS_TAB_TEXT = "Table Charts:";
 
 //miscellaneous
 var BANNER_TEXT = "Highlands Negotiations LLC";
-var COPYRIGHT_MESSAGE = "\u00A9 Highlands Negotiations, 2018, v1.0";
+var COPYRIGHT_MESSAGE = "\u00A9 Highlands Negotiations, 2018-19, v1.1";
 var SCATTER_X_TITLE = 'Market Growth';
 var SCATTER_Y_TITLE = 'Client Revenue Growth';
 var TERMS_AND_CONDITIONS = "http://www.highlandsnegotiations.com/";

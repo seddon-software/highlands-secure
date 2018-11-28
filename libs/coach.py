@@ -8,7 +8,7 @@
 
 # testing GIT
 
-import os, re, math
+import os, re
 import pandas as pd
 from ast import literal_eval
 from io import BytesIO
@@ -20,6 +20,7 @@ from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER,TA_LEFT, TA_JUSTIFY
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 PAGE_HEIGHT = LETTER[1]
 PAGE_WIDTH = LETTER[0]
@@ -28,7 +29,6 @@ if __name__ == "__main__": os.chdir("..")
 from database import Database
 from myglobals import MyGlobals
 from excel import Excel
-# from server_database import getResult, printResults
 
 g = MyGlobals()
 db = Database()
@@ -211,7 +211,7 @@ class Coach:
             downloadName = f"""Report on {client} ({r["timestamp"]:%d %B %Y %H.%M}).pdf"""
             downloadHtml = f'''<a href="{url}" download="{downloadName}">download</a>'''
             viewPdf = f'''<input type="button" id="{r['guid']}" class="pdfView ui-state-default ui-corner-all" value="view">'''
-            summary.append([i, r['email'], f'{r["timestamp"]:%d %B %Y %H:%M}', client, downloadHtml, viewPdf])
+            summary.append([i+1, r['email'], f'{r["timestamp"]:%d %B %Y %H:%M}', client, downloadHtml, viewPdf])
         return summary              
 
 if __name__ == "__main__":

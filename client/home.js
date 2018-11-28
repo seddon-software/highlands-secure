@@ -11,6 +11,7 @@
 
 function displayCompletedAssessments() {
 	$("#completed-assessments").empty();
+	$("#home-title").html(HOME_TAB_TITLE);
 	let title = div(`${COMPLETED_ASSESSMENTS_TAB_TEXT}`, "", { color:`${COMPLETED_ASSESSMENTS_TITLE_COLOR}`});
 	$("#completed-assessments-title").html(title);
 	let a = getAjaxData3(`/completed-assessments?email=${document.email}&uuid=${document.uuid}`);
