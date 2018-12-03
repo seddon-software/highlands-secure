@@ -331,6 +331,18 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 except:
                     sendHeaders(code=404)
     
+        def filesToBeIgnored(fileName):
+            ignore = ["favicon.ico",
+                      "apple-touch-icon.png",
+                      "apple-touch-icon-precomposed.png",
+                      "apple-touch-icon-152x152.png",
+                      "apple-touch-icon-152x152-precomposed.png",
+                      "apple-touch-icon.png",
+                      "apple-touch-icon-precomposed.png",
+                      "apple-touch-icon-152x152.png",
+                      "apple-touch-icon-152x152-precomposed.png"]
+            return fileName in ignore
+        
         def isAdmin():   return theUuid == UUID1
         def isManager(): return theUuid == UUID2
         def isOther():   return theUuid == UUID3
@@ -357,7 +369,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
         try:
             fileName, theUuid, queryDictionary = parseInputUrl()
-            if(fileName == "favicon.ico"):
+            if(filesToBeIgnored(fileName)):
                 sendHeaders()
                 return
             elif(fileName == "questions"):                  writeToClient(xl.getQuestions)
