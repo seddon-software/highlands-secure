@@ -10,6 +10,7 @@ import pandas as pd
 import uuid
 import datetime
 import os
+import json
 from ast import literal_eval
 
 if __name__ == "__main__": 
@@ -23,7 +24,7 @@ db = Database()
 g = MyGlobals()
 xl = Excel()
 
-def saveResults(results, headers, my_logger):
+def saveResults(results, headers):
     connection = db.connect()
     try:
         resultsAsString = ','.join(str(e) for e in results)
@@ -41,9 +42,10 @@ def saveResults(results, headers, my_logger):
                                VALUES (   %s,          %s,      %s,      %s,       %s)""".format(g.get("table"))
             guid = str(uuid.uuid4())
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            print("**** {} ****".format(len(resultsAsString)))
-            print("**** {} ****".format(resultsAsString))
+#             print("**** {} ****".format(len(resultsAsString)))
+#             print("**** {} ****".format(resultsAsString))
             cursor.execute(sql, (guid, timestamp, email, str(headers), resultsAsString))
+
         # connection is not autocommit by default. So you must commit to save your changes.
         connection.commit()    
         print("1 record committed")

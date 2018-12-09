@@ -54,6 +54,7 @@ function generateChart(categories, toolTips, data, selection) {
 			$("#filter-drop-down").append(heading);
 		}
 	}
+	if(data === undefined) return
 	// x-axis: <Aspect>, <values array>
 	// y-axis: <categories>
 	// axes are swapped

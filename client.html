@@ -125,6 +125,9 @@ function loadPage(activeTab, mode) {
 		displaySystemLogs();
 		displayRegisteredUsers();
 	}
+	if(mode === "refresh") {
+		displayCompletedAssessments();
+	}
 	if(mode === "init") {
 		// assessments
 		removeCookiesOnStartup();
