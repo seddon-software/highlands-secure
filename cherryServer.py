@@ -364,6 +364,9 @@ class Root(object):
         if method == "POST": 
             self.do_POST()
 
+from cherrypy.process.plugins import Daemonizer
+d = Daemonizer(cherrypy.engine)
+d.subscribe()
 cherrypy.config.update(
     { 'server.socket_port': 5050,
       'engine.autoreload.on' : False,
