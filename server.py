@@ -364,21 +364,25 @@ class Root(object):
         if method == "POST": 
             self.do_POST()
 
+from myglobals import MyGlobals
+g = MyGlobals()
+PORT = g.get("port")
+SERVER = g.get("server")
+
 from cherrypy.process.plugins import Daemonizer
 d = Daemonizer(cherrypy.engine)
 d.subscribe()
 cherrypy.config.update(
-    { 'server.socket_port': 5050,
+    { 'server.socket_port': PORT,
       'engine.autoreload.on' : False,
       'environment': 'embedded',
-      'server.socket_host': '0.0.0.0',
+      'server.socket_host': SERVER,
       'server.ssl_certificate':'certs/fullchain1.pem',
       'server.ssl_private_key':'certs/privkey1.pem'} )
 
 
 # my libraries
 sys.path.append("libs")
-from myglobals import MyGlobals
 from checkbox import Checkbox
 from scatter import Scatter
 from piechart import Radio
@@ -402,13 +406,11 @@ xl = Excel()
 table = Table()
 db = Database()
 coach = Coach()
-g = MyGlobals()
 switchOffCheeryPyLogging(cherrypy)
 my_logger = g.setupLogging()
 my_logger.debug("server started at {}".format(datetime.datetime.now()))
 
-PORT = g.get("port")
-SERVER = g.get("server")
+
 print("cherrypy server:", SERVER)
 print("port:", PORT)
 print("database:", g.get("database"))
