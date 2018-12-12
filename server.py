@@ -364,6 +364,7 @@ class Root(object):
         if method == "POST": 
             self.do_POST()
 
+sys.path.append("libs")
 from myglobals import MyGlobals
 g = MyGlobals()
 PORT = g.get("port")
@@ -382,7 +383,6 @@ cherrypy.config.update(
 
 
 # my libraries
-sys.path.append("libs")
 from checkbox import Checkbox
 from scatter import Scatter
 from piechart import Radio
