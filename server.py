@@ -426,10 +426,9 @@ cherrypy.quickstart(Root(), '/',
         '/favicon.ico': 
         {
             'tools.staticfile.on': True,
+            'tools.staticfile.filename': os.path.join(os.path.dirname(os.path.abspath(__file__)), 'favicon.ico')
 #            'tools.staticfile.filename': 'client/images/favicon.ico'
-            'tools.staticfile.filename': os.path.join(os.path.dirname(__file__), '/client/images/favicon.ico')
-
-
+#            'tools.staticfile.filename': os.path.join(os.path.dirname(__file__), '/client/images/favicon.ico')
         }
     }
 )
