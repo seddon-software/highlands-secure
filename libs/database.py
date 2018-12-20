@@ -211,8 +211,6 @@ class Database:
             return re.sub(pattern, replacement, s)
             excelData = convertTimestamps(excelData)
             return excelData
-        print(excelData[1560:1590])
-        print(excelData)
         return convertTimestamps(excelData)
             
 if __name__ == "__main__": 

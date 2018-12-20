@@ -1,8 +1,10 @@
+debug = True
 import cherrypy
 import json
 #from cherrypy.process.plugins import Daemonizer
 
 import datetime
+import os
 import ssl
 import sys
 import random
@@ -26,10 +28,7 @@ class Root(object):
     def do_POST(self):
         contentLength = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(contentLength))
-#         jsonAsString = rawbody.decode("UTF-8")
-#         results = json.loads(jsonAsString)
         results = json.loads(rawbody)
-        # !!!!!!!!!! server_database is not storing headers properly !!!!!!!!!!!!!!
         headers = cherrypy.request.headers
         headersAsString = ""
         for key in headers:
@@ -271,7 +270,7 @@ class Root(object):
                     return True
 
             extension = fileName.split(".")[-1]
-            if (extension == "png" or extension == "jpg" or extension == "gif"):
+            if (extension == "png" or extension == "jpg" or extension == "gif" or extension == "ico"):
                 sendHeaders()
                 f = open(fileName, "rb")
                 data = f.read()
@@ -292,8 +291,8 @@ class Root(object):
                     sendHeaders(code=404)
     
         def filesToBeIgnored(fileName):
-            ignore = ["favicon.ico",
-                      "apple-touch-icon.png",
+#            ignore = ["favicon.ico",
+            ignore = ["apple-touch-icon.png",
                       "apple-touch-icon-precomposed.png",
                       "apple-touch-icon-152x152.png",
                       "apple-touch-icon-152x152-precomposed.png",
@@ -371,15 +370,18 @@ PORT = g.get("port")
 SERVER = g.get("server")
 
 from cherrypy.process.plugins import Daemonizer
-d = Daemonizer(cherrypy.engine)
-d.subscribe()
+
+if not debug:
+    d = Daemonizer(cherrypy.engine)
+    d.subscribe()
 cherrypy.config.update(
     { 'server.socket_port': PORT,
       'engine.autoreload.on' : False,
       'environment': 'embedded',
       'server.socket_host': SERVER,
       'server.ssl_certificate':'certs/fullchain1.pem',
-      'server.ssl_private_key':'certs/privkey1.pem'} )
+      'server.ssl_private_key':'certs/privkey1.pem'
+    } )
 
 
 # my libraries
@@ -419,5 +421,15 @@ print("users table:", g.get("usersTable"))
 print("spreadsheet:", g.get("excelFile"))
 if(g.get("auto")): print("automatic testing")
 print("")
-cherrypy.quickstart(Root(), '/')
+cherrypy.quickstart(Root(), '/',
+    {
+        '/favicon.ico': 
+        {
+            'tools.staticfile.on': True,
+#            'tools.staticfile.filename': 'client/images/favicon.ico'
+            'tools.staticfile.filename': os.path.join(os.path.dirname(__file__), 'client/images/favicon.ico')
 
+
+        }
+    }
+)
