@@ -1,4 +1,4 @@
-debug = True
+debug = False
 import cherrypy
 import json
 #from cherrypy.process.plugins import Daemonizer
@@ -427,7 +427,7 @@ cherrypy.quickstart(Root(), '/',
         {
             'tools.staticfile.on': True,
 #            'tools.staticfile.filename': 'client/images/favicon.ico'
-            'tools.staticfile.filename': os.path.join(os.path.dirname(__file__), 'client/images/favicon.ico')
+            'tools.staticfile.filename': os.path.join(os.path.dirname(__file__), '/client/images/favicon.ico')
 
 
         }
