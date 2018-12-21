@@ -421,6 +421,12 @@ print("users table:", g.get("usersTable"))
 print("spreadsheet:", g.get("excelFile"))
 if(g.get("auto")): print("automatic testing")
 print("")
+
+# Note:
+#
+# If you load a module in the current directory, and the current directory isn't in sys.path, you'll get an absolute path. 
+# If you load a module in the current directory, and the current directory is in sys.path, you'll get a relative path.
+
 cherrypy.quickstart(Root(), '/',
     {
         '/favicon.ico': 
