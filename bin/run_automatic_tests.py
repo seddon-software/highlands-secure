@@ -12,6 +12,7 @@ import os, sys, re
 import requests
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+import platform
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -29,16 +30,14 @@ def startBrowser(url):
     print("URL:", url)
     global browser
     os.environ["PATH"] = "testing" + os.pathsep + os.environ["PATH"]
-
-    try:
+    print(platform.system())
+    if platform.system() == "Windows":
         browser = webdriver.Chrome(executable_path=r"chromedriver.exe")
-    except: pass
-    try:
-        browser = webdriver.Chrome(executable_path=r"chromedriver_linux")
-    except: pass
-    try:
+    elif platform.system() == "Darwin":
         browser = webdriver.Chrome(executable_path=r"chromedriver_macos")
-    except: pass
+    else:
+        browser = webdriver.Chrome(executable_path=r"chromedriver_linux")
+
     try:
         r = requests.get(url, verify=False)
         if r.status_code == 404:
@@ -55,7 +54,7 @@ def startBrowser(url):
 
 def stopBrowser():
     global browser
-    browser.close()
+    browser.quit()
 
 def scrollTo(element):
     global browser
@@ -160,7 +159,7 @@ def doValidation(table):
                 values = [int(x) for x in re.split("[ ]+", values)]
                 items, Max = [int(x) for x in optionCount.split(",")]
                 if len(values) != items:
-                    print("Not enough values in test {}, question {}".format(testNo, question))
+                    print("Wrong number of values in test {}, question {}: should be {}".format(testNo, question, items))
                     sys.exit()
                 if max(values) > Max or min(values) < 1:
                     print("Option out of range in test {}, question {}".format(testNo, question))
@@ -204,7 +203,8 @@ try:
     rows, cols = table.shape
     
     startBrowser("https://{}:{}/client.html?auto".format(g.get("server"), g.get("port")))
-    for testNo in range(1, cols-1):  # 1 non test column
+#    for testNo in range(1, cols-1):  # 1 non test column
+    for testNo in range(1, 2):  # 1 non test column
         print("Starting Test {}".format(testNo))
         data = "Test{}".format(testNo)
         df = table[["Question", "Category", data]]

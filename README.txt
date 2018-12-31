@@ -1,3 +1,7 @@
+The installation directory must have two subdirectories:
+	logs
+	certs   
+
 Excel File defaults to highlands.xlsx, but can be called anything as long as it has an .xlsx extension
 
 The Excel File has 2 or 3 tabs:
@@ -64,29 +68,25 @@ Installing a new A2 Server:
 	mysql_secure_installation
 	sudo systemctl start mysql
 
-7. To install Anaconda 3.4:
-	wget http://repo.continuum.io/archive/Anaconda3-4.3.0-Linux-x86_64.sh
-   	bash Anaconda3-4.3.0-Linux-x86_64.sh
+7. To install Anaconda 5.3.1:
+	wget http://repo.continuum.io/archive/Anaconda3-5.3.1-Linux-x86_64.sh
+   	bash Anaconda3-5.3.1-Linux-x86_64.sh
+	pip install --upgrade pip
+	
+8. To install additional Python libraries
+	pip install --ignore-installed six
+	pip install cherrypy
    	pip install pymysql
-	must create log directory
-	must set up certs   
+	pip install sendgrid
+	pip install validate_email
+	pip install reportlab
+
 Note:
 	asssessmydeal.com is 68.66.241.111
 	assessmydeal.com is 199.195.116.16
 
-Certs:
-IMPORTANT NOTES:
- - Congratulations! Your certificate and chain have been saved at:
-   /etc/letsencrypt/live/asssessmydeal.com/fullchain.pem
-   Your key file has been saved at:
-   /etc/letsencrypt/live/asssessmydeal.com/privkey.pem
-   Your cert will expire on 2018-12-21. To obtain a new or tweaked
-   version of this certificate in the future, simply run certbot
-   again. To non-interactively renew *all* of your certificates, run
-   "certbot renew"
- - If you like Certbot, please consider supporting our work by:
+To renew Certificates:
+	sudo certbot renew --standalone --preferred-challenges http
 
-   Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
-   Donating to EFF:                    https://eff.org/donate-le
 	
 	

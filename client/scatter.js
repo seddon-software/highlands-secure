@@ -17,8 +17,8 @@
 var scatterFrequencies;
 
 function displayScatterChart() {
-	let a1 = getAjaxData2(`/emails-and-clients?${document.uuid}`);
-	let a2 = getAjaxData2(`/scatter-data?${document.uuid}`);
+	let a1 = getAjaxData2(`/emails-and-clients?uuid=${document.uuid}`);
+	let a2 = getAjaxData2(`/scatter-data?uuid=${document.uuid}`);
 	$.when(a1, a2).done(function(emailsAndClients, scatterData) {
 		scatterChartCallback(emailsAndClients[0], scatterData[0]);
 	});

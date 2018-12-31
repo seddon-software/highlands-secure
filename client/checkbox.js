@@ -23,12 +23,10 @@
  *  	$("#checkbox-filter").on("change", function(e) { ...
  */
 
-//var checkboxData;
-//getAjaxData(`/checkbox-data?${document.uuid}`, setCheckboxData);
 
 function displayCheckboxData() {
-	let a1 = getAjaxData2(`/emails-and-clients?${document.uuid}`);
-	let a2 = getAjaxData2(`/checkbox-data?${document.uuid}`);
+	let a1 = getAjaxData2(`/emails-and-clients?uuid=${document.uuid}`);
+	let a2 = getAjaxData2(`/checkbox-data?uuid=${document.uuid}`);
 	$.when(a1, a2).done(function(emailsAndClients, checkboxData) {
 		drawCheckboxCharts(emailsAndClients[0], checkboxData[0]);
 	});
@@ -36,12 +34,9 @@ function displayCheckboxData() {
 
 function setCheckboxData(data) {
 	checkboxData = data;
-	getAjaxData(`/emails-and-clients?${document.uuid}`, drawCheckboxCharts);
+	getAjaxData(`/emails-and-clients?uuid=${document.uuid}`, drawCheckboxCharts);
 }
 
-//$.when(a1, a2).done(function(emailsAndClients, checkboxData) {
-
-//function drawCheckboxCharts(data) {
 function drawCheckboxCharts(emailsAndClients, checkboxData) {
 	let emails = emailsAndClients[0];
 	let clients = emailsAndClients[1];
@@ -52,6 +47,9 @@ function drawCheckboxCharts(emailsAndClients, checkboxData) {
 	if (emails.length === 0) return;
 
 	function drawAllCheckboxCharts(clientOrEmail) {
+		if (!checkboxData) 
+			$("#checkboxcharts").html("<p><p>no data available");
+			return;
 	 	$("#checkboxcharts").empty();
 		for(let i = 0; i < checkboxData['record'].length; i++) {
 			let number = checkboxData['record'][i]['Number'];

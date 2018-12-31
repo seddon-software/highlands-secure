@@ -7,11 +7,15 @@
 ############################################################
 
 import sys, os
+import logging.handlers
 import pandas as pd
 
 if __name__ == "__main__": os.chdir("..")
 
 class MyGlobals:
+    logger = None
+    logFileName = None
+    
     def __init__(self):
         self.parseCommandLine()
         self.getNamesAndPasswords()
@@ -37,6 +41,30 @@ class MyGlobals:
         self.port = hostFrame["OPTION"].tolist()[0]
         self.usersTable = usersFrame["OPTION"].tolist()[0]
 
+    def setupLogging(self):
+        LOG_FILENAME = "logs/{}-{}-{}-{}.log".format(
+            self.get("database"), 
+            self.get("table"), 
+            self.get("usersTable"),
+            self.get("port"))
+
+        # Set up a specific logger with our desired output level
+        my_logger = logging.getLogger('MyLogger')
+        my_logger.setLevel(logging.DEBUG)
+        
+        # Add the log message handler to the logger
+        handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=1000000, backupCount=10)
+        my_logger.addHandler(handler)
+        MyGlobals.logger = my_logger
+        MyGlobals.logFileName = LOG_FILENAME
+        return self.logger
+
+    def getLogger(self):
+        return MyGlobals.logger
+            
+    def getLogFileName(self):
+        return MyGlobals.logFileName
+            
     def get(self, name):
             if name == "root": return self.root
             if name == "rootPassword": return self.rootPassword
@@ -49,24 +77,7 @@ class MyGlobals:
             if name == "excelFile": return self.excelFile
             if name == "usersTable": return self.usersTable
             if name == "auto": return self.auto
-
-#     def parseCommandLine2(self):
-#         # default excel file is "highlands.xlsx", but can be changed on command line:
-#         #    python server.py [excel-file]
-#         if len(sys.argv) > 2:
-#             print("Useage: python server.py [excel-file]")
-#             sys.exit()
-#         if len(sys.argv) == 1:
-#             excelFile = "highlands.xlsx"
-#         else:
-#             excelFile = sys.argv[1].replace(".xlsx", "") + ".xlsx"
-#         
-#         if not os.path.isfile(excelFile):
-#             print("{} does not exist".format(excelFile))
-#             sys.exit()
-#     
-#         self.excelFile = excelFile
-
+            
     def parseCommandLine(self):
         # default excel file is "highlands.xlsx", but can be changed on command line:
         #    python server.py [excel-file]

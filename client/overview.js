@@ -11,8 +11,8 @@
 var chartGroups;
 
 function displayCharts() {
-	let a1 = getAjaxData2(`/emails-and-clients?${document.uuid}`);
-	let a2 = getAjaxData2(`/chart-data?${document.uuid}`);
+	let a1 = getAjaxData2(`/emails-and-clients?uuid=${document.uuid}`);
+	let a2 = getAjaxData2(`/chart-data?uuid=${document.uuid}`);
 	$.when(a1, a2).done(function(emailsAndClientsResponse, chartDataResponse) {
 		let emails = emailsAndClientsResponse[0][0];
 		let clients = emailsAndClientsResponse[0][1];
@@ -54,6 +54,7 @@ function generateChart(categories, toolTips, data, selection) {
 			$("#filter-drop-down").append(heading);
 		}
 	}
+	if(data === undefined) return
 	// x-axis: <Aspect>, <values array>
 	// y-axis: <categories>
 	// axes are swapped

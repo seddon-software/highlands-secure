@@ -1,10 +1,15 @@
 #! /bin/bash
-printf "which server(ss, sss): "
+printf "which server(pi, ss, sss): "
 read server
 printf "file to copy: "
 read fileName
-server=a${server}essmydeal.com
-
-echo scp -P 7822 ${fileName} chris@${server}:/home/chris/h
-scp -P 7822 ${fileName} chris@${server}:/home/chris/h
+if [ "$server" = "pi" ]; then
+  server=192.168.0.72
+  echo scp ${fileName} pi@${server}:/home/pi
+  scp ${fileName} pi@${server}:/home/pi
+else
+  server=a${server}essmydeal.com
+  echo scp -p 7822 ${fileName} chris@${server}:/home/chris/h
+  scp -p 7822 ${fileName} chris@${server}:/home/chris/h
+fi
 

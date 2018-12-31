@@ -13,7 +13,7 @@ function displayRegisteredUsers() {
 	$("#registerUsersInfo").empty();
 	let title = div(`${REGISTERED_USERS_TAB_TEXT}`, "", { color:`${REGISTERED_USERS_TITLE_COLOR}`});
 	$("#registerUsers-title").html(title);
-	let a = getAjaxData3(`/registered-users?${document.uuid}`);
+	let a = getAjaxData3(`/registered-users?uuid=${document.uuid}`);
 	$.when(a).done(function(data) {
 		var jsonObject = $.parseJSON(data);
 		doTable(jsonObject);

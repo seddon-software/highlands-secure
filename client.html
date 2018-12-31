@@ -34,6 +34,7 @@ Note: Line 123 has the save button code commented out
 <script src="client/client.js"></script>
 <script src="client/constants.js"></script>
 <script src="client/excel.js"></script>
+<script src="client/home.js"></script>
 <script src="client/log.js"></script>
 <script src="client/overview.js"></script>
 <script src="client/piecharts.js"></script>
@@ -86,6 +87,11 @@ input[type=text] {
 #theLog {
 	white-space: pre-line
 }
+
+.ui-dialog .ui-dialog-titlebar {
+	padding: 0
+}
+
 </style>
 
 <script>
@@ -96,10 +102,12 @@ $(window).on('load', function () {
 
 function loadPage(activeTab, mode) {
 	//flag for automatic testing to make email field read/write
-	if($(location).attr('search')==="?auto")
+	if($(location).attr('search')==="?auto") {
 		document.auto = true;	// testing
-	else
+		activeTab = 1;
+	} else {
 		document.auto = false;	// normal
+	}
 	
 	setupHeadings();
 	if(document.managerType === "chart" || document.managerType === "admin") {
@@ -117,15 +125,19 @@ function loadPage(activeTab, mode) {
 		displaySystemLogs();
 		displayRegisteredUsers();
 	}
+	if(mode === "refresh") {
+		displayCompletedAssessments();
+	}
 	if(mode === "init") {
 		// assessments
 		removeCookiesOnStartup();
+		displayCompletedAssessments();
 		getQuestions();
 		getOptions();
 //		setupSaveButton();
 		addClickHandlers();
 	}
-	if(activeTab === undefined) activeTab = 1;
+	if(activeTab === undefined) activeTab = 0;
 	setupTabs(activeTab);
 	setStyles();
 	setTimeout(function() {
@@ -196,6 +208,8 @@ function setupTabs(activeTab) {
 		hideTab("#syslog-tab");
 	} else if(document.managerType==="admin") {
 		tabObject["active"] = activeTab;
+	} else if($(location).attr('search')==="?auto") {
+		tabObject["active"] = 1;
 	} else {
 		tabObject["active"] = 0;
 		hideTab("#overview-tab");
@@ -226,6 +240,7 @@ function setupTabs(activeTab) {
 	<div id="headings"></div>
     <div id="tabs">
 	  <ul>
+	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#home-tab" class="tabs-button" id="home-button">Home</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#questions-tab" class="tabs-button" id="assessment-button">Assessment</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#overview-tab"  title="q" class="tabs-button" id="charts-button">Overview</a></li>
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#responses-tab" class="tabs-button" id="piecharts-button">Responses</a></li>
@@ -238,6 +253,12 @@ function setupTabs(activeTab) {
 	    <li onmousemove='setTimeout(positionCopyright, 100)'><a href="#registered-users-tab" class="tabs-button" id="registered-users-button">Registered Users</a></li>
 	  </ul>
       <div id="refresh"></div>
+	  <div id="home-tab">
+	    <div class="tab-title" id="home-title"></div>
+		<div id="completed-assessments-title"></div>
+		<div id="completed-assessments"></div>
+		<div id="display-pdf"></div>
+	  </div>
 	  <div id="questions-tab">
 		<div id='canvas' style='float:left'>
 		    <div id='questions'></div>

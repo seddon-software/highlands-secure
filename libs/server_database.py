@@ -10,6 +10,7 @@ import pandas as pd
 import uuid
 import datetime
 import os
+import json
 from ast import literal_eval
 
 if __name__ == "__main__": 
@@ -35,20 +36,22 @@ def saveResults(results, headers):
                 d = keyValuePair["email"]
                 email = d["name"]
                 break
-            
         with connection.cursor() as cursor:
             # Create a new record
             sql = """INSERT INTO `{}` (`guid`, `timestamp`, `email`, `headers`, `result`) 
                                VALUES (   %s,          %s,      %s,      %s,       %s)""".format(g.get("table"))
             guid = str(uuid.uuid4())
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#             print("**** {} ****".format(len(resultsAsString)))
+#             print("**** {} ****".format(resultsAsString))
             cursor.execute(sql, (guid, timestamp, email, str(headers), resultsAsString))
+
         # connection is not autocommit by default. So you must commit to save your changes.
         connection.commit()    
         print("1 record committed")
     except Exception as e:
         print("rollback")
-        print(e)
+        g.getLogger().error(f"Error saving results to database, {e}")
         connection.rollback()
     finally:
         connection.close()
@@ -102,5 +105,4 @@ def getEmailsAndClients():
 
 
 if __name__ == "__main__":
-    print(getResult("chris@def.com"))
-    
+    print(getResult("seddon-software@keme.co.uk"))

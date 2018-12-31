@@ -45,7 +45,19 @@ class Excel:
         if(row): options.append(row)    # for last row
             
         return options
-        
+    
+    def extractCoaching(self):
+        try:
+            excelFile = g.get("excelFile")
+            pd.set_option('display.width', 1000)
+            table = pd.read_excel(excelFile, 'coaching')
+            table = table[pd.notnull(table['Question'])]
+            table['Question'] = table['Question'].astype(str)
+        except Exception as e:
+            g.getLogger().error(f"Excel error: {e}")
+        finally:
+            return table
+    
     def filterQuestions(self, questionType):
         listQuestions = []
         for question, option in zip(self.questions, self.options):    #@UnusedVariable
@@ -241,10 +253,10 @@ if __name__ == "__main__":
 #     print(xl.getManagerType("  peter.SMith@highlands.com   "))
 #     print(xl.getAllowOrDenyMode())
 #     print(xl.getAllowDomains("peter.SMith@highlands.ibm.com"))
-    print(xl.getEmailFrom())
-    print(xl.getEmailSubject())
-    print(xl.getEmailBody())
-
-    
-    
+#     print(xl.getEmailFrom())
+#     print(xl.getEmailSubject())
+#     print(xl.getEmailBody())
+#     print(xl.extractCoaching())
+    for row in zip(xl.getQuestions(), xl.getOptions()):
+        print(row)
     

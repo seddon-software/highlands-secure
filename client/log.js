@@ -13,7 +13,7 @@ function displayLog() {
 	let title = div(`${LOG_TAB_TEXT}`, "", { color:`${LOG_TITLE_COLOR}`});
 	$("#log-title").html(title);
 
-	let a = getAjaxData3(`/log?${document.uuid}`);
+	let a = getAjaxData3(`/log?uuid=${document.uuid}`);
 	$.when(a).done(function(logFile) {
 		var lines = logFile.split("\n");
 		var result = "<br/>";
@@ -35,7 +35,7 @@ function displaySystemLogs() {
 	}
 
 	$("#theSyslog").empty();
-	let a = getAjaxData3(`/system-logs?${document.uuid}`);
+	let a = getAjaxData3(`/system-logs?uuid=${document.uuid}`);
 	$.when(a).done(function(data) {
 		var jsonObject = $.parseJSON(data);
 		let id = "syslog-filter";

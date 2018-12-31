@@ -17,12 +17,15 @@
   <meta http-equiv="Cache-Control" content="max-age=31536000">
 <link rel="stylesheet" href="client/css/jquery-ui-1.12.1.css">
 <link rel="stylesheet" href="client/css/jquery-ui.theme.css">
-<!--  <link href="client/images/favicon.ico" rel="icon" type="image/x-icon" />  -->
 <script src="client/js/jquery-3.2.1.js"></script>
 <script src="client/js/jquery-ui-1.12.1.js"></script>
+<script src="client/d3-5.5.0/d3.min.js" charset="utf-8"></script>
+<script src="client/c3-0.6.5/c3.min.js"></script>
 <script src="client/utilities.js"></script>
 <script src="client/constants.js"></script>
 <script src="client/client.js"></script>
+<script src="client/ajax.js"></script>
+<script src="client/home.js"></script>
 </head>
 
 <style>
@@ -64,7 +67,6 @@ input[type="button"] {
 </style>
 
 <script>
-var cookiesAccepted = false;
 
 $(window).on('load', function () {
 	setStyles();
@@ -74,41 +76,26 @@ $(window).on('load', function () {
 	}, 100);
 	let html = div(greeting, "message");
 	$("body").append(html);
+	displayCompletedAssessments();
+/*	
+
 	let loginButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="login">`, "login");
 	let changePasswordButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="change password">`, "changePassword");
 	let registerButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="register">`, "register");
 	let blockDiv = div("", "block");
 	$("body").append(blockDiv);
-	$("#block").append(loginButton);
+ 	$("#block").append(loginButton);
 	$("#login-button").button();
 	$("#block").append(changePasswordButton);
 	$("#block").append(registerButton);
  	$("#login").click(doLogin);
 	$("#changePassword").click(doChangePassword);
 	$("#register").click(doRegister);
-	html = div(loginMessage, "login-message", {"clear":"both", "font-size":"large"});
+ 	html = div(loginMessage, "login-message", {"clear":"both", "font-size":"large"});
 	$("#block").append(html);
-	if(!cookiesAccepted) setupCookieMessage();
+*/
 });
 
-function setupCookieMessage() {
-	let cookieCSS = { 
-			"width":"90vw",
-			"color":"red",
-			"bottom":"5vh", 
-			"position":"fixed",
-			"text-align":"center",
-			"margin-left":"5vw"
-	};
-	let cookieMessage = div(cookiesText, "cookie-message", cookieCSS);
-	let cookieButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="I agree to use of cookies">`);
-	$("#block").append(cookieMessage);
-	$("#cookie-message").addClass("ui-state-default ui-corner-all");
-	$("#cookie-message").click(function() { 
-	    cookiesAccepted = true;
-		$("#cookie-message").remove(); 
-	});
-}
 
 function grid(name, selector, args) {
 	// this only works for grids with 2 columns
@@ -134,10 +121,6 @@ function grid(name, selector, args) {
 
 
 function doLogin() {
-	if(!cookiesAccepted) {
-		$("#message").html(cookiesWarning);
-		return;
-	}
 	$("#block").empty();
 	$("#message").html(doLoginMessage);
 	grid("do-login", "#block", 
@@ -145,7 +128,7 @@ function doLogin() {
 			["password", `<input type="password" style="font-size:large" id="password">`]
 	);
 	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="submit">`, "do-login");
-	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="cancel">`, "do-restart");
+	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
 	$("#block").append(submitButton);
 	$("#block").append(restartButton);	
 	$("#do-restart").click(function() { location.reload(); });
@@ -182,10 +165,6 @@ function doLogin() {
 }
 
 function doChangePassword() {
-	if(!cookiesAccepted) {
-		$("#message").html(cookiesWarning);
-		return;
-	}
 	$("#message").html(doChangePasswordMessage);
 	$("#block").empty();
 	let emailBox = $(`<div>email<input type="text" id="email"></div>`);
@@ -199,7 +178,7 @@ function doChangePassword() {
             ["confirm password", `<input type="password" style="font-size:large" id="password2">`]
 	);
 	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="do-changePassword" value="submit">`);
-	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="cancel">`, "do-restart");
+	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
 	$("#block").append(submitButton);
 	$("#block").append(restartButton);
 	$("#do-restart").click(function() { location.reload(); });
@@ -246,10 +225,6 @@ function doChangePassword() {
 }
 
 function doRegister() {
-	if(!cookiesAccepted) {
-		$("#message").html(cookiesWarning);
-		return;
-	}
 	function startRegistration() {
 		let email = $("#email").val();
 		$.ajax({
@@ -269,7 +244,7 @@ function doRegister() {
 	                       ["enter code",       `<input type="text" style="font-size:large" id="code">`]
 				);
 				let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="complete-registration" value="submit">`);
-				let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="cancel">`, "do-restart");
+				let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
 				$("#block").append(submitButton);
 				$("#block").append(restartButton);	
 				$("#do-restart").click(function() { location.reload(); });
@@ -322,7 +297,7 @@ function doRegister() {
 	let passwordBox1 = $(`<div>password<input type="password" id="password1"></div>`);
 	let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
 	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="start-registration" value="submit">`);
-	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="cancel">`, "do-restart");
+	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
 	$("#block").append(submitButton);
 	$("#block").append(restartButton);	
 	$("#do-restart").click(function() { location.reload(); });
@@ -365,6 +340,8 @@ function setupHeadings() {
 
 <body>
 	<div id="headings"></div>
+	<div id="completed-assessments-title"></div>
+	<div id="completed-assessments"></div>
 </body>
 </html>
 
