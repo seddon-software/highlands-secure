@@ -668,6 +668,14 @@ function addClickHandlers() {
 		    			$(this).dialog("close");
 		    			clearPage();
 		    		}
+		    	},
+		    	"View Coaching": {
+                    id: "view-coaching", 
+                    text: "View Coaching", 
+                    click: function() {
+                        $(this).dialog("close");
+                        loadPage(0, "refresh");
+                    }
 		    	}
 		    }
 		});

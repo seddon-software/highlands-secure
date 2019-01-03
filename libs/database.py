@@ -209,8 +209,8 @@ class Database:
             pattern = r'Timestamp[(]([^)]+)[)]'
             replacement = r"\1"
             return re.sub(pattern, replacement, s)
-            excelData = convertTimestamps(excelData)
-            return excelData
+#             excelData = convertTimestamps(excelData)
+#             return excelData
         return convertTimestamps(excelData)
             
 if __name__ == "__main__": 
