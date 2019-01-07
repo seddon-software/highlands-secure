@@ -110,7 +110,7 @@ function loadPage(activeTab, mode) {
 	}
 	
 	setupHeadings();
-	if(document.managerType === "chart" || document.managerType === "admin") {
+	if(document.managerType === "manager" || document.managerType === "admin") {
 		// charts
 		displayCharts();
 		displayPieCharts();
@@ -200,7 +200,7 @@ function setupTabs(activeTab) {
 		$(`[href="${selector}"]`).closest('li').hide();		
 	}
 	let tabObject = {};
-	if(document.managerType==="chart") {
+	if(document.managerType==="manager") {
 		tabObject["active"] = activeTab;
 		hideTab("#excel-tab");
 		hideTab("#log-tab");

@@ -241,7 +241,7 @@ class Root(object):
                 reply = {}
                 if managerType == "admin":
                     reply["uuid"] = UUID1
-                elif managerType == "chart":
+                elif managerType == "manager":
                     reply["uuid"] = UUID2
                 else:
                     reply["uuid"] = UUID3
