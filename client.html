@@ -131,13 +131,15 @@ function loadPage(activeTab, mode) {
 	if(mode === "init") {
 		// assessments
 		removeCookiesOnStartup();
-		displayCompletedAssessments();
 		getQuestions();
 		getOptions();
 //		setupSaveButton();
 		addClickHandlers();
+		displayCompletedAssessments();
 	}
 	if(activeTab === undefined) activeTab = 0;
+
+	
 	setupTabs(activeTab);
 	setStyles();
 	setTimeout(function() {

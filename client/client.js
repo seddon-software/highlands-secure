@@ -653,34 +653,35 @@ function addClickHandlers() {
 		    title: "Highlands Assessment",
 		    modal: true,
 		    buttons: {
-		    	"No": {
+				"Exit": {
 		    		id: "continue-no", 
-		    		text: "No", 
+		    		text: "Exit", 
 		    		click: function() {
 		    			$(this).dialog("close");
 		    			setInterval(function() {location.assign(`${WHERE_TO_GO_ON_EXIT}`)}, 500);
 		    		}
 		    	},
-		    	"Yes": {
+		    	"Another profile": {
 		    		id: "continue-yes", 
-		    		text: "Yes", 
+		    		text: "Another Profile", 
 		    		click: function() {
 		    			$(this).dialog("close");
 		    			clearPage();
 		    		}
-		    	},
-		    	"View Coaching": {
-                    id: "view-coaching", 
-                    text: "View Coaching", 
-                    click: function() {
+				},
+				"View Coaching": {
+		    		id: "view-coaching", 
+					text: "View Coaching", 
+					click: function() {
                         $(this).dialog("close");
-                        loadPage(0, "refresh");
+						clearPage();
+						loadPage(0, "refresh");
                     }
 		    	}
 		    }
 		});
 			
-		$("#modal_dialog").html("Do you want to complete another client profile?")
+		$("#modal_dialog").html("What do you want to do now?")
 		                  .css({"font-size":"large", "background-color":DIALOG_BACKGROUND_COLOR});
 	}
 
