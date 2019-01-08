@@ -110,7 +110,7 @@ function loadPage(activeTab, mode) {
 	}
 	
 	setupHeadings();
-	if(document.managerType === "chart" || document.managerType === "admin") {
+	if(document.managerType === "manager" || document.managerType === "admin") {
 		// charts
 		displayCharts();
 		displayPieCharts();
@@ -131,13 +131,15 @@ function loadPage(activeTab, mode) {
 	if(mode === "init") {
 		// assessments
 		removeCookiesOnStartup();
-		displayCompletedAssessments();
 		getQuestions();
 		getOptions();
 //		setupSaveButton();
 		addClickHandlers();
+		displayCompletedAssessments();
 	}
 	if(activeTab === undefined) activeTab = 0;
+
+	
 	setupTabs(activeTab);
 	setStyles();
 	setTimeout(function() {
@@ -200,7 +202,7 @@ function setupTabs(activeTab) {
 		$(`[href="${selector}"]`).closest('li').hide();		
 	}
 	let tabObject = {};
-	if(document.managerType==="chart") {
+	if(document.managerType==="manager") {
 		tabObject["active"] = activeTab;
 		hideTab("#excel-tab");
 		hideTab("#log-tab");
