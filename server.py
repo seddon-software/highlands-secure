@@ -138,7 +138,7 @@ class Root(object):
             return pdf
 
         def doDownloadPdf():        # view PDF inline
-            guid = queryDictionary['pdf'];
+            guid = queryDictionary['pdf']
             pdf = coach.generatePdf(guid)
             cherrypy.response.status = 200
             cherrypy.response.headers["Content-type"] = 'application/pdf'
@@ -170,26 +170,27 @@ class Root(object):
             if oldPassword1hash == "": # not registered
                 sendHeaders(code=401)
                 message = "change password attempted for unregistered email: {}".format(email)
-                return message.encode()
                 log(message)
+                return message.encode()
+                
             else:
                 oldPassword2 = queryDictionary['oldPassword']
                 oldPassword2hash = hashPassword(oldPassword2)
                 if oldPassword1hash == oldPassword2hash:
                     sendHeaders()
                     db.createUser(queryDictionary['email'], queryDictionary['newPassword'], "")
-                    return '["password changed"]'.encode()
                     log("password updated for {}".format(queryDictionary['email']))
+                    return '["password changed"]'.encode()
                 else:
                     sendHeaders(401)
-                    return '["incorrect password"]'.encode()
                     log("password update failed for {}".format(queryDictionary['email']))
+                    return '["incorrect password"]'.encode()
     
         def doStartRegistration():
             def sendRegistrationDetails(code, message, logMessage):
                 sendHeaders(code=code)
-                return message.encode()
                 log(logMessage)
+                return message.encode()
 
             email = queryDictionary['email']
             code = generateCode()
@@ -223,12 +224,12 @@ class Root(object):
             if code1 == code2:
                 sendHeaders()
                 db.createUser(queryDictionary['email'], queryDictionary['password'], queryDictionary['code'])
-                return '["registration succeeded"]'.encode()
                 log("{} is now registered".format(queryDictionary['email']))
+                return '["registration succeeded"]'.encode()
             else:
                 sendHeaders(code=401)
-                return '["registration failed"]'.encode()
                 log("{} failed to register".format(queryDictionary['email']))
+                return '["registration failed"]'.encode()
     
         def doAuthenticate():
             theEmail, response = authenticate()
@@ -249,12 +250,14 @@ class Root(object):
                 reply["manager-type"] = managerType
                 reply["source"] = data
                 reply = json.dumps(reply)
-                return str(reply).encode()
                 log("{} login succeeded".format(theEmail))
+                return str(reply).encode()
+                
             else:
                 sendHeaders(401)
-                return '["login failed"]'.encode()
                 log("{} failed to login".format(theEmail))
+                return '["login failed"]'.encode()
+                
 
 
         def doSendRegularFiles(fileName):
