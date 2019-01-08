@@ -1,4 +1,5 @@
 #! /bin/bash
+
 printf "which server(pi, ss, sss): "
 read server
 printf "file to copy: "
