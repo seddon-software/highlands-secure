@@ -55,16 +55,6 @@ class Root(object):
             cherrypy.response.status = code
             cherrypy.response.headers['Content-type'] = mimeType
 
-        def sendHeaders_old(**d):
-            code = d["code"] if "code" in d else 200
-            mimeType = d["mimeType"] if "mimeType" in d else getMimeType()
-            self.send_response(code)
-            self.send_header("Content-type", mimeType)
-            try:            # this is to suppress broken pipe warnings
-                self.end_headers()
-            except Exception as e:
-                pass            
-
         def hashPassword(password):
             return hashlib.sha1(password.encode()).hexdigest()
                     
@@ -182,7 +172,7 @@ class Root(object):
                     log("password updated for {}".format(queryDictionary['email']))
                     return '["password changed"]'.encode()
                 else:
-                    sendHeaders(401)
+                    sendHeaders(code=401)
                     log("password update failed for {}".format(queryDictionary['email']))
                     return '["incorrect password"]'.encode()
     
@@ -254,7 +244,7 @@ class Root(object):
                 return str(reply).encode()
                 
             else:
-                sendHeaders(401)
+                sendHeaders(code=401)
                 log("{} failed to login".format(theEmail))
                 return '["login failed"]'.encode()
                 
