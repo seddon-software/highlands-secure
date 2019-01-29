@@ -81,14 +81,6 @@ Installing a new A2 Server:
 	pip install validate_email
 	pip install reportlab
 
-9. To debug on the CherryPy server, you need to add code:
-	import pdb				# at start of file
-	...
-	pdb.set_trace()			# on the line where you want to break
-	
-	# note that you can't set a breakpoint in one thread and break in another.  Therefore
-	# the breakpoint needs to be positioned in the code where the thread will break
-	
 Note:
 	asssessmydeal.com is 68.66.241.111
 	assessmydeal.com is 199.195.116.16
