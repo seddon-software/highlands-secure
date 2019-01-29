@@ -1,4 +1,4 @@
-debug = True
+debug = False
 import cherrypy
 import json
 #from cherrypy.process.plugins import Daemonizer
@@ -185,9 +185,9 @@ class Root(object):
             email = queryDictionary['email']
             code = generateCode()
             msgInvalidDomain = "Please use a business email.  You won't be able to register using the email you entered below"
-            logInvalidDomain = "registration rejected for {email}"
+            logInvalidDomain = f"registration rejected for {email}"
             msgRegistrationCodeSent = '["registration code sent"]'
-            logRegistrationCodeSent = "registration code {code} sent to {email}"
+            logRegistrationCodeSent = f"registration code {code} sent to {email}"
             msgInternalServerError = 'internal server error - please contact Highlands'
             logInternalServerError = "internal server error: SENDGRID_API_KEY missing from setup tab on spreadsheet"
             msgDomainNotAllowed = "The domain your are using for your email is not a permitted domain"
@@ -206,7 +206,8 @@ class Root(object):
                     sendRegistrationDetails(200, msgRegistrationCodeSent, logRegistrationCodeSent)
                 else:
                     sendRegistrationDetails(response, msgInternalServerError, logInternalServerError)
-            return code, response
+            # the returned data is ignored on success, but used as an error message on failure
+            return f'["{msgInternalServerError}"]'.encode()
     
         def doCompleteRegistration():
             code1 = db.getCode(queryDictionary['email'])
@@ -401,7 +402,8 @@ xl = Excel()
 table = Table()
 db = Database()
 coach = Coach()
-switchOffCheeryPyLogging(cherrypy)
+if not debug:
+    switchOffCheeryPyLogging(cherrypy)
 my_logger = g.setupLogging()
 my_logger.debug("server started at {}".format(datetime.datetime.now()))
 
