@@ -407,6 +407,7 @@ function drawTable(selector, options, n, questionType, questionNumber) {
 	function getTemplateSpacing(hw) {
 		let n, space;
 		let extraSpaces = TABLE_COLUMN_SPACING;
+		let firstColWidth = TABLE_FIRST_COLUMN_WIDTH;
 		if(hw === 'h') {
 			n = rowText.length + 1;
 			space = TABLE_SPACING_BETWEEN_ROWS;
@@ -417,11 +418,21 @@ function drawTable(selector, options, n, questionType, questionNumber) {
 		}
 		let spacing = "";
 		for(let i = 0; i < n; i++) {
-			// make the first width (1+extraSpaces) times as big as others
-			if(hw === 'w' && i === 0) 
-				spacing += `${(1+extraSpaces)*space}v${hw} `;
+			//  set up first column width or row height, then use even spacing
+			if (i === 0) {
+				if (hw === 'w')
+					spacing += `${firstColWidth} `;
+				else
+					spacing += `min-content `;
+			}
 			else
-				spacing += `${space}v${hw} `;	
+				spacing += `1fr `;
+			
+//			// make the first width (1+extraSpaces) times as big as others, uses viewport for spacing
+//			if(hw === 'w' && i === 0) 
+//				spacing += `${(1+extraSpaces)*space}v${hw} `;
+//			else
+//				spacing += `${space}v${hw} `;	
 		}
 		return spacing;
 	}
