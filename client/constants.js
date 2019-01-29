@@ -80,7 +80,6 @@ var TEXTAREA_MAX_WIDTH = "95%";
 var TEXTAREA_PADDING = "5%";
 var TABLE_COLUMN_SPACING = 1.0;
 var TABLE_SPACING_BETWEEN_ROWS = 5;
-var TABLE_FIRST_COLUMN_WIDTH = "33%";
 
 // Tab Titles
 var ASSESSMENT_TAB_TITLE = "Assessment";
@@ -116,7 +115,7 @@ var WHERE_TO_GO_ON_EXIT = "http://www.highlandsnegotiations.com/";
 var cookiesText = 
 	"This website uses cookies to ensure you get the best experience on our website.<br/>" +
 	"We use cookies to save you repeating responses in the assessment you are about to complete.<br/>" +
-	"Please click HERE to agree to the use of these cookies";
+	"Please CLICK to agree to the use of these cookies";
 var cookiesWarning = "please accept cookies before proceeding<br/>";
 var doChangePasswordMessage = "change password<br/>"; 
 var doLoginErrorMessage = "invalid login attempt(wrong password, invalid email), try again"; 
@@ -131,4 +130,4 @@ var loginMessage =
     "<br/>Please note that you must use a business email.  We will not accept personal domains such as " + 
     "<em>'hotmail.com'</em> or <em>'google.com'</em>." +
     "<p>Be aware that we collect certain data through the assessment that may be considered personally identifiable, " + 
-    `such as your email and IP address.  For full terms and conditions please click <a href="${TERMS_AND_CONDITIONS}">here</a>.`;
+    `such as your IP address.  For full terms and conditions please click <a href="${TERMS_AND_CONDITIONS}">here</a>.`;
