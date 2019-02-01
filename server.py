@@ -1,4 +1,4 @@
-debug = True
+debug = False
 import cherrypy
 import json
 #from cherrypy.process.plugins import Daemonizer
