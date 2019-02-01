@@ -4,337 +4,339 @@
 #
 #    Highlands Server
 #
-#    © Highlands Negotiations, 2018, v1.0
+#    © Highlands Negotiations, 2018, v1.1
 #
 ############################################################
 -->
 <html>
+
 <head>
-  <meta charset="utf-8" />
-  <meta name='viewport' 
-        content='width=device-width, height=device-height, user-scalable=no,
+	<meta charset="utf-8" />
+	<meta name='viewport' content='width=device-width, height=device-height, user-scalable=no,
                  initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
-  <meta http-equiv="Cache-Control" content="max-age=31536000">
-<link rel="stylesheet" href="client/css/jquery-ui-1.12.1.css">
-<link rel="stylesheet" href="client/css/jquery-ui.theme.css">
-<script src="client/js/jquery-3.2.1.js"></script>
-<script src="client/js/jquery-ui-1.12.1.js"></script>
-<script src="client/d3-5.5.0/d3.min.js" charset="utf-8"></script>
-<script src="client/c3-0.6.5/c3.min.js"></script>
-<script src="client/utilities.js"></script>
-<script src="client/constants.js"></script>
-<script src="client/client.js"></script>
-<script src="client/ajax.js"></script>
-<script src="client/home.js"></script>
+	<meta http-equiv="Cache-Control" content="max-age=31536000">
+	<link rel="stylesheet" href="client/css/jquery-ui-1.12.1.css">
+	<link rel="stylesheet" href="client/css/jquery-ui.theme.css">
+	<script src="client/js/jquery-3.2.1.js"></script>
+	<script src="client/js/jquery-ui-1.12.1.js"></script>
+	<script src="client/d3-5.5.0/d3.min.js" charset="utf-8"></script>
+	<script src="client/c3-0.6.5/c3.min.js"></script>
+	<script src="client/utilities.js"></script>
+	<script src="client/constants.js"></script>
+	<script src="client/client.js"></script>
+	<script src="client/ajax.js"></script>
+	<script src="client/home.js"></script>
 </head>
 
 <style>
-body {
-    background-color: azure;
-}
-input[type="text"],
-input[type="password"] {
-    color: brown;
-	padding-left: 2vw;
-	width: 100%;
-  	text-align: left;
-}
+	body {
+		background-color: azure;
+	}
 
-#message {
-	font-size: xx-large;
-	padding-bottom: 2vh;
-}
+	input[type="text"],
+	input[type="password"] {
+		color: brown;
+		padding-left: 2vw;
+		width: 100%;
+		text-align: left;
+	}
 
-input[type="button"] {
-    color: brown;
-  	text-align: center;
-	margin-left: 2vw;
-	width: 20%;
-	float: left;
-	padding-top: 1vh;
-	padding-bottom: 1vh;
-}
+	#message {
+		font-size: xx-large;
+		padding-bottom: 2vh;
+	}
 
-.ui-state-default { font-size: large; }
+	input[type="button"] {
+		color: brown;
+		text-align: center;
+		margin-left: 2vw;
+		width: auto;
+		float: left;
+		padding-top: 1vh;
+		padding-bottom: 1vh;
+	}
 
-.grid-container {
-    display: grid;
-    grid-template-columns: 25% 35%}");
-    background-color: #2196F3;
-    padding: 0px;
-}
+	.ui-state-default {
+		font-size: large;
+	}
+
+	.grid-container {
+		display: grid;
+		grid-template-columns: 25% 35%
+	}
 
 </style>
 
 <script>
 
-$(window).on('load', function () {
-	setStyles();
-	setupHeadings();
-	setTimeout(function() {
-		positionCopyright();
-	}, 100);
-	let html = div(greeting, "message");
-	$("body").append(html);
-	displayCompletedAssessments();
-/*	
+	$(window).on('load', function () {
+		setStyles();
+		setupHeadings();
+		setTimeout(function () {
+			positionCopyright();
+		}, 100);
+		let html = div(greeting, "message");
+		$("body").append(html);
+		displayCompletedAssessments();
+		/*	
+		
+			let loginButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="login">`, "login");
+			let changePasswordButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="change password">`, "changePassword");
+			let registerButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="register">`, "register");
+			let blockDiv = div("", "block");
+			$("body").append(blockDiv);
+			$("#block").append(loginButton);
+			$("#login-button").button();
+			$("#block").append(changePasswordButton);
+			$("#block").append(registerButton);
+			$("#login").click(doLogin);
+			$("#changePassword").click(doChangePassword);
+			$("#register").click(doRegister);
+			html = div(loginMessage, "login-message", {"clear":"both", "font-size":"large"});
+			$("#block").append(html);
+		*/
+	});
 
-	let loginButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="login">`, "login");
-	let changePasswordButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="change password">`, "changePassword");
-	let registerButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="register">`, "register");
-	let blockDiv = div("", "block");
-	$("body").append(blockDiv);
- 	$("#block").append(loginButton);
-	$("#login-button").button();
-	$("#block").append(changePasswordButton);
-	$("#block").append(registerButton);
- 	$("#login").click(doLogin);
-	$("#changePassword").click(doChangePassword);
-	$("#register").click(doRegister);
- 	html = div(loginMessage, "login-message", {"clear":"both", "font-size":"large"});
-	$("#block").append(html);
-*/
-});
 
+	function grid(name, selector, args) {
+		// this only works for grids with 2 columns
+		let container = div("", `container-${name}`);
+		container.addClass("grid-container")
 
-function grid(name, selector, args) {
-	// this only works for grids with 2 columns
-	let container = div("", `container-${name}`);
-	container.addClass("grid-container")
-
-	$(selector).append(container);
-    rows = arguments.length - 2;
-	for(var i = 2; i < arguments.length; i++) {
-		let row = arguments[i];
-		for(let col = 0; col < row.length; col++) {
-			let contents = div(row[col], `grid-item-${name}-${i}-${col}`);
-			$(`#container-${name}`).append(contents);
-			$(`#grid-item-${name}-${i}-${col}`).addClass("grid-item");
-			$(`#grid-item-${name}-${i}-${col}`).css({
-				"line-height":"5vw", 
-				"font-size":"x-large",
-			    "padding-right": "1vw",
-				"text-align":"right"});
+		$(selector).append(container);
+		rows = arguments.length - 2;
+		for (var i = 2; i < arguments.length; i++) {
+			let row = arguments[i];
+			for (let col = 0; col < row.length; col++) {
+				let contents = div(row[col], `grid-item-${name}-${i}-${col}`);
+				$(`#container-${name}`).append(contents);
+				$(`#grid-item-${name}-${i}-${col}`).addClass("grid-item");
+				$(`#grid-item-${name}-${i}-${col}`).css({
+					"line-height": "5vw",
+					"font-size": "x-large",
+					"padding-right": "1vw",
+					"text-align": "right"
+				});
+			}
 		}
 	}
-}
 
 
-function doLogin() {
-	$("#block").empty();
-	$("#message").html(doLoginMessage);
-	grid("do-login", "#block", 
-			["email",    `<input type="text" style="font-size:large" id="email">`], 
+	function doLogin() {
+		$("#block").empty();
+		$("#message").html(doLoginMessage);
+		grid("do-login", "#block",
+			["email", `<input type="text" style="font-size:large" id="email">`],
 			["password", `<input type="password" style="font-size:large" id="password">`]
-	);
-	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="submit">`, "do-login");
-	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
-	$("#block").append(submitButton);
-	$("#block").append(restartButton);	
-	$("#do-restart").click(function() { location.reload(); });
-	$("#do-login").click(function() {
-		$.ajax({
-			url: "authentication",
-			dataType: 'text',
-			data: {},
-			success: function(data, status) {
-				var response = JSON.parse(data);				
-				let uuid = response["uuid"];
-				let email = response["email"];
-				let managerType = response["manager-type"];
-				let html = response["source"];
-				document.open();
-				document.uuid = uuid;
-				document.email = email;
-				document.managerType = managerType;
-				document.write(html);
-				document.close();
-			},
-			error: function(data, status, error) {
-				console.log("error data", data, status, error);	  
-				$("#message").html(doLoginErrorMessage);
-				$("#password").val("");
-			},
-			beforeSend: function(xhr, settings) { 
-				let email = $("#email").val();
-				let password = $("#password").val();
-				xhr.setRequestHeader('Authorization', `${email}+${password}`); 
-			} 
+		);
+		let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="submit">`, "do-login");
+		let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
+		$("#block").append(submitButton);
+		$("#block").append(restartButton);
+		$("#do-restart").click(function () { location.reload(); });
+		$("#do-login").click(function () {
+			$.ajax({
+				url: "authentication",
+				dataType: 'text',
+				data: {},
+				success: function (data, status) {
+					var response = JSON.parse(data);
+					let uuid = response["uuid"];
+					let email = response["email"];
+					let managerType = response["manager-type"];
+					let html = response["source"];
+					document.open();
+					document.uuid = uuid;
+					document.email = email;
+					document.managerType = managerType;
+					document.write(html);
+					document.close();
+				},
+				error: function (data, status, error) {
+					console.log("error data", data, status, error);
+					$("#message").html(doLoginErrorMessage);
+					$("#password").val("");
+				},
+				beforeSend: function (xhr, settings) {
+					let email = $("#email").val();
+					let password = $("#password").val();
+					xhr.setRequestHeader('Authorization', `${email}+${password}`);
+				}
+			});
 		});
-	});
-}
+	}
 
-function doChangePassword() {
-	$("#message").html(doChangePasswordMessage);
-	$("#block").empty();
-	let emailBox = $(`<div>email<input type="text" id="email"></div>`);
-	let passwordBox0 = $(`<div>old password<input type="password" id="password0"></div>`);
-	let passwordBox1 = $(`<div>new password<input type="password" id="password1"></div>`);
-	let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
-	grid("do-change-password", "#block",
-			["email",            `<input type="text" style="font-size:large" id="email">`],
-            ["old password",     `<input type="password" style="font-size:large" id="password0">`],
-            ["new password",     `<input type="password" style="font-size:large" id="password1">`],
-            ["confirm password", `<input type="password" style="font-size:large" id="password2">`]
-	);
-	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="do-changePassword" value="submit">`);
-	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
-	$("#block").append(submitButton);
-	$("#block").append(restartButton);
-	$("#do-restart").click(function() { location.reload(); });
-	$("#do-changePassword").click(function() {
-		let email = $("#email").val();
-		let password0 = $("#password0").val();
-		let password1 = $("#password1").val();
-		let password2 = $("#password2").val();
-		if(password0.trim() === "" || password1.trim() === "" || password2.trim() === "") {
-			$("#message").html("passwords can't be empty, try again");
-			$("#password1").val("");
-			$("#password2").val("");
-			return;			
-		}
-		if(password1 !== password2) {
-			$("#message").html("passwords different, try again");
-			$("#password1").val("");
-			$("#password2").val("");
-			return;
-		}
-		$.ajax({
-			url: "change-password",
-			dataType: 'json',
-			data:{
-			    email: `${email}`,
-			    oldPassword: `${password0}`,
-				newPassword: `${password1}`
-			},
-			success: function(data, status) {
-				$("#block").empty();					
-    			$("#message").html("change successful")
-				setTimeout(function() {
-					location.reload();
-	    		}, 3000);
-			},
-			error: function(data, status, error) {
-				$("#message").html(data.responseText);
-				$("#password0").val("");
+	function doChangePassword() {
+		$("#message").html(doChangePasswordMessage);
+		$("#block").empty();
+		let emailBox = $(`<div>email<input type="text" id="email"></div>`);
+		let passwordBox0 = $(`<div>old password<input type="password" id="password0"></div>`);
+		let passwordBox1 = $(`<div>new password<input type="password" id="password1"></div>`);
+		let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
+		grid("do-change-password", "#block",
+			["email", `<input type="text" style="font-size:large" id="email">`],
+			["old password", `<input type="password" style="font-size:large" id="password0">`],
+			["new password", `<input type="password" style="font-size:large" id="password1">`],
+			["confirm password", `<input type="password" style="font-size:large" id="password2">`]
+		);
+		let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="do-changePassword" value="submit">`);
+		let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
+		$("#block").append(submitButton);
+		$("#block").append(restartButton);
+		$("#do-restart").click(function () { location.reload(); });
+		$("#do-changePassword").click(function () {
+			let email = $("#email").val();
+			let password0 = $("#password0").val();
+			let password1 = $("#password1").val();
+			let password2 = $("#password2").val();
+			if (password0.trim() === "" || password1.trim() === "" || password2.trim() === "") {
+				$("#message").html("passwords can't be empty, try again");
 				$("#password1").val("");
 				$("#password2").val("");
-			} 
+				return;
+			}
+			if (password1 !== password2) {
+				$("#message").html("passwords different, try again");
+				$("#password1").val("");
+				$("#password2").val("");
+				return;
+			}
+			$.ajax({
+				url: "change-password",
+				dataType: 'json',
+				data: {
+					email: `${email}`,
+					oldPassword: `${password0}`,
+					newPassword: `${password1}`
+				},
+				success: function (data, status) {
+					$("#block").empty();
+					$("#message").html("change successful")
+					setTimeout(function () {
+						location.reload();
+					}, 3000);
+				},
+				error: function (data, status, error) {
+					$("#message").html(data.responseText);
+					$("#password0").val("");
+					$("#password1").val("");
+					$("#password2").val("");
+				}
+			});
 		});
-	});
-}
-
-function doRegister() {
-	function startRegistration() {
-		let email = $("#email").val();
-		$.ajax({
-			url: "start-registration",
-			dataType: 'json',
-			data:{
-			    email: `${email}`
-			},
-			success: function(data, status) {
-				$("#start-registration").remove();
-				$("#do-restart").remove();
-				$("#message").html(doRegisterMessage);
-				let codeBox = div(`enter code<input type="text" id="code">`);
-				grid("do-register2", "#block", 
-	                       ["password",         `<input type="password" style="font-size:large" id="password1">`],
-	                       ["confirm password", `<input type="password" style="font-size:large" id="password2">`],
-	                       ["enter code",       `<input type="text" style="font-size:large" id="code">`]
-				);
-				let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="complete-registration" value="submit">`);
-				let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
-				$("#block").append(submitButton);
-				$("#block").append(restartButton);	
-				$("#do-restart").click(function() { location.reload(); });
-				$("#complete-registration").click(completeRegistration);
-			},
-			error: function(data, status, error) {
-//				$("#message").html(data.responseJSON);
-				$("#message").html(data.responseText);
-			} 
-		});
-		
 	}
-	
-	function completeRegistration() {
-		let email = $("#email").val();
-		let password1 = $("#password1").val();
-		let password2 = $("#password2").val();
-		let code = $("#code").val();
-		if(password1 !== password2) {
-			$("#message").html("passwords different, try again");
-			$("#password1").val("");
-			$("#password2").val("");
-			return;
+
+	function doRegister() {
+		function startRegistration() {
+			let email = $("#email").val();
+			$.ajax({
+				url: "start-registration",
+				dataType: 'json',
+				data: {
+					email: `${email}`
+				},
+				success: function (data, status) {
+					$("#start-registration").remove();
+					$("#do-restart").remove();
+					$("#message").html(doRegisterMessage);
+					let codeBox = div(`enter code<input type="text" id="code">`);
+					grid("do-register2", "#block",
+						["password", `<input type="password" style="font-size:large" id="password1">`],
+						["confirm password", `<input type="password" style="font-size:large" id="password2">`],
+						["enter code", `<input type="text" style="font-size:large" id="code">`]
+					);
+					let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="complete-registration" value="submit">`);
+					let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
+					$("#block").append(submitButton);
+					$("#block").append(restartButton);
+					$("#do-restart").click(function () { location.reload(); });
+					$("#complete-registration").click(completeRegistration);
+				},
+				error: function (data, status, error) {
+					//				$("#message").html(data.responseJSON);
+					$("#message").html(data.responseText);
+				}
+			});
+
 		}
-		$.ajax({
-			url: "complete-registration",
-			dataType: 'json',
-			data:{
-			    email: `${email}`,
-			    password: `${password1}`,
-			    code: `${code}`
-			},
-			success: function(data, status) {
-				$("#message").html("Registration succeeded - you can now logon")
-				setTimeout(function() {
-					location.reload();
-				}, 3000);
-			},
-			error: function(data, status, error) {
-				console.log(data, status, error);
-				$("#message").html("Registration failed")
-			} 
-		});
+
+		function completeRegistration() {
+			let email = $("#email").val();
+			let password1 = $("#password1").val();
+			let password2 = $("#password2").val();
+			let code = $("#code").val();
+			if (password1 !== password2) {
+				$("#message").html("passwords different, try again");
+				$("#password1").val("");
+				$("#password2").val("");
+				return;
+			}
+			$.ajax({
+				url: "complete-registration",
+				dataType: 'json',
+				data: {
+					email: `${email}`,
+					password: `${password1}`,
+					code: `${code}`
+				},
+				success: function (data, status) {
+					$("#message").html("Registration succeeded - you can now logon")
+					setTimeout(function () {
+						location.reload();
+					}, 3000);
+				},
+				error: function (data, status, error) {
+					console.log(data, status, error);
+					$("#message").html("Registration failed")
+				}
+			});
+		}
+
+		$("#message").html("Please register for assessmydeal")
+		$("#block").empty();
+		let emailBox = $(`<div>email<input type="text" id="email"></div>`);
+		grid("do-login", "#block", ["email", `<input type="text" style="font-size:large" id="email">`]);
+		let passwordBox1 = $(`<div>password<input type="password" id="password1"></div>`);
+		let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
+		let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="start-registration" value="submit">`);
+		let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
+		$("#block").append(submitButton);
+		$("#block").append(restartButton);
+		$("#do-restart").click(function () { location.reload(); });
+		$("#messageBox").html("");
+		$("#start-registration").click(startRegistration);
 	}
-	
-	$("#message").html("Please register for assessmydeal")
-	$("#block").empty();
-	let emailBox = $(`<div>email<input type="text" id="email"></div>`);
-	grid("do-login", "#block", ["email", `<input type="text" style="font-size:large" id="email">`]);
-	let passwordBox1 = $(`<div>password<input type="password" id="password1"></div>`);
-	let passwordBox2 = $(`<div>repeat password<input type="password" id="password2"></div>`);
-	let submitButton = div(`<input type="button" class="ui-state-default ui-corner-all" id="start-registration" value="submit">`);
-	let restartButton = div(`<input type="button" class="ui-state-default ui-corner-all" value="restart">`, "do-restart");
-	$("#block").append(submitButton);
-	$("#block").append(restartButton);	
-	$("#do-restart").click(function() { location.reload(); });
-	$("#messageBox").html("");	
-	$("#start-registration").click(startRegistration);
-}
 
-function setupHeadings() {	
-	let image = div("<img src='client/images/highlands.png'/>", "highlands-image", {"float":"left"});
-	let headingFrame = div("", "heading-frame", {"width":BANNER_WIDTH, "background-color":TITLE_BAR_COLOR});
-	let headingTopFrame = div("", "heading-top-frame", {"width":BANNER_WIDTH, "border-style": "solid"});
-	let headingText = div(`${BANNER_TEXT}`, "heading-text", {"width":BANNER_WIDTH, "display":"inline-block", "text-align":"center"});
-	let headingBottomFrame = div("", "heading-bottom-frame", {"width":"60%", "border-style": "solid"});
-	$("#headings").append(image);
-	$("#headings").append(headingFrame);
-	$("#heading-frame").append(headingTopFrame);
-	$("#heading-frame").append(headingText);
-	$("#heading-frame").append(headingBottomFrame);	
-	$("div#headings").css({
-		"display": "flex",
-		"width": "100%",
-		"flex-direction": "row",
-		"justify-content": "center",
-		"align-items": "center",
-		"align-content": "space-between",
-		"background-color": TITLE_BAR_COLOR
-	});
-	$("#heading-frame").css({
-		"display": "flex",
-		"flex-direction": "column",
-		"text-align": "center",
-		"padding-left": "15vw",
-	    "font-size": "xx-large",
-		"color": BANNER_TITLE_COLOR
-	});
+	function setupHeadings() {
+		let image = div("<img src='client/images/highlands.png'/>", "highlands-image", { "float": "left" });
+		let headingFrame = div("", "heading-frame", { "width": BANNER_WIDTH, "background-color": TITLE_BAR_COLOR });
+		let headingTopFrame = div("", "heading-top-frame", { "width": BANNER_WIDTH, "border-style": "solid" });
+		let headingText = div(`${BANNER_TEXT}`, "heading-text", { "width": BANNER_WIDTH, "display": "inline-block", "text-align": "center" });
+		let headingBottomFrame = div("", "heading-bottom-frame", { "width": "60%", "border-style": "solid" });
+		$("#headings").append(image);
+		$("#headings").append(headingFrame);
+		$("#heading-frame").append(headingTopFrame);
+		$("#heading-frame").append(headingText);
+		$("#heading-frame").append(headingBottomFrame);
+		$("div#headings").css({
+			"display": "flex",
+			"width": "100%",
+			"flex-direction": "row",
+			"justify-content": "center",
+			"align-items": "center",
+			"align-content": "space-between",
+			"background-color": TITLE_BAR_COLOR
+		});
+		$("#heading-frame").css({
+			"display": "flex",
+			"flex-direction": "column",
+			"text-align": "center",
+			"padding-left": "15vw",
+			"font-size": "xx-large",
+			"color": BANNER_TITLE_COLOR
+		});
 
-}
+	}
 
 </script>
 
@@ -343,5 +345,5 @@ function setupHeadings() {
 	<div id="completed-assessments-title"></div>
 	<div id="completed-assessments"></div>
 </body>
-</html>
 
+</html>
