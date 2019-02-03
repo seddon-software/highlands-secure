@@ -202,7 +202,8 @@ class Root(object):
             else:
                 response = sendCodeInEmail(email, code)
                 if response == 202:
-                    db.createUser(email, "", code)
+                    randomPassword = generateCode()
+                    db.createUser(email, randomPassword, code)
                     sendRegistrationDetails(200, msgRegistrationCodeSent, logRegistrationCodeSent)
                 else:
                     sendRegistrationDetails(response, msgInternalServerError, logInternalServerError)
@@ -340,7 +341,8 @@ class Root(object):
             elif(fileName == "download-pdf"):               return doDownloadPdf()
             elif(fileName == "system-logs"):                return doSystemLogs()
             elif(fileName == "change-password"):            return doChangePassword()
-            elif(fileName == "start-registration"):         return doStartRegistration()
+            elif(fileName == "start-registration"):         
+                return doStartRegistration()
             elif(fileName == "complete-registration"):      return doCompleteRegistration()
             elif(fileName == "authentication"):             return doAuthenticate()                
             else:                                           
