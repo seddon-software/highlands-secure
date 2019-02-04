@@ -16,3 +16,4 @@ libs/__pycache__
 /.metadata/
 /RemoteSystemsTempFiles/
 sendgrid.env
+client/images/favicon.ico
