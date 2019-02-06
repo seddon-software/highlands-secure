@@ -1,0 +1,17 @@
+#! /bin/bash
+cat *9097.log | grep -o '[(].*[)]' | tr -d '()' > temp$$
+cat temp$$ | sort | uniq | tr -s ' ' >> temp1$$
+
+for i in $(cat temp1$$); do
+    whois $i | awk 'BEGIN { FS = ":" }; 
+/[aA]ddress:/ {print $2}; 
+/[oO]rganization:/ {print $2}; 
+/[cC]ity:/ {print $2}; 
+/[sS]tateProv:/ {print $2}; 
+/[pP]ostalCode:/ {print $2}; 
+/[cC]ountry:/ {print $2};  ' | tr '\n' ',' 
+printf '\n'
+done > temp2$$
+
+rm temp$$ temp1$$ temp2$$
+

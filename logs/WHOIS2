@@ -1,0 +1,27 @@
+#! /bin/bash
+# Takes a log file as an arguement
+if [ -z $1 ]
+then 
+    echo "This needs a log file name as parameter"
+    exit 1
+fi
+
+cat $1 | grep -o '[(].*[)]' | tr -d '()' > temp$$
+cat temp$$ | sort | uniq > temp1$$
+
+for i in $(cat temp1$$); do
+    whois $i | awk 'BEGIN { FS = ":" }; 
+print $i;
+/[aA]ddress:/ {print $2}; 
+/[oO]rganization:/ {print $2}; 
+/[cC]ity:/ {print $2}; 
+/[sS]tateProv:/ {print $2}; 
+/[pP]ostalCode:/ {print $2}; 
+/[cC]ountry:/ {print $2};  ' | tr '\n' ',' 
+printf '\n'
+done > $1Whois.log
+
+clear
+
+rm temp$$ temp1$$
+
